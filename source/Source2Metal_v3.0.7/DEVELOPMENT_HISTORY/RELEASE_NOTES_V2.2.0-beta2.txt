@@ -1,0 +1,75 @@
+Source2Metal v2.2.0-beta2 - ChessBase integratiebeta
+====================================================
+
+Waarom v2.2?
+-------------
+v2.0.0-beta3 valideerde PGN -> RAW_GAMES. v2.1.0-beta1 integreerde CTG ->
+RAW_BOOKS en CTG -> METAL. v2.2.0-beta1 voegde de derde en vierde bronvorm inhoudelijk toe: klassieke
+CBH en nieuwe 2CBH. beta2 is een directe correctiebeta voor de console-
+voortgang tijdens die geïntegreerde adapters.
+
+Nieuw
+-----
+1. CBH -> RAW_GAMES
+   De bewaarde CB2PGN Builder v0.1.3 klassieke decoder wordt intern gebruikt.
+   De decoder schrijft alleen een tijdelijke neutrale PGN onder TEMP; daarna
+   gelden de gewone Source2Metal RAW-regels en gezamenlijke deduplicatie.
+
+2. 2CBH -> RAW_GAMES
+   De bewaarde CB2PGN Builder v0.1.3 2CBH-decoder wordt op dezelfde manier als
+   interne adapter gebruikt.
+
+3. Complete-setcontrole
+   CBH vereist .cbh+.cbg+.cbp+.cbt. 2CBH vereist .2cbh+.2cbg+.2lid.
+   Onvolledige sets worden zichtbaar overgeslagen en gerapporteerd.
+
+4. Provenance
+   Partijen die via een tijdelijke adapter-PGN binnenkomen, krijgen in
+   Source2MetalSource het oorspronkelijke .cbh/.2cbh-pad, niet het TEMP-pad.
+
+5. Per-database adapterrapport
+   REPORT bevat voor iedere CBH/2CBH-bron aantallen fysieke records,
+   geconverteerde partijen, ply, skips en skipredenen.
+
+6. Metal-uitleg
+   INSTRUCTIE_INLEREN.txt legt nu expliciet uit waarom een synthetisch Metal-
+   record al na enkele zetten met 1-0 of 0-1 kan eindigen. Dat resultaat is een
+   Fritz-leersignaal, geen historische partij-uitslag.
+
+7. Broncodeborging uitgebreid
+   Exacte originele CB2PGN Builder v0.1.3-sourcebundle is toegevoegd aan
+   legacy_sources/testdata/, samen met Source2Metal v2.1.0-beta1_SOURCE.zip als
+   extra herstelpunt.
+
+8. Vensterwijziging-bestendige voortgang
+   De beta1-adapter schreef de oorspronkelijke vaste CB2PGN-voortgangsregel
+   rechtstreeks naar de console. Bij smaller/breder maken van het Windows-
+   venster kon die regel omvouwen en als meerdere oude fragmenten blijven staan.
+   In beta2 bezit Source2Metal de voortgangsweergave: de actuele zichtbare
+   consolebreedte wordt bij iedere update opnieuw gelezen, de regel kiest een
+   passende korte/lange vorm en oude, door resize omgevouwen progress-rijen
+   worden gewist voordat alleen de actuele status opnieuw wordt getekend.
+   De CBH/2CBH decodeeralgoritmen zijn hiervoor niet gewijzigd; alleen de
+   console-progressie is via een callback aan Source2Metal overgedragen.
+
+9. RAW en CTG gebruiken dezelfde renderer
+   Ook de bestaande PGN/RAW-voortgang en de geïntegreerde CTG RAW_BOOKS/METAL-
+   live-regels lopen nu via dezelfde resize-robuste Source2Metal-renderer. De
+   oorspronkelijke CTG-decoders/selectielogica blijven inhoudelijk ongewijzigd;
+   alleen hun live status wordt aan Source2Metal doorgegeven.
+
+10. Extra herstelpunt
+   De complete Source2Metal v2.2.0-beta1_SOURCE.zip is toegevoegd aan het
+   ingebedde legacy-archief.
+
+Bewuste beperkingen
+-------------------
+- De geïntegreerde 2CBH-route bouwt voort op de eerder gevalideerde 43/43,
+  3119/3119 ply, 0-overgeslagen referentieproef, maar moet nu opnieuw in de
+  volledige Source2Metal-run worden gecontroleerd.
+- De klassieke CBH-route blijft experimenteel totdat StrongGames2017 in deze
+  geïntegreerde beta opnieuw correct converteert en het RAW-resultaat praktisch
+  is gecontroleerd.
+- De adapter gebruikt voorlopig een tijdelijke PGN tussenlaag om de bewezen
+  losse decoder zo intact mogelijk te houden. Direct streaming kan later.
+- De universele Evidence Engine is nog niet de bron van CTG METAL.

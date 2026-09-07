@@ -1,0 +1,148 @@
+Source2Metal v3.0.7 - INFORMATIE EN HANDLEIDING
+================================================
+
+DOEL
+Source2Metal is een eerste open aanzet om zelfgemaakte openingsboeken in het
+NNUE-tijdperk technisch beter onderbouwd en praktisch weerbaarder te maken en
+het plezier in computerschaak te vergroten. Het project pretendeert NNUE niet
+te "verslaan". Het biedt gereedschap om bronmateriaal gecontroleerd om te zetten
+naar RAW- en METAL-PGN's voor verdere boekbouw en Fritz-learning. Gebruikers en
+ontwikkelaars mogen het project met hulp van OpenAI ChatGPT verder verbeteren.
+
+EERSTE START EN TAAL
+Bij de eerste start begint Source2Metal altijd in het Engels en vraagt:
+  Choose your default language
+Beschikbare talen:
+  1. English (English)
+  2. Deutsch (German)
+  3. Nederlands (Dutch)
+  4. Français (French)
+  5. Español (Spanish)
+  6. 中文 (Chinese)
+  7. Русский (Russian)
+De keuze wordt opgeslagen in Source2Metal.ini naast de EXE. Bij volgende starts
+opent het programma direct in die taal. Via "Taal wijzigen" in het hoofdmenu kan
+de standaard later worden veranderd. Console, statusbestanden en rapporten
+gebruiken uitsluitend de gekozen taal. Technische map- en bestandsnamen blijven
+stabiele Engelse namen.
+
+ONDERSTEUNDE BRONNEN
+- PGN
+- CBH
+- 2CBH
+- complete CTG/CTO/CTB-sets
+
+Source2Metal zoekt recursief vanaf de gekozen hoofdmap naar beneden. Bovenliggende
+mappen worden niet doorzocht. Herkenbare Source2Metal-uitvoer- en tempmappen
+worden overgeslagen. ZIP/RAR/7z-archieven worden niet als bron geopend.
+
+HOOFDMENU
+1. Bronnen verwerken [standaard]
+2. Hulpprogramma's
+   - Broncodepakket uitpakken
+   - Los SyzygyCheck-pakket uitpakken (ZIP)
+   - SyzygyCheck-broncodepakket uitpakken (ZIP)
+   - Pagefile-informatie
+3. Taal wijzigen
+4. Informatie
+0. Afsluiten
+
+MODI
+1. Alleen inventaris/rapport.
+2. RAW bouwen.
+3. RAW + METAL bouwen [standaard].
+
+UITVOER
+GAME RAW
+  PGN, CBH en 2CBH worden als GAME-bronnen verwerkt. CBH/2CBH gaan via een
+  tijdelijke interne adapter naar dezelfde RAW-controle als PGN.
+
+CTG RAW
+  Iedere complete CTG-set krijgt een eigen RAW-PGN. De omvang volgt de werkelijk
+  decodeerbare broninhoud.
+
+ALLE SOURCES RAW
+  Als GAME RAW en CTG RAW beide bestaan, worden de reeds gecontroleerde
+  resultaten aanvullend samengevoegd zonder extra cross-class deduplicatie.
+
+GAME METAL
+  GAME-bronnen worden transpositie-bewust statistisch beoordeeld. Het resultaat
+  bestaat uit volledige, legale echte bronpartijen met hun oorspronkelijke
+  uitslag.
+
+CTG METAL
+  Iedere CTG blijft een afzonderlijke boekgerichte bewijsbron. Eerst wordt de
+  strikte selectie geprobeerd. Alleen wanneer diagnostiek voldoende potentieel
+  toont, kan zichtbaar een voorzichtige Kleine/Brede-fallback worden geprobeerd.
+
+GAME METAL en CTG METAL blijven bewust gescheiden omdat zij verschillende
+soorten leer-evidence vertegenwoordigen.
+
+TECHNISCHE MAPNAMEN
+De fysieke mapnamen zijn bewust Engels en in iedere taal identiek. Veelgebruikte
+namen zijn REPORTS, Merged Sources, Separate Sources, TEMP, RAW en METAL. Zo
+blijven paden herkenbaar en ontstaan geen zeven verschillende mapstructuren.
+
+STATUSSEN
+GESLAAGD
+  De gevraagde verwerking eindigde zonder fouten of noodzakelijke overslagen.
+GESLAAGD MET OVERGESLAGEN BRONNEN
+  De run is technisch geslaagd, maar een of meer bronnen leverden bewust geen
+  verantwoord product op. Dit is geen parserfout.
+GESLAAGD MET FOUTEN
+  De run kon doorgaan, maar een of meer afzonderlijke bronnen of adapters
+  mislukten technisch.
+MISLUKT
+  De run is voortijdig afgebroken door een fout die verdere verwerking verhinderde.
+Een bron zonder verantwoord product krijgt geen lege of misleidende PGN maar
+een STATUS.txt met de reden en waar mogelijk het technische detailrapport.
+
+FRITZ - BIJLEREN UIT DATABASE
+Gebruik voor Source2Metal Metal-PGN's:
+  Overwinningen    AAN
+  Verliespartijen  AAN
+  Wit              UIT
+  Zwart            UIT
+  Speler           UIT
+  Spelernaam       LEEG
+  Partijen         ALLE
+
+BRONCODEPAKKET
+De Windows-EXE bevat het broncodepakket dat bij deze versie hoort. Kies
+Hulpprogramma's > Source2Metal-broncodepakket uitpakken. Voor gevorderden:
+  Source2Metal_v3.0.7.exe -extract-source
+Een bestaand identiek pakket wordt niet onnodig overschreven.
+
+CONTROLES
+- Originele bronbestanden worden alleen gelezen.
+- RAW/METAL-resultaten krijgen waar toepasbaar structurele recordcontrole.
+- GAME METAL krijgt aanvullende legale echte-partijcontrole.
+- Tijdelijke segmenten staan niet in de gebruikerschecksumlijst.
+- Definitieve kleine rapport-/tekstbestanden worden via een tijdelijk bestand
+  afgerond en pas daarna naar hun definitieve naam verplaatst.
+- Bij gelijke bronnamen kan Source2Metal een korte stabiele bron-ID aan een
+  uitvoernaam toevoegen om overschrijven te voorkomen.
+- Windows-console invoer en uitvoer worden expliciet op UTF-8 gezet, zodat Chinees
+  en Cyrillisch leesbaar blijven op ondersteunde Windows 10/11-consoles en
+  Windows Terminal.
+
+CREDITS
+Hoofdontwikkeling, architectuur en technische uitwerking:
+  OpenAI ChatGPT (GPT-5.6 Sol)
+Praktijkrichting en testen:
+  Nocompany, Nederland - computerschaker
+
+Source2Metal bevat en/of is afgeleid van open-source componenten van andere
+auteurs. Hun auteurschap en licenties blijven afzonderlijk vermeld in
+THIRD_PARTY_NOTICES.txt en LICENSE_GPL-3.0.txt.
+
+SYZYGY-BRONCODEPAKKET
+Via Hulpprogramma's kan ook het exacte broncodepakket van de ingebedde
+SyzygyCheck v2.0.7 worden uitgepakt. Daarin is de bewezen éénregelige adaptieve
+Windows-Terminal resize/reflow-bestendige voortgangsrenderer expliciet als
+regressieregel verankerd.
+
+PERMANENTE CONSISTENTIECONTROLE
+Bij iedere onderhouden build moeten `go test ./...` en de ingebouwde selftest
+automatisch de release-consistentie controleren: versies, utility-routes, uitleg,
+bestandsnamen en overeenstemming van embedded programma- en broncodepakketten.

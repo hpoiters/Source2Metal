@@ -1,0 +1,130 @@
+Source2Metal v3.0.7 - 信息与使用指南
+====================================
+
+用途
+Source2Metal 是一个开放的初步尝试，目标是在 NNUE 时代让用户自己制作的开局库
+在技术依据和实战稳定性方面更完善，同时增加计算机国际象棋的乐趣。本项目并不
+声称能够“击败”NNUE。它提供工具，以可控方式把源资料转换为 RAW 和 METAL PGN，
+用于后续开局库制作以及 Fritz 的数据库学习。欢迎用户和开发者借助 OpenAI ChatGPT
+继续改进本项目。
+
+首次启动与语言
+首次启动时，Source2Metal 始终先以英语显示，并询问：
+  Choose your default language
+可选语言：
+  1. English (English)
+  2. Deutsch (German)
+  3. Nederlands (Dutch)
+  4. Français (French)
+  5. Español (Spanish)
+  6. 中文 (Chinese)
+  7. Русский (Russian)
+选择会保存在 EXE 旁边的 Source2Metal.ini 中。以后启动时，程序会直接使用已保存的
+语言。可通过主菜单中的“更改语言”修改默认语言。控制台、状态文件和报告只使用
+所选语言。技术目录名和文件名保持统一的英文名称。
+
+支持的源格式
+- PGN
+- CBH
+- 2CBH
+- 完整的 CTG/CTO/CTB 文件组
+
+Source2Metal 只从所选根目录向下递归搜索，不搜索父目录。可识别的 Source2Metal
+输出目录和临时目录会被跳过。ZIP/RAR/7z 压缩包不会自动作为源打开。
+
+主菜单
+1. 处理源文件 [默认]
+2. 实用工具
+   - 解压源代码包
+   - 解出独立 SyzygyCheck 包（ZIP）
+   - 解压 SyzygyCheck 源代码包（ZIP）
+   - 页面文件信息
+3. 更改语言 (Change language / Изменить язык)
+4. 信息
+0. 退出
+
+处理模式
+1. 仅清单/报告。
+2. 构建 RAW。
+3. 构建 RAW + METAL [默认]。
+
+输出
+GAME RAW
+  PGN、CBH 和 2CBH 作为 GAME 源处理。CBH/2CBH 先经过临时内部适配器，再使用
+  与 PGN 相同的 RAW 验证。
+CTG RAW
+  每个完整 CTG 文件组生成自己的 RAW PGN，输出大小由实际能够解码的内容决定。
+ALL SOURCES RAW
+  当 GAME RAW 和 CTG RAW 都存在时，把已经验证的结果进一步合并，不执行额外的
+  跨类别去重。
+GAME METAL
+  使用考虑转置的局面/着法统计进行评估。输出由完整、合法的真实源对局组成，并
+  保留原始结果。
+CTG METAL
+  每个 CTG 仍然是独立的开局库证据源。先使用严格选择；只有诊断显示有足够潜力时，
+  才可能明确显示并尝试谨慎的 Small/Broad 后备选择。
+GAME METAL 与 CTG METAL 有意保持分开，因为它们代表不同类型的学习证据。
+
+英文技术目录名对照
+物理目录名统一使用英文，以便不同语言版本拥有完全相同的目录结构：
+  REPORTS          = 报告
+  Merged Sources   = 合并来源
+  Separate Sources = 独立来源
+  TEMP             = 临时文件
+  RAW              = 原始/基础输出
+  METAL            = Metal 学习输出
+这些英文名称本身不会按语言改名。
+
+状态
+成功
+  所要求的处理完成，没有错误或必要的跳过。
+成功（有跳过的源）
+  技术处理成功，但一个或多个源被有意跳过，因为无法负责任地产生输出；这不是
+  解析器故障。
+完成但有错误
+  处理能够继续，但一个或多个单独源/适配器发生技术错误。
+失败
+  错误阻止了继续处理。
+没有合适输出的源不会得到空白或误导性的 PGN，而会得到 STATUS.txt 说明原因。
+
+FRITZ - 从数据库学习
+Source2Metal Metal PGN 建议设置：
+  胜局          开启
+  负局          开启
+  白方          关闭
+  黑方          关闭
+  棋手          关闭
+  棋手名        留空
+  对局          全部
+
+源代码包
+Windows EXE 内含与本版本对应的源代码包。选择“实用工具 > 解压 Source2Metal 源代码包”。高级
+用户也可使用：
+  Source2Metal_v3.0.7.exe -extract-source
+已有完全相同的包不会被不必要地覆盖。
+
+检查与保护
+- 原始源文件只读，不会被修改。
+- RAW/METAL 结果在适用时进行结构记录检查。
+- GAME METAL 还进行真实合法对局检查。
+- TEMP 临时段不进入用户 SHA-256 列表。
+- 小型最终报告/文本文件先写入临时文件，成功后再移动到最终名称。
+- 如源名称冲突，可加入短而稳定的源 ID，防止覆盖。
+- Windows 控制台输入和输出显式设置为 UTF-8，以保证中文和西里尔文字在支持的
+  Windows 10/11 控制台及 Windows Terminal 中可读。
+
+致谢
+主要开发、架构与技术实现：
+  OpenAI ChatGPT (GPT-5.6 Sol)
+实战方向与测试：
+  Nocompany，荷兰 - 计算机国际象棋棋手
+第三方开源组件的作者和许可证仍分别保留在 THIRD_PARTY_NOTICES.txt 和
+LICENSE_GPL-3.0.txt 中。
+
+SYZYGY 源代码包
+“实用工具”还可以解压内嵌 SyzygyCheck v2.0.7 对应的精确源代码包。该包把单行
+自适应、可抵抗 Windows Terminal 调整大小/reflow 的进度显示明确保留为回归要求。
+
+版本一致性
+`go test ./...` 和内置自检会自动检查版本号、实用工具路径、文档以及内嵌程序/
+源代码包是否一致。

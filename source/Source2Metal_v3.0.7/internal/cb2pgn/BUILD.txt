@@ -1,0 +1,25 @@
+CB2PGN Builder v0.1.3 - build
+=============================
+
+Benodigd: Go 1.23 of nieuwer. Geen externe Go-packages nodig.
+
+Bestanden die bij de build naast elkaar moeten staan:
+  main.go
+  legacy_cbh.go
+  README_CB2PGN_v0.1.3.txt
+  THIRD_PARTY_NOTICES.txt
+  BUILD.txt
+  LICENSE_GPL-3.0.txt
+  reference_cbh2pgn-0.1\*
+
+Windows amd64 build vanaf Linux/macOS:
+  GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o CB2PGN_Builder_v0.1.3.exe main.go legacy_cbh.go
+
+Windows amd64 build vanaf Windows cmd:
+  go build -trimpath -ldflags="-s -w" -o CB2PGN_Builder_v0.1.3.exe main.go legacy_cbh.go
+
+Selftest:
+  CB2PGN_Builder_v0.1.3.exe --selftest
+
+Ingebedde broncode terughalen:
+  CB2PGN_Builder_v0.1.3.exe --extract-source
