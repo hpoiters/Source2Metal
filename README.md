@@ -41,11 +41,14 @@ Release hashes are used to detect accidental or unauthorized modification.
 
 ## Code signing
 
-The project is being prepared for transparent open-source Windows code signing.
+Source2Metal is prepared for transparent open-source Windows code signing through SignPath Foundation.
 
-Signing-related changes concern release authentication and distribution only. They are not intended to change chess processing, Syzygy checking, user-interface behaviour or program logic.
+The project's code-signing policy is available here:
 
-A separate code-signing policy will be published in this repository.
+[CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md)
+
+Signing-related changes concern release authentication and distribution only. They do not alter chess processing, Syzygy checking, user-interface behaviour or program logic.
+
 
 ## License
 
