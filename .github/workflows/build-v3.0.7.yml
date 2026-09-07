@@ -1,0 +1,58 @@
+name: Build Source2Metal v3.0.7
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'source/Source2Metal_v3.0.7/**'
+      - 'build_inputs/Source2Metal_v3.0.7_SOURCE.zip'
+      - '.github/workflows/build-v3.0.7.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go 1.23.2
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.2'
+          cache: false
+
+      - name: Prepare exact embedded source archive
+        shell: pwsh
+        run: Copy-Item build_inputs/Source2Metal_v3.0.7_SOURCE.zip source/Source2Metal_v3.0.7/embedded_source.zip -Force
+
+      - name: Test
+        working-directory: source/Source2Metal_v3.0.7
+        run: go test ./...
+
+      - name: Vet
+        working-directory: source/Source2Metal_v3.0.7
+        run: go vet ./...
+
+      - name: Build Windows executable
+        working-directory: source/Source2Metal_v3.0.7
+        shell: pwsh
+        run: |
+          $env:GOOS='windows'
+          $env:GOARCH='amd64'
+          $env:CGO_ENABLED='0'
+          go build -trimpath -buildvcs=false -ldflags='-s -w' -o Source2Metal_v3.0.7.exe .
+
+      - name: Show SHA-256
+        working-directory: source/Source2Metal_v3.0.7
+        shell: pwsh
+        run: Get-FileHash .\Source2Metal_v3.0.7.exe -Algorithm SHA256
+
+      - name: Upload unsigned build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Source2Metal-v3.0.7-unsigned
+          path: source/Source2Metal_v3.0.7/Source2Metal_v3.0.7.exe
+          if-no-files-found: error
