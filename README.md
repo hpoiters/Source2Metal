@@ -5,6 +5,14 @@ Source2Metal is an open-source Windows toolset for building, analysing and impro
 
 The project is aimed at practical computer-chess use, with particular attention to reproducibility, transparent source processing and robust opening-book preparation.
 
+## Source material and third-party content
+
+Source2Metal does not include or distribute opening books, chess databases, or third-party game collections.
+
+Users supply their own source material and are responsible for ensuring that they have the right to process, use, and redistribute that material and any derived output.
+
+The Source2Metal license applies to the software itself and does not grant rights to third-party source material processed with it.
+
 ## Conversions and utilities
 
 Source2Metal provides practical computer-chess conversion and checking tools, including:
