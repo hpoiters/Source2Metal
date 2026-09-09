@@ -5,6 +5,16 @@ Source2Metal is an open-source Windows toolset for building, analysing and impro
 
 The project is aimed at practical computer-chess use, with particular attention to reproducibility, transparent source processing and robust opening-book preparation.
 
+## Conversions and utilities
+
+Source2Metal provides practical computer-chess conversion and checking tools, including:
+
+- CTG to PGN — CTG2PGN
+- CBH to PGN — CBH2PGN
+- 2CBH to PGN — 2CBH2PGN
+- PGN processing for Fritz and ChessBase opening-book workflows
+- SyzygyCheck for Syzygy tablebase validity and integrity checking of RTBW and RTBZ files
+
 ## Included tools
 
 ### Source2Metal
@@ -41,13 +51,15 @@ Release hashes are used to detect accidental or unauthorized modification.
 
 ## Code signing
 
-Source2Metal is prepared for transparent open-source Windows code signing through SignPath Foundation.
+The Windows executable in the current Source2Metal v3.0.7 release is unsigned. Windows may therefore display a Microsoft Defender SmartScreen or "Unknown publisher" warning when the program is downloaded and started.
+
+Source2Metal is published with public source code, reproducible GitHub Actions build verification and SHA-256 integrity information.
 
 The project's code-signing policy is available here:
 
 [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md)
 
-Signing-related changes concern release authentication and distribution only. They do not alter chess processing, Syzygy checking, user-interface behaviour or program logic.
+Trusted Windows code signing may be added to future releases when an appropriate signing route becomes available.
 
 
 ## License
