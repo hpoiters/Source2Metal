@@ -1,17 +1,18 @@
-SOURCE2METAL GITHUB UPLOAD PACKAGE v3.0.7
-========================================
+SOURCE2METAL GITHUB PUBLICATION NOTES v3.0.9
+============================================
 
-This ZIP is prepared for the public Source2Metal GitHub repository.
-It does NOT modify Source2Metal v3.0.7 program logic.
+The v3.0.9 source tree is prepared for the public Source2Metal GitHub
+repository. The Source2Metal processing logic remains unchanged from v3.0.7.
 
 It contains:
-- public source trees for Source2Metal v3.0.7 and SyzygyCheck v2.0.7;
-- the exact v3.0.7 source archive used as the embedded-source build input;
+- public source trees for Source2Metal v3.0.9 and SyzygyCheck v2.0.9 V9F;
+- the exact v3.0.9 source archive used as the embedded-source build input;
 - build/reproducibility documentation;
 - privacy and third-party notices;
 - code-signing policy preparation.
 
-Do not upload the outer ZIP itself as repository source.
-Extract it first, then upload the CONTENTS of the extracted folder to the repository root.
+The v3.0.9 GitHub Actions workflow tests the source, builds the unsigned
+Windows executable and publishes the complete release package and SHA-256 list.
 
-The complete end-user distribution V3.0.7.zip will be added later as a GitHub RELEASE asset, not mixed into the repository source tree.
+The complete end-user distribution is a GitHub RELEASE asset and is not mixed
+into the repository source tree.

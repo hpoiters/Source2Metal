@@ -1,0 +1,44 @@
+SyzygyCheck v2.0.9 V9F — virtual memory / pagefile guide
+=====================================================
+
+Why this warning?
+-----------------
+A complete Syzygy collection can be many terabytes and a check can run for many hours or longer.
+Windows and the verification engine use virtual memory in addition to physical RAM. A disabled or
+very small paging file can contribute to memory-allocation failures or an unexpectedly interrupted run.
+
+SyzygyCheck does NOT change your paging-file settings. At startup it therefore offers only a short
+choice: Enter continues; A aborts so you can review the Windows settings first.
+
+Recommended simple setting
+--------------------------
+For most systems, the simplest safe starting point is to let Windows manage the paging-file size
+automatically and to keep enough free disk space on the drive where Windows places the pagefile.
+Do not disable the pagefile or impose a very small fixed maximum before an exceptionally large check.
+
+Windows 11 — step by step
+-------------------------
+1. Exit SyzygyCheck if it is still running.
+2. Open Start and search for: View advanced system settings
+3. Open System Properties.
+4. Select the Advanced tab.
+5. Under Performance select Settings...
+6. Select the Advanced tab again.
+7. Under Virtual memory select Change...
+8. Enable: Automatically manage paging file size for all drives.
+9. Confirm with OK/Apply.
+10. If Windows requests a restart, restart before starting a long Syzygy check.
+
+If automatic management still causes problems
+---------------------------------------------
+Automatic management is a practical default, not an absolute guarantee for every Windows setup or
+extreme workload. If a check repeatedly stops with memory/allocation errors despite ample free disk
+space, a deliberately larger initial pagefile can be considered as an advanced troubleshooting step.
+SyzygyCheck does not choose such values for you.
+
+Important
+---------
+- The pagefile is not a substitute for faulty RAM or unstable hardware.
+- A pagefile on an almost full drive cannot grow indefinitely.
+- A restart may be required after changing the setting.
+- When in doubt, Windows-managed sizing is a better starting point than a small fixed limit.

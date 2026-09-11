@@ -1,0 +1,131 @@
+Source2Metal v3.0.9 - INFORMATION UND ANLEITUNG
+================================================
+
+ZWECK
+Source2Metal ist ein erster offener Ansatz, selbst erstellte Eröffnungsbücher im
+NNUE-Zeitalter technisch fundierter und praktisch widerstandsfähiger zu machen
+und zugleich den Spaß am Computerschach zu erhöhen. Es wird nicht behauptet,
+NNUE zu „besiegen“. Das Programm wandelt Quellen kontrolliert in RAW- und
+METAL-PGNs für weiteren Buchbau und Fritz-Lernen um. Anwender und Entwickler
+können das Projekt mit Hilfe von OpenAI ChatGPT weiter verbessern.
+
+ERSTER START UND SPRACHE
+Beim ersten Start beginnt Source2Metal immer auf Englisch und fragt:
+  Choose your default language
+Verfügbare Sprachen:
+  1. English (English)
+  2. Deutsch (German)
+  3. Nederlands (Dutch)
+  4. Français (French)
+  5. Español (Spanish)
+  6. 中文 (Chinese)
+  7. Русский (Russian)
+Die Auswahl wird in Source2Metal.ini neben der EXE gespeichert. Bei späteren
+Starts öffnet das Programm direkt in dieser Sprache. Über „Sprache ändern“ kann
+die Standardsprache geändert werden. Konsole, Statusdateien und Berichte
+verwenden nur die gewählte Sprache. Technische Ordner- und Dateinamen bleiben
+stabile englische Namen.
+
+UNTERSTÜTZTE QUELLEN
+- PGN
+- CBH
+- 2CBH
+- vollständige CTG/CTO/CTB-Sets
+
+Source2Metal sucht rekursiv abwärts ab dem gewählten Stammordner. Übergeordnete
+Ordner werden nie durchsucht. Erkannte Ausgabe- und TEMP-Ordner werden
+übersprungen. ZIP/RAR/7z-Archive werden nicht als Quellen geöffnet.
+
+HAUPTMENÜ
+1. Quellen verarbeiten [Standard]
+2. Hilfsprogramme
+   - Quellcodepaket entpacken
+   - Separates SyzygyCheck-Paket (ZIP) entpacken
+   - SyzygyCheck-Quellcodepaket (ZIP) entpacken
+   - Pagefile-Information
+3. Sprache ändern
+4. Informationen
+0. Beenden
+
+MODI
+1. Nur Inventar/Bericht.
+2. RAW erstellen.
+3. RAW + METAL erstellen [Standard].
+
+AUSGABE
+GAME RAW
+  PGN, CBH und 2CBH werden als GAME-Quellen verarbeitet. CBH/2CBH laufen über
+  einen temporären internen Adapter und danach durch dieselbe RAW-Prüfung wie PGN.
+CTG RAW
+  Jedes vollständige CTG-Set erhält eine eigene RAW-PGN. Die Größe folgt dem
+  tatsächlich dekodierbaren Quelleninhalt.
+ALL SOURCES RAW
+  Wenn GAME RAW und CTG RAW vorhanden sind, werden die bereits geprüften Produkte
+  zusätzlich ohne klassenübergreifende Deduplizierung zusammengeführt.
+GAME METAL
+  GAME-Quellen werden mit transpositionsbewusster Statistik bewertet. Die Ausgabe
+  besteht aus vollständigen legalen echten Quellpartien mit Originalergebnis.
+CTG METAL
+  Jede CTG bleibt eine separate buchbezogene Evidenzquelle. Zuerst wird streng
+  ausgewählt; nur bei ausreichendem Potenzial kann sichtbar ein vorsichtiger
+  Small/Broad-Fallback versucht werden.
+GAME METAL und CTG METAL bleiben bewusst getrennt.
+
+TECHNISCHE ORDNERNAMEN
+Die physischen Ordnernamen sind absichtlich englisch und in jeder Sprache gleich:
+REPORTS, Merged Sources, Separate Sources, TEMP, RAW und METAL. Dadurch bleiben
+Pfade international erkennbar und stabil.
+
+STATUS
+ERFOLGREICH - Verarbeitung ohne Fehler oder notwendige Überspringungen.
+ERFOLGREICH MIT ÜBERSPRUNGENEN QUELLEN - technisch erfolgreich, aber mindestens
+eine Quelle lieferte bewusst kein verantwortbares Produkt; kein Parserfehler.
+ERFOLGREICH MIT FEHLERN - Verarbeitung konnte fortfahren, einzelne Quellen oder
+Adapter sind jedoch technisch fehlgeschlagen.
+FEHLGESCHLAGEN - ein Fehler verhinderte die weitere Verarbeitung.
+Eine Quelle ohne verantwortbares Produkt erhält keine irreführende leere PGN,
+sondern STATUS.txt mit Begründung und soweit möglich technischen Details.
+
+FRITZ - AUS DATENBANK LERNEN
+Für Source2Metal-Metal-PGNs:
+  Siege          EIN
+  Niederlagen    EIN
+  Weiß           AUS
+  Schwarz        AUS
+  Spieler        AUS
+  Spielername    LEER
+  Partien        ALLE
+
+QUELLCODEPAKET
+Die Windows-EXE enthält das zu dieser Version gehörende Quellcodepaket. Wählen
+Sie Hilfsprogramme > Source2Metal-Quellcodepaket entpacken. Für Fortgeschrittene:
+  Source2Metal_v3.0.9.exe -extract-source
+
+PRÜFUNGEN
+- Originalquellen werden nur gelesen.
+- RAW/METAL-Produkte erhalten soweit anwendbar strukturelle Record-Prüfungen.
+- GAME METAL erhält zusätzlich eine Prüfung echter legaler Partien.
+- TEMP-Segmente stehen nicht in der Benutzer-Prüfsummenliste.
+- Kleine endgültige Berichts-/Textdateien werden zunächst temporär geschrieben.
+- Namenskollisionen können durch eine kurze stabile Quellen-ID verhindert werden.
+- Windows-Konsoleingabe/-ausgabe wird auf UTF-8 gesetzt, damit chinesische und
+  kyrillische Zeichen auf unterstützten Windows-10/11-Konsolen lesbar bleiben.
+
+CREDITS
+Hauptentwicklung, Architektur und technische Umsetzung:
+  OpenAI ChatGPT (GPT-5.6 Sol)
+Praxisrichtung und Tests:
+  Nocompany, Niederlande - Computerschachspieler
+Drittanbieter-Autorenschaft und Lizenzen bleiben separat in
+THIRD_PARTY_NOTICES.txt und LICENSE_GPL-3.0.txt genannt.
+
+SYZYGY-QUELLCODEPAKET
+Über Hilfsprogramme lässt sich auch der exakte Quellcode der eingebetteten
+SyzygyCheck v2.0.9 V9F entpacken. Darin sind der veröffentlichte Prüfkern, die
+Thread-Auswahl, Checkpoint/Fortsetzen, die kompakte Live-Fortschrittsanzeige,
+Berichte, Dokumentationsprüfungen und der Quellenhinweis auf Ronald de Man
+festgehalten.
+
+RELEASE-KONSISTENZ
+`go test ./...` und der eingebaute Selbsttest prüfen bei gepflegten Builds
+automatisch Versionen, Utility-Wege, Dokumentation und eingebettete Pakete.

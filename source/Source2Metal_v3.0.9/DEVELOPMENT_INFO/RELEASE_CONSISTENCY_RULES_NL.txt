@@ -1,0 +1,27 @@
+Source2Metal - PERMANENTE RELEASE-CONSISTENTIEREGELS
+====================================================
+
+Deze controle hoort permanent bij het broncodepakket en moet bij iedere latere
+wijziging automatisch blijven meelopen. Een gebruiker hoeft hier niet opnieuw
+om te vragen.
+
+Minimaal controleren:
+- Source2Metal-versie in code, INFO, release notes en bestandsnamen;
+- ingebedde SyzygyCheck-programmaversie en het bijbehorende broncodepakket;
+- overeenstemming van de twee embedded Syzygy-ZIP's met de kopieën in SOURCE.zip;
+- utility-menu: Source2Metal-broncode, SyzygyCheck-programmapakket,
+  SyzygyCheck-broncodepakket, pagefile-informatie en Terug;
+- alle uitpakroutes en command-line switches;
+- geen verouderde tekst die zegt dat Broncodepakket uitpakken in het startmenu staat;
+- INFO/README/release-notities consistent met de actuele werking;
+- de SyzygyCheck-bron bewaart de gepubliceerde v2.0.9 V9F-versie inclusief
+  verificatiekern, threadkeuze, checkpoint/hervatten, compacte live voortgang,
+  rapportage, documentatiecontroles en de canonieke Ronald de Man-credit;
+- de los ingebedde V9F-bron-ZIP is bytegelijk aan dezelfde bron-ZIP binnen de
+  gepubliceerde GitHub-releasebundle;
+- alle INFO-bestanden noemen Source2Metal v3.0.9 en SyzygyCheck v2.0.9 V9F.
+
+Technische afdwinging:
+- `go test ./...` roept releaseConsistencyCheck() aan;
+- `Source2Metal -selftest` roept dezelfde controle aan;
+- een inconsistente release moet falen vóór zij als release wordt beschouwd.

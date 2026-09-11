@@ -1,0 +1,146 @@
+Source2Metal v3.0.9 - INFORMATION AND USER GUIDE
+================================================
+
+PURPOSE
+Source2Metal is a first open effort to make self-built opening books more
+technically grounded and practically resilient in the NNUE era, while increasing
+the enjoyment of computer chess. It does not claim to "defeat" NNUE. It provides
+tools for converting source material in a controlled way into RAW and METAL PGNs
+for further book building and Fritz learning. Users and developers are welcome
+to improve the project further with the help of OpenAI ChatGPT.
+
+FIRST START AND LANGUAGE
+On the first start Source2Metal always begins in English and asks:
+  Choose your default language
+The available languages are:
+  1. English (English)
+  2. Deutsch (German)
+  3. Nederlands (Dutch)
+  4. Français (French)
+  5. Español (Spanish)
+  6. 中文 (Chinese)
+  7. Русский (Russian)
+The choice is stored in Source2Metal.ini next to the EXE. On later starts the
+program opens directly in that language. Use "Change language" in the main menu
+to change the saved default. Console text, status files and reports use only the
+selected language. Technical folder and file names remain stable English names.
+
+SUPPORTED SOURCES
+- PGN
+- CBH
+- 2CBH
+- complete CTG/CTO/CTB sets
+
+Source2Metal searches recursively downward from the selected root directory.
+Parent directories are never searched. Recognizable Source2Metal output and
+temporary directories are skipped. ZIP/RAR/7z archives are not opened as sources.
+
+MAIN MENU
+1. Process sources [default]
+2. Utilities
+   - Extract source package
+   - Extract separate SyzygyCheck package (ZIP)
+   - Extract SyzygyCheck source-code package (ZIP)
+   - Pagefile information
+3. Change language (Изменить язык / 更改语言)
+4. Information
+0. Exit
+
+MODES
+1. Inventory/report only.
+2. Build RAW.
+3. Build RAW + METAL [default].
+
+OUTPUT
+GAME RAW
+  PGN, CBH and 2CBH are processed as GAME sources. CBH/2CBH pass through a
+  temporary internal adapter and then use the same RAW validation as PGN.
+
+CTG RAW
+  Each complete CTG set gets its own RAW PGN. Output size follows the source
+  content that can actually be decoded.
+
+ALL SOURCES RAW
+  When both GAME RAW and CTG RAW exist, the already validated products are also
+  concatenated without additional cross-class deduplication.
+
+GAME METAL
+  GAME sources are evaluated with transposition-aware statistics. The output
+  consists of complete, legal real source games with their original result.
+
+CTG METAL
+  Each CTG remains a separate book-oriented evidence source. Strict selection is
+  tried first. Only when diagnostics show sufficient potential can a visible,
+  conservative Small/Broad fallback be attempted.
+
+GAME METAL and CTG METAL deliberately remain separate because they represent
+different kinds of learning evidence.
+
+TECHNICAL FOLDER NAMES
+The physical folder names are intentionally English and identical in every
+language. Common names include REPORTS, Merged Sources, Separate Sources, TEMP,
+RAW and METAL. This keeps paths recognizable and avoids seven different directory
+structures.
+
+STATUSES
+SUCCESS
+  The requested processing finished without errors or necessary skips.
+SUCCESS WITH SKIPPED SOURCES
+  The run succeeded technically, but one or more sources intentionally produced
+  no responsible output. This is not a parser failure.
+SUCCESS WITH ERRORS
+  The run could continue, but one or more individual sources or adapters failed
+  technically.
+FAILED
+  The run stopped early because an error prevented further processing.
+A source without responsible output does not receive an empty or misleading PGN;
+it receives a STATUS.txt explaining why, plus technical details where available.
+
+FRITZ - LEARN FROM DATABASE
+Use these settings for Source2Metal Metal PGNs:
+  Wins             ON
+  Losses           ON
+  White            OFF
+  Black            OFF
+  Player           OFF
+  Player name      EMPTY
+  Games            ALL
+
+SOURCE-CODE PACKAGE
+The Windows EXE contains the source-code package belonging to this version.
+Choose Utilities > Extract Source2Metal source package. Advanced users can also use:
+  Source2Metal_v3.0.9.exe -extract-source
+An existing identical package is not overwritten unnecessarily.
+
+CHECKS
+- Original source files are read-only.
+- RAW/METAL products receive structural record checks where applicable.
+- GAME METAL receives an additional legal real-game check.
+- Temporary segments are excluded from the user checksum list.
+- Final small report/text files are written through a temporary sibling and only
+  moved to their final name after successful completion.
+- If source names collide, Source2Metal can add a short stable source ID to an
+  output name to prevent overwriting.
+- Windows console input/output is explicitly set to UTF-8 so Chinese and Cyrillic
+  text remain readable on supported Windows 10/11 consoles and Windows Terminal.
+
+CREDITS
+Main development, architecture and technical implementation:
+  OpenAI ChatGPT (GPT-5.6 Sol)
+Practical direction and testing:
+  Nocompany, Netherlands - computer-chess player
+
+Source2Metal contains and/or derives from open-source components by other
+authors. Their authorship and licenses remain separately credited in
+THIRD_PARTY_NOTICES.txt and LICENSE_GPL-3.0.txt.
+
+SYZYGY SOURCE PACKAGE
+The Utilities menu can also extract the exact source-code package belonging to
+the embedded SyzygyCheck v2.0.9 V9F. It preserves the published verification
+core, thread selection, checkpoint/resume, compact live progress display,
+reporting, documentation checks and the Ronald de Man source credit.
+
+RELEASE CONSISTENCY
+Every maintained build must run the permanent consistency check (`go test ./...`
+and the built-in self-test). It guards version references, utility routes, docs,
+and embedded package/source agreement.

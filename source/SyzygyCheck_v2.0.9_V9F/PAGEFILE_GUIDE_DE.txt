@@ -1,0 +1,46 @@
+SyzygyCheck v2.0.9 V9F — Anleitung virtueller Speicher / Auslagerungsdatei
+==========================================================================
+
+Warum diese Warnung?
+--------------------
+Eine vollständige Syzygy-Sammlung kann viele Terabyte groß sein und eine Prüfung kann viele Stunden
+oder länger dauern. Windows und die Prüfengine verwenden neben dem physischen RAM auch virtuellen
+Speicher. Eine deaktivierte oder sehr kleine Auslagerungsdatei kann bei schweren, langen Prüfungen zu
+Speicher-/Allokationsfehlern oder einem unerwarteten Abbruch beitragen.
+
+SyzygyCheck ändert die Windows-Auslagerungsdatei NICHT automatisch. Beim Start erscheint deshalb nur
+eine kurze Wahl: Enter = fortfahren; A = abbrechen, um die Windows-Einstellungen zuerst zu prüfen.
+
+Empfohlene einfache Einstellung
+-------------------------------
+Für die meisten Systeme ist es am einfachsten und sichersten, Windows die Größe der Auslagerungsdatei
+automatisch verwalten zu lassen. Auf dem Laufwerk, auf dem Windows die Auslagerungsdatei anlegt, sollte
+genügend freier Speicherplatz vorhanden sein. Deaktivieren Sie die Auslagerungsdatei vor einer sehr
+großen Prüfung nicht und setzen Sie keine sehr kleine feste Obergrenze.
+
+Windows 11 — Schritt für Schritt
+--------------------------------
+1. Beenden Sie SyzygyCheck, falls es noch läuft.
+2. Öffnen Sie Start und suchen Sie nach: Erweiterte Systemeinstellungen anzeigen
+3. Öffnen Sie die Systemeigenschaften.
+4. Wählen Sie die Registerkarte Erweitert.
+5. Unter Leistung wählen Sie Einstellungen...
+6. Wählen Sie erneut Erweitert.
+7. Unter Virtueller Arbeitsspeicher wählen Sie Ändern...
+8. Aktivieren Sie: Auslagerungsdateigröße für alle Laufwerke automatisch verwalten.
+9. Bestätigen Sie mit OK/Übernehmen.
+10. Falls Windows einen Neustart verlangt, starten Sie neu, bevor Sie eine lange Syzygy-Prüfung beginnen.
+
+Wenn die automatische Verwaltung trotzdem Probleme macht
+--------------------------------------------------------
+Die automatische Verwaltung ist eine praktische Standardeinstellung, aber keine absolute Garantie für
+jede Windows-Konfiguration oder extreme Belastung. Wenn die Prüfung trotz genügend freiem Speicherplatz
+wiederholt mit Speicher-/Allokationsfehlern stoppt, kann eine bewusst größere Anfangsgröße der
+Auslagerungsdatei als fortgeschrittener Schritt erwogen werden. SyzygyCheck wählt solche Werte nicht selbst.
+
+Wichtig
+-------
+- Die Auslagerungsdatei ersetzt keinen defekten RAM und keine instabile Hardware.
+- Auf einem fast vollen Laufwerk kann die Auslagerungsdatei nicht unbegrenzt wachsen.
+- Nach einer Änderung kann ein Neustart erforderlich sein.
+- Im Zweifel ist die automatische Windows-Verwaltung besser als eine kleine feste Grenze.

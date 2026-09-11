@@ -1,0 +1,47 @@
+SyzygyCheck v2.0.9 V9F — handleiding virtueel geheugen / pagefile
+=================================================================
+
+Waarom deze waarschuwing?
+-------------------------
+Een volledige Syzygy-verzameling kan vele terabytes groot zijn en een controle kan uren of zelfs
+meer dan een dag duren. Windows en de controle-engine gebruiken naast fysiek RAM ook virtueel geheugen.
+Een te kleine of uitgeschakelde pagefile kan bij zware, langdurige controles bijdragen aan
+geheugen-/allocatiefouten of een onverwacht afgebroken run.
+
+SyzygyCheck controleert of wijzigt uw pagefile-instelling NIET automatisch. Bij de start krijgt u
+daarom alleen een korte keuze: Enter om door te gaan, of A om af te breken en de Windows-instellingen
+eerst te bekijken.
+
+Aanbevolen eenvoudige instelling
+--------------------------------
+Voor de meeste systemen is de eenvoudigste veilige uitgangspositie dat Windows de grootte van het
+wisselbestand/pagefile zelf beheert. Zorg daarbij ook voor voldoende vrije schijfruimte op het station
+waar Windows de pagefile plaatst. Schakel de pagefile voor een zeer grote controle niet zonder reden uit
+en leg geen erg kleine vaste bovengrens op.
+
+Windows 11 — stap voor stap
+---------------------------
+1. Sluit SyzygyCheck af als het nog draait.
+2. Open Start en typ: Geavanceerde systeeminstellingen weergeven
+3. Open het gevonden venster Systeemeigenschappen.
+4. Kies het tabblad Geavanceerd.
+5. Onder Prestaties kiest u Instellingen...
+6. Kies opnieuw het tabblad Geavanceerd.
+7. Onder Virtueel geheugen kiest u Wijzigen...
+8. Vink bovenaan aan: Wisselbestandsgrootte voor alle stations automatisch beheren.
+9. Bevestig de vensters met OK/Toepassen.
+10. Als Windows om een herstart vraagt, herstart de computer voordat u een langdurige Syzygy-controle start.
+
+Als automatisch beheer toch problemen geeft
+--------------------------------------------
+Automatisch beheer is een praktische standaardinstelling, maar geen absolute garantie voor iedere
+Windows-configuratie of uitzonderlijk zware belasting. Als een controle ondanks voldoende vrije
+schijfruimte herhaaldelijk met geheugen-/allocatiefouten stopt, kan een handmatig grotere beginwaarde
+een gevorderde vervolgstap zijn. SyzygyCheck zelf probeert zulke waarden niet voor u te bepalen.
+
+Belangrijk
+----------
+- De pagefile is geen vervanging voor defect RAM of instabiele hardware.
+- Een pagefile op een bijna volle schijf kan niet onbeperkt meegroeien.
+- Na een wijziging kan een herstart nodig zijn.
+- Bij twijfel is Windows-beheer een betere uitgangspositie dan een kleine vaste limiet.

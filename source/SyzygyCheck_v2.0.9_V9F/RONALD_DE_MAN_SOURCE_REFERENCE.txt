@@ -1,0 +1,26 @@
+Ronald de Man — authoritative Syzygy tbcheck source reference
+=============================================================
+
+Upstream repository:
+https://github.com/syzygy1/tb
+
+Relevant upstream source files include:
+src/tbcheck.c
+src/checksum.c
+src/checksum.h
+src/threads.c
+src/threads.h
+src/defs.h
+src/util.c
+src/util.h
+src/city-c.c
+src/city-c.h
+src/citycrc.h
+src/c11threads.h
+src/c11threads_win32.c
+
+Upstream COPYING.txt and README.md contain the authoritative licensing and project information.
+The repository states that, except for separately identified third-party files, the src code is GNU GPL version 2 only.
+SyzygyCheck AL does not claim authorship of the verification code by Ronald de Man.
+
+For MakeMem: preserve a source snapshot/download of the upstream repository together with the AL source whenever available.

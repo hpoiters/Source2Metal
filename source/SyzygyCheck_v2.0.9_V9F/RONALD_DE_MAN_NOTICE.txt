@@ -1,0 +1,24 @@
+Ronald de Man / Syzygy verification core
+=========================================
+
+Based on the original Syzygy tablebase verification code by Ronald de Man.
+SyzygyCheck AL uses the original tbcheck program as its verification core and does not reimplement the checksum
+algorithm.
+
+Upstream project:
+https://github.com/syzygy1/tb
+
+Upstream purpose of tbcheck:
+tbcheck verifies the integrity of Syzygy tablebase files by recalculating and comparing their embedded checksums.
+It accepts multiple tablebase filenames in one invocation and supports an explicit thread count.
+
+Licensing note from the upstream project:
+The upstream src code by Ronald de Man is distributed under GNU GPL version 2 only, except separately identified
+third-party files. See the upstream repository for the authoritative license and notices.
+
+Exact helper used as the v2.0.7 AL reference:
+tbcheck.exe
+SHA-256: 9cb2f0ba2343f343bab29f9b9cd6aad6e4a2612702a93e06aa84a417f8eabbcc
+
+For MakeMem/Collect, preserve the relevant upstream Ronald de Man source together with this AL source and its
+notices.

@@ -1,0 +1,34 @@
+Source2Metal v3.0.8 - release notes
+===================================
+
+Integratierelease ten opzichte van v3.0.7.
+
+Wijzigingen:
+- Het ingebedde SyzygyCheck-programmapakket is vervangen door de exact
+  gepubliceerde SyzygyCheck v2.0.9 V9F Final GitHub-releasebundle.
+  Bestandsnaam: SyzygyCheck_v2.0.9_V9F_FINAL_GitHub_Release_Bundle.zip.
+- Het afzonderlijk uitpakbare SyzygyCheck-broncodepakket is vervangen door het
+  exacte gepubliceerde SyzygyCheck v2.0.9 V9F Final-bronpakket.
+  Bestandsnaam: SyzygyCheck_v2.0.9_V9F_FINAL_SOURCE.zip.
+- Source2Metal voert SyzygyCheck niet uit en wijzigt geen Syzygy-bestanden; het
+  schrijft uitsluitend de ongewijzigde ZIP-pakketten naast zijn eigen EXE uit.
+- De uitgeschreven bestandsnamen zijn nu de volledige gepubliceerde V9F-namen,
+  zodat pakket, versie en variant niet met oudere releases kunnen worden verward.
+- Alle zeven INFO-bestanden, buildinformatie, reproduceerinstructies,
+  bronverwijzingen en versienummers zijn bijgewerkt naar v3.0.8 / v2.0.9 V9F.
+- De permanente release-consistentiecontrole begrijpt de V9F-mapstructuur en
+  controleert de releasebundle, de afzonderlijke bron-ZIP, de executable-naam,
+  de gepubliceerde SHA-256-lijst en verplichte V9F-bronbestanden.
+- De controle bewaakt tevens de canonieke Nederlandse credit:
+  "Gebaseerd op de oorspronkelijke Syzygy-tablebase-verificatiecode van Ronald de Man."
+- Verouderde vormen "Ronald de Mans" en "Ronald de Man's" worden in de actuele
+  Source2Metal-documentatie uitgesloten.
+- Broninventarisatie, adapters, RAW, GAME-METAL, CTG-METAL en leerlogica zijn
+  ongewijzigd ten opzichte van Source2Metal v3.0.7.
+
+Ingebedde SyzygyCheck v2.0.9 V9F GitHub-releasebundle SHA-256:
+  e3fe90ae9c8aebd6f0179b7dfc34a2858ff920aff28495306fe757aa09f9c671
+Ingebed SyzygyCheck v2.0.9 V9F Final-bronpakket SHA-256:
+  b9a2e4d294e40fc086b35eb4b511be484244613d2d75e9b14a6f1804d62719b4
+SyzygyCheck v2.0.9 V9F executable SHA-256:
+  b384f37f5c67df5ac1e02ab55190e85a8034fd530d2be6a6d0c2fce5ea391c35

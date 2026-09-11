@@ -1,0 +1,60 @@
+SyzygyCheck v2.0.9 V9F — tekst-, taal- en releaseconsistentiecontrole
+=======================================================================
+Datum: 11 september 2026
+
+Doel
+----
+V9F bouwt rechtstreeks voort op V9E. Checksum-/verificatiekern, threadwerking, checkpointlogica en live
+voortgang zijn inhoudelijk niet gewijzigd. V9F werkt alleen de laatste taal-/presentatiedetails en de
+release-documentatie af.
+
+Releaseconsistentie
+-------------------
+- Alle gebruikersgerichte releaseheaders dragen v2.0.9 V9F.
+- De executable-naam is !SyzygyCheck_v2.0.9_V9F.exe.
+- De Nederlandse canonieke credit blijft exact:
+  "Gebaseerd op de oorspronkelijke Syzygy-tablebase-verificatiecode van Ronald de Man."
+- Onjuiste bezitsvormen van Ronald de Man zijn uitgesloten.
+- Werkers/threads blijven per taal consequent gelabeld.
+- Fysieke Esc-terugnavigatie blijft intact in de keuzeschermen.
+
+Hoofdmenu
+---------
+De hoofdprompt vermeldt in geen van de zeven talen nog `Esc = taal/language/...`.
+De zichtbare optie voor taal wijzigen blijft meertalig herkenbaar. De fysieke Esc-snelkoppeling op het hoofdmenu
+blijft functioneel, maar wordt daar niet meer extra uitgelegd.
+
+Resttijd bij uren
+-----------------
+- Engels/Duits/Nederlands/Frans/Spaans: `1:18 h`
+- Russisch: `1:18 ч (h)`
+- Chinees: `1:18 小时 (h)`
+Daarmee staat in Russisch en Chinees eerst de eigen gebruikelijke tijdseenheid en blijft de internationale h
+als brug herkenbaar.
+
+Vensterbeveiliging
+------------------
+- De bestaande V9E-code probeert tijdens de echte scan SC_CLOSE van een klassiek Windows-consolevenster uit te
+  schakelen.
+- Dit mag niet worden voorgesteld als gegarandeerde bescherming van het zichtbare X in Windows Terminal:
+  dat X behoort aan Windows Terminal zelf en kan SyzygyCheck nog steeds beëindigen.
+- Verkleinen, vergroten/maximaliseren, formaat wijzigen en scrollback worden door SyzygyCheck niet bewust
+  geblokkeerd.
+- Checkpoint/hervatten blijft de betrouwbare bescherming tegen verloren reeds bevestigd werk na een onbedoelde
+  afsluiting.
+
+Ondersteunde talen
+------------------
+Engels, Duits, Nederlands, Frans, Spaans, Chinees en Russisch.
+
+Buildcontrole
+-------------
+De uiteindelijke V9F-bron moet vóór verpakking slagen voor:
+- go test ./...
+- go vet ./...
+- Windows x64 cross-build
+
+Release-status
+--------------
+V9F is na de geslaagde praktijktest de definitieve Final-release. De gebruiker wil pas verder testen met deze volledig
+bijgewerkte editie, samen met een actuele MakeMem.

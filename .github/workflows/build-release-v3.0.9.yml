@@ -1,0 +1,185 @@
+name: Build and release Source2Metal v3.0.9
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'source/Source2Metal_v3.0.9/**'
+      - 'source/SyzygyCheck_v2.0.9_V9F/**'
+      - '.github/workflows/build-release-v3.0.9.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-test-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go 1.26.6
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.6'
+          cache: false
+
+      - name: Create exact source archive and embedded copy
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $sourceDir = Join-Path $env:GITHUB_WORKSPACE 'source/Source2Metal_v3.0.9'
+          $stageDir = Join-Path $env:RUNNER_TEMP 'Source2Metal_v3.0.9_SOURCE'
+          $sourceZip = Join-Path $env:GITHUB_WORKSPACE 'build_inputs/Source2Metal_v3.0.9_SOURCE.zip'
+
+          if (Test-Path $stageDir) { Remove-Item $stageDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $stageDir | Out-Null
+          Copy-Item (Join-Path $sourceDir '*') $stageDir -Recurse -Force
+          Remove-Item (Join-Path $stageDir 'embedded_source.zip') -Force -ErrorAction SilentlyContinue
+          Remove-Item $sourceZip -Force -ErrorAction SilentlyContinue
+          Compress-Archive -Path (Join-Path $stageDir '*') -DestinationPath $sourceZip -CompressionLevel Optimal
+          Copy-Item $sourceZip (Join-Path $sourceDir 'embedded_source.zip') -Force
+
+      - name: Test permanent release consistency
+        working-directory: source/Source2Metal_v3.0.9
+        run: go test ./...
+
+      - name: Vet
+        working-directory: source/Source2Metal_v3.0.9
+        run: go vet ./...
+
+      - name: Check repository documentation
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $docs = @(
+            'README.md',
+            'BUILDING.md',
+            'CODE_SIGNING_POLICY.md',
+            'THIRD_PARTY_NOTICES.md',
+            'UPLOAD_INSTRUCTIONS.txt'
+          )
+          $text = ($docs | ForEach-Object { Get-Content $_ -Raw }) -join "`n"
+          foreach ($required in @(
+            'Source2Metal v3.0.9',
+            'SyzygyCheck v2.0.9 V9F',
+            'Ronald de Man'
+          )) {
+            if (-not $text.Contains($required)) { throw "Repository documentation misses: $required" }
+          }
+          foreach ($obsolete in @('Ronald de Mans', "Ronald de Man's")) {
+            if ($text.Contains($obsolete)) { throw "Repository documentation contains obsolete credit: $obsolete" }
+          }
+
+      - name: Build Windows executable
+        working-directory: source/Source2Metal_v3.0.9
+        shell: pwsh
+        run: |
+          $env:GOOS = 'windows'
+          $env:GOARCH = 'amd64'
+          $env:CGO_ENABLED = '0'
+          go build -trimpath -buildvcs=false -ldflags='-s -w' -o Source2Metal_v3.0.9.exe .
+
+      - name: Run executable self-test and verify source extraction
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $sourceDir = Join-Path $env:GITHUB_WORKSPACE 'source/Source2Metal_v3.0.9'
+          $sourceZip = Join-Path $env:GITHUB_WORKSPACE 'build_inputs/Source2Metal_v3.0.9_SOURCE.zip'
+          $runtimeDir = Join-Path $env:RUNNER_TEMP 'Source2Metal_v3.0.9_RUNTIME'
+          New-Item -ItemType Directory -Path $runtimeDir -Force | Out-Null
+          Copy-Item (Join-Path $sourceDir 'Source2Metal_v3.0.9.exe') $runtimeDir -Force
+
+          & (Join-Path $runtimeDir 'Source2Metal_v3.0.9.exe') -selftest
+          if ($LASTEXITCODE -ne 0) { throw 'Source2Metal self-test failed' }
+
+          & (Join-Path $runtimeDir 'Source2Metal_v3.0.9.exe') -extract-source
+          if ($LASTEXITCODE -ne 0) { throw 'Embedded source extraction failed' }
+
+          $extracted = Join-Path $runtimeDir 'Source2Metal_v3.0.9_SOURCE.zip'
+          if ((Get-FileHash $sourceZip -Algorithm SHA256).Hash -ne
+              (Get-FileHash $extracted -Algorithm SHA256).Hash) {
+            throw 'Extracted embedded source differs from the published source archive'
+          }
+
+      - name: Prepare release files
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $releaseDir = Join-Path $env:GITHUB_WORKSPACE 'release_v3.0.9'
+          $sourceDir = Join-Path $env:GITHUB_WORKSPACE 'source/Source2Metal_v3.0.9'
+          $sourceZip = Join-Path $env:GITHUB_WORKSPACE 'build_inputs/Source2Metal_v3.0.9_SOURCE.zip'
+          $exe = Join-Path $sourceDir 'Source2Metal_v3.0.9.exe'
+          $notes = Join-Path $sourceDir 'DEVELOPMENT_HISTORY/RELEASE_NOTES_V3.0.9.txt'
+          $package = Join-Path $releaseDir 'Source2Metal_v3.0.9_RELEASE.zip'
+          $hashFile = Join-Path $releaseDir 'SHA256_Source2Metal_v3.0.9.txt'
+
+          if (Test-Path $releaseDir) { Remove-Item $releaseDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $releaseDir | Out-Null
+          $packageStage = Join-Path $env:RUNNER_TEMP 'Source2Metal_v3.0.9_PACKAGE'
+          if (Test-Path $packageStage) { Remove-Item $packageStage -Recurse -Force }
+          New-Item -ItemType Directory -Path $packageStage | Out-Null
+          Copy-Item $exe $packageStage
+          Copy-Item $sourceZip $packageStage
+          Copy-Item $notes (Join-Path $packageStage 'RELEASE_NOTES_Source2Metal_v3.0.9.txt')
+          Compress-Archive -Path (Join-Path $packageStage '*') -DestinationPath $package -CompressionLevel Optimal
+
+          $packageHash = (Get-FileHash $package -Algorithm SHA256).Hash.ToLowerInvariant()
+          $exeHash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          $sourceHash = (Get-FileHash $sourceZip -Algorithm SHA256).Hash.ToLowerInvariant()
+          @(
+            'Source2Metal v3.0.9 - SHA-256',
+            '================================',
+            '',
+            "$packageHash  Source2Metal_v3.0.9_RELEASE.zip",
+            "$exeHash  Source2Metal_v3.0.9.exe",
+            "$sourceHash  Source2Metal_v3.0.9_SOURCE.zip",
+            '',
+            'Embedded unchanged SyzygyCheck v2.0.9 V9F artifacts:',
+            'e3fe90ae9c8aebd6f0179b7dfc34a2858ff920aff28495306fe757aa09f9c671  SyzygyCheck_v2.0.9_V9F_FINAL_GitHub_Release_Bundle.zip',
+            'b9a2e4d294e40fc086b35eb4b511be484244613d2d75e9b14a6f1804d62719b4  SyzygyCheck_v2.0.9_V9F_FINAL_SOURCE.zip',
+            'b384f37f5c67df5ac1e02ab55190e85a8034fd530d2be6a6d0c2fce5ea391c35  !SyzygyCheck_v2.0.9_V9F.exe'
+          ) | Set-Content $hashFile -Encoding utf8NoBOM
+
+      - name: Preserve exact source archive in repository
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add build_inputs/Source2Metal_v3.0.9_SOURCE.zip
+          $pending = git diff --cached --name-only
+          if ($pending) {
+            git commit -m 'Add exact Source2Metal v3.0.9 embedded source archive'
+            git push
+          }
+
+      - name: Publish or refresh v3.0.9 release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $false
+          $releaseDir = Join-Path $env:GITHUB_WORKSPACE 'release_v3.0.9'
+          $notes = Join-Path $env:GITHUB_WORKSPACE 'source/Source2Metal_v3.0.9/DEVELOPMENT_HISTORY/RELEASE_NOTES_V3.0.9.txt'
+          $package = Join-Path $releaseDir 'Source2Metal_v3.0.9_RELEASE.zip'
+          $hashFile = Join-Path $releaseDir 'SHA256_Source2Metal_v3.0.9.txt'
+
+          gh release view v3.0.9 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload v3.0.9 $package $hashFile --clobber
+            gh release edit v3.0.9 --title 'Source2Metal v3.0.9' --notes-file $notes --latest --target main
+          } else {
+            gh release create v3.0.9 $package $hashFile --title 'Source2Metal v3.0.9' --notes-file $notes --latest --target main
+          }
+
+      - name: Upload verified build evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: Source2Metal-v3.0.9-verified-release
+          path: release_v3.0.9/*
+          if-no-files-found: error

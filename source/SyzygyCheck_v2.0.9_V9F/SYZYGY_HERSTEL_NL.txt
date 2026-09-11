@@ -1,0 +1,23 @@
+SyzygyCheck v2.0.9 V9F — Herstel van defecte Syzygy-bestanden
+==========================================================
+
+Als SyzygyCheck een echte checksumfout (FAIL) of een lees-/procesprobleem (ERROR) meldt, wijzig of repareer het bestand dan niet in de checker zelf. Zet het probleem-bestand bij voorkeur apart of verwijder het pas nadat u de bestandsnaam hebt genoteerd. Download daarna een nieuwe kopie van exact dezelfde .rtbw- of .rtbz-file uit een betrouwbare bron.
+
+Betrouwbare downloadbronnen:
+- Lichess Syzygy mirror: https://tablebase.lichess.ovh/tables/standard/
+- Sesse tablebase mirror: https://tablebases.sesse.net/
+
+Aanbevolen werkwijze:
+1. Noteer de bestandsnaam die SyzygyCheck als FAIL of ERROR meldt.
+2. Zet het defecte of onvolledige bestand apart, of verwijder het nadat u zeker weet dat u de juiste naam hebt.
+3. Download exact hetzelfde bestand opnieuw uit een betrouwbare bron.
+4. Kopieer het vervangende bestand terug naar de Syzygy-map.
+5. Voer SyzygyCheck opnieuw uit.
+
+Let op:
+- Een FAIL betekent dat de ingebedde checksum aanwezig is maar niet overeenkomt met de opnieuw berekende checksum.
+- Een ERROR betekent dat het bestand niet betrouwbaar kon worden gecontroleerd, bijvoorbeeld door een lees-, structuur- of procesprobleem.
+- Gebruik geen bewust beschadigde testbestanden in een echte tablebaseverzameling.
+- SyzygyCheck verandert uw echte tablebasebestanden niet.
+
+Bron van de verificatiekern: Ronald de Man — https://github.com/syzygy1/tb

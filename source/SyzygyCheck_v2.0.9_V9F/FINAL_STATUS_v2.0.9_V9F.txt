@@ -1,0 +1,25 @@
+SyzygyCheck v2.0.9 V9F — FINAL
+Datum: 11 september 2026
+
+Deze V9F is na praktijktest als releasewaardig beoordeeld.
+
+Laatste praktijktest:
+- 57/57 bestanden gecontroleerd
+- 20,22 GB
+- 11 werkers (threads)
+- 27 seconden
+- gemiddelde effectieve verificatiesnelheid 777,4 MB/s
+- exact 2 bedoelde checksumfouten gevonden
+- 0 lees-/procesproblemen
+- diagnostische onboard TEST-FAIL geslaagd
+
+De EXE zelf is exact de V9F die in de geslaagde praktijktest is gebruikt.
+De meegeleverde release-/statusdocumentatie is op deze definitieve Final-stand afgestemd.
+
+Windows Terminal:
+het buitenste sluitkruisje kan door SyzygyCheck niet betrouwbaar worden
+uitgeschakeld. Checkpoint/hervatten blijft de veilige bescherming tegen verlies
+van reeds bevestigd werk.
+
+Canonieke Nederlandse credit:
+Gebaseerd op de oorspronkelijke Syzygy-tablebase-verificatiecode van Ronald de Man.

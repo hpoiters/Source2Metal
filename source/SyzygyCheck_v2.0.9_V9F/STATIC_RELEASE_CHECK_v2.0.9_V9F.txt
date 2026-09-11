@@ -1,0 +1,55 @@
+SyzygyCheck v2.0.9 V9F - automatische statische releasecontrole
+================================================================
+Datum: 11 september 2026
+
+Resultaat: 48/48 geslaagd; 0 mislukt.
+
+[OK] main version V9F
+[OK] build executable V9F
+[OK] release executable V9F
+[OK] Dutch canonical credit
+[OK] no Ronald de Mans
+[OK] no Ronald de Man's
+[OK] en main prompt simplified
+[OK] de main prompt simplified
+[OK] nl main prompt simplified
+[OK] fr main prompt simplified
+[OK] es main prompt simplified
+[OK] zh main prompt simplified
+[OK] ru main prompt simplified
+[OK] absent: Esc = language
+[OK] absent: Esc = Sprache
+[OK] absent: Esc = taal
+[OK] absent: Échap = langue
+[OK] absent: Esc = idioma
+[OK] absent: Esc = 语言
+[OK] absent: Esc = язык
+[OK] Russian hour local+international
+[OK] Chinese hour local+international
+[OK] default languages retain h
+[OK] Windows Terminal limitation documented
+[OK] checkpoint/resume documented as dependable protection
+[OK] README_NL.txt V9F header
+[OK] README_EN.txt V9F header
+[OK] RELEASE_NOTES_v2.0.9.txt V9F header
+[OK] BUILD_v2.0.9.txt V9F header
+[OK] PAGEFILE_GUIDE_DE.txt V9F header
+[OK] PAGEFILE_GUIDE_EN.txt V9F header
+[OK] PAGEFILE_GUIDE_ES.txt V9F header
+[OK] PAGEFILE_GUIDE_FR.txt V9F header
+[OK] PAGEFILE_GUIDE_NL.txt V9F header
+[OK] PAGEFILE_GUIDE_RU.txt V9F header
+[OK] PAGEFILE_GUIDE_ZH.txt V9F header
+[OK] SYZYGY_HERSTEL_NL.txt V9F header
+[OK] SYZYGY_RECOVERY_EN.txt V9F header
+[OK] SYZYGY_RECOVERY_RU.txt V9F header
+[OK] SYZYGY_RECOVERY_ZH.txt V9F header
+[OK] SYZYGY_RECUPERACION_ES.txt V9F header
+[OK] SYZYGY_RECUPERATION_FR.txt V9F header
+[OK] SYZYGY_WIEDERHERSTELLUNG_DE.txt V9F header
+[OK] TEXT_CONSISTENCY_CHECK_v2.0.9_V9F.txt V9F header
+
+[OK] README_EN classic-console protection accurately limited
+[OK] README_NL classic-console protection accurately limited
+[OK] README.md Windows Terminal limitation accurate
+[OK] repository README.md added

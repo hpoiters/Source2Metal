@@ -1,0 +1,50 @@
+Source2Metal v2.2.0-beta4 - bronhistorie / provenance
+======================================================
+
+Deze release bewaart de gezaghebbende historische deelbronnen lokaal in de
+sourcearchive, zodat de integratie niet afhankelijk is van latere chat-retrieval.
+
+legacy_sources/testdata/Ctg2Metal_v2.1.0_source_ORIGINAL.go
+  SHA-256: 3b2abafa01c5acf9e179b11ae5d419773a427a401636712d63408eff907eda41
+  Functie: native CTG/CTO/CTB -> Metal.pgn, statistiek/selectie, rapportage.
+
+legacy_sources/testdata/CTGExtractor_v2.4_METAL_ONEPGN_ORIGINAL.go
+  SHA-256: a863bebde8485d1f061d2b853b649757fd55715ff8fa6fb16994fb95f82f9ba6
+  Functie: CTG/CTO/CTB -> neutrale representatieve PGN.
+
+legacy_sources/testdata/CB2PGN_Builder_v0.1.3_source_ORIGINAL.zip
+  SHA-256: 3344409ea851bdc8247383a1dbc9b06d0154ce225ccbd8b04ccc0fc4f6ec691e
+  Functie: klassieke CBH en nieuwe 2CBH -> neutrale RAW-PGN.
+  De bundle bevat ook de ongewijzigde MIT-referentie cbh2pgn-0.1.
+
+legacy_sources/testdata/Source2Metal_v2.0.0-beta3_SOURCE.zip
+  SHA-256: 6dd4a7bc78b02bf0808f573d62c90123bccfe5eadbc3b46592a27560fcb03934
+  Functie: praktisch gevalideerde PGN/RAW-basis.
+
+legacy_sources/testdata/Source2Metal_v2.1.0-beta1_SOURCE.zip
+  SHA-256: 96e5fc06527f5c7b77cb2fe4a9e48c50d8bbe92139dd2af73e1ed1cd0bd2f39d
+  Functie: eerste geïntegreerde CTG/RAW_BOOKS + CTG/METAL releasebasis.
+
+Geïntegreerde adapterkopieën staan onder:
+  internal/cb2pgn/
+  internal/ctgraw/
+  internal/ctgmetal/
+
+Belangrijk
+----------
+De originele bestanden hierboven blijven ongewijzigd bewaard als referentie.
+De geïntegreerde kopieën mogen alleen aan Source2Metal worden aangepast waar
+nodig voor pakketkoppeling, mapstructuur, foutisolatie, rapportage en gecorrigeerde
+Source2Metal-documentatie.
+
+legacy_sources/testdata/Source2Metal_v2.2.0-beta1_SOURCE.zip
+  SHA-256: aaaebfeed671371b653ce0d28836caa47a134bfea93b4c7501a9934f4d8777e8
+  Functie: volledige directe voorganger/herstelpunt voor de beta2 resize-fix.
+
+legacy_sources/testdata/Source2Metal_v2.2.0-beta2_SOURCE.zip
+  SHA-256: 087d3a9385a1af39bc91da59119da51baf2d7c5b86974bbbe2d14cdef25eeca9
+  Functie: directe voorganger/herstelpunt voor beta3; bevat de resize-robuste renderer en eerste CBH/2CBH-integratie.
+
+legacy_sources/testdata/Source2Metal_v2.2.0-beta3_SOURCE.zip
+  SHA-256: 42ad714c37227d9400d2070ab34c9c0147127ed8a4eea6e2f1c85e7dae962325
+  Functie: exacte door beta3 zelf geëxtraheerde directe voorganger en gezaghebbende basis voor beta4.

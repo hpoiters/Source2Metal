@@ -1,0 +1,82 @@
+SyzygyCheck v2.0.9 V9F — Final
+===========================================
+
+V9F is a language/presentation and release-consistency refinement of the successfully tested V9C/V9D/V9E
+line. Verification/checksum behaviour, thread functionality, checkpoint logic and the compact live progress
+renderer are unchanged.
+
+V9F refinements
+---------------
+- Main-menu prompt simplified in all seven languages: only the Enter default is shown. The multilingual
+  `Change language` menu item already makes language switching obvious, so `Esc = language` is no longer
+  printed on the main-menu prompt.
+- Russian remaining times of at least one hour now use `ч (h)`.
+- Chinese remaining times of at least one hour now use `小时 (h)`.
+- English, German, Dutch, French and Spanish continue to use the compact international `h`.
+- Release documentation now distinguishes classic-console close protection from Windows Terminal behaviour.
+
+Verification core
+-----------------
+Based on the original Syzygy tablebase verification code by Ronald de Man.
+The AL layer does not reimplement the checksum logic; it adds the multilingual interface, progress display,
+self-test, checkpoint/resume, thread selection and reporting around the original verification core.
+
+Thread selection
+----------------
+At startup SyzygyCheck silently detects the logical processors available to the process and offers:
+
+  1 = all detected threads
+  2 = half [default; Enter selects this]
+  3 = a custom value from 1 to the detected maximum
+
+The selected count is visible in the run header using the properly localised equivalent of `Workers (threads)`
+and is passed directly to tbcheck as `--threads n`.
+
+Live display
+------------
+- compact three-line live progress block;
+- read speed on the same first line as the current file count;
+- read speed and remaining time share one right-hand column when width permits;
+- exactly one blank separator after a visible FAIL/ERROR;
+- current progress remains visible while older error lines can scroll upward;
+- checkpoint/resume, onboard intentional FAIL self-test and reporting are retained.
+
+Escape/back navigation
+----------------------
+Physical Esc remains a genuine back action in Windows choice screens. On the main menu its language shortcut
+still works but is no longer advertised because the visible language-change menu item is already sufficient.
+
+Window-close protection
+-----------------------
+During the real scan SyzygyCheck still makes a best-effort attempt to disable SC_CLOSE for a classic Windows
+console host. This does not control the outer top-right X of Windows Terminal, because that button belongs to
+Windows Terminal itself. In that host an accidental close can therefore still terminate the visible terminal.
+Checkpoint/resume remains the dependable protection against losing already confirmed work.
+
+Minimize, maximize, resizing and scrollback are not intentionally blocked.
+
+Read-speed meaning
+------------------
+The displayed value is effective verification throughput, not necessarily raw physical disk speed. Confirmed
+results and the final report use definitively verified bytes for the current session; bytes completed before a
+resumed session are excluded from that session average.
+
+Checkpoint behaviour
+--------------------
+Confirmed FAIL results are written into the checkpoint and are carried into a resumed run. A partially completed
+batch may be rechecked. A fully completed run without operational ERROR removes the checkpoint.
+
+Final practical validation
+--------------------------
+- V9F, i7-6800K, 11 workers: 57 files / 20.22 GB, 27 s, 777.4 MB/s average effective verification throughput,
+  exactly 2 expected checksum FAILs found, 0 read/process errors, onboard diagnostic TEST-FAIL passed.
+- Earlier cold V9C/V9D/V9E-line validation on the same i7-6800K with 12 workers reached 805.0 MB/s average
+  effective verification throughput after reboot.
+- Drobo: successful practical operation with 4 threads, acceptable throughput and reasonably normal mechanical
+  behaviour.
+- Large X299 / 5× NVMe RAID0 scaling remains useful as an additional performance measurement, but is not a
+  release blocker.
+
+Executable
+----------
+  !SyzygyCheck_v2.0.9_V9F.exe

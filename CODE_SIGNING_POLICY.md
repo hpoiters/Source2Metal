@@ -2,11 +2,14 @@
 
 ## Status
 
-Source2Metal is being prepared for open-source code signing through SignPath Foundation.
-The currently published Source2Metal v3.0.7 reference binary is the validated unsigned build.
+Source2Metal is currently unsigned. An open-source signing application to
+SignPath Foundation was not approved because the project did not yet meet its
+public-visibility requirement. This policy is retained for a possible later
+application; it does not imply current approval or certification.
+The currently published Source2Metal v3.0.9 reference binary is the validated unsigned build.
 No file should be described as SignPath-signed unless its Authenticode signature has actually been verified.
 
-For releases signed after project approval:
+For any future release signed after explicit project approval:
 
 **Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).**
 

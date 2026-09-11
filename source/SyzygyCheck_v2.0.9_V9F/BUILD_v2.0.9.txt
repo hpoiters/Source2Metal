@@ -1,0 +1,36 @@
+SyzygyCheck v2.0.9 V9F — Windows x64 Final build
+================================================================
+
+Base: SyzygyCheck v2.0.9 V9E.
+Verification core: original Ronald de Man tbcheck checksum engine; checksum logic unchanged.
+
+V9F changes
+------------
+- The main-menu prompt is visually quieter in all seven languages: it shows only the normal Enter default.
+  The language-change option itself remains visibly multilingual; the physical Esc shortcut is retained internally.
+- Remaining times of one hour or more use local hour notation in Russian and Chinese while retaining the
+  international h as a bridge:
+    Russian:  1:18 ч (h)
+    Chinese:  1:18 小时 (h)
+  English, German, Dutch, French and Spanish retain: 1:18 h
+- Documentation now describes the V9E close protection accurately: SC_CLOSE protection applies to a classic
+  Windows console host. In Windows Terminal the visible top-right X belongs to Terminal and can still close the
+  window. Checkpoint/resume therefore remains the reliable protection against lost progress.
+
+Retained from V9C/V9D/V9E
+--------------------------
+- silent logical-processor detection;
+- all / half [default] / custom thread selection;
+- active count shown using the localised equivalent of `Workers (threads)`;
+- compact three-line live progress with aligned right-hand column;
+- checkpoint/resume with confirmed FAIL preservation;
+- physical Esc-back navigation in choice screens;
+- onboard intentional FAIL self-test;
+- end report with average effective verification throughput;
+- best-effort classic-console SC_CLOSE protection during the real scan.
+
+Build
+-----
+  go test ./...
+  go vet ./...
+  GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o '!SyzygyCheck_v2.0.9_V9F.exe' .

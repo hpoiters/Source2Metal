@@ -1,0 +1,30 @@
+Source2Metal v3.0.7 - release notes
+===================================
+
+Afwerkingsrelease ten opzichte van v3.0.6.
+
+Wijzigingen:
+- Het ingebedde SyzygyCheck-pakket is bijgewerkt naar SyzygyCheck v2.0.7.
+- SyzygyCheck v2.0.7 gebruikt één adaptieve fysieke voortgangsregel en is in een
+  echte Windows-Terminal-praktijktest herhaald vergroot/verkleind zonder
+  historische reflow-/scrollregels op te bouwen.
+- De bewezen tbcheck-checksumengine blijft ongewijzigd.
+- Nieuw derde uitpakbare ontwikkelpakket: SyzygyCheck_v2.0.7_SOURCE.zip. Dit
+  bewaart de exact gebruikte checkerbron en verankert de resize/reflow-regressieregel.
+- Hulpprogramma's bevat nu vier functies: Source2Metal-broncode uitpakken,
+  SyzygyCheck-programmapakket uitpakken, SyzygyCheck-broncode uitpakken en
+  pagefile-informatie.
+- De verouderde tekst die suggereerde dat Broncodepakket uitpakken rechtstreeks
+  in het startmenu stond is gecorrigeerd naar Hulpprogramma's.
+- Er is een permanente automatische release-consistentiecontrole toegevoegd.
+  `go test ./...` en `-selftest` controleren versies, docs, utility-routes en de
+  overeenstemming van embedded programma- en broncodepakketten.
+- Geen wijzigingen aan broninventarisatie, adapters, RAW, GAME-METAL, CTG-METAL
+  of leerlogica ten opzichte van de praktisch geslaagde v3.0.6-run.
+
+SyzygyCheck v2.0.7 programmapakket SHA-256:
+  888ede616b567099b57f5eda6c7299099e437f38e0131cbbd0742ec8ac6e3e3e
+SyzygyCheck v2.0.7 broncodepakket SHA-256:
+  28255459a6cd3d680a4a998fb5386271f71c4cbdf52c8311f4b0e425daab92a7
+SyzygyCheck_v2.0.7.exe SHA-256:
+  b43eec16d9cf50cf558fb78cee412b80abe0cdd94c862c2c5b3f5b14425e2c23

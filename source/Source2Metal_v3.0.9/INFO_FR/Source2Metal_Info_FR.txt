@@ -1,0 +1,114 @@
+Source2Metal v3.0.9 - INFORMATIONS ET MODE D'EMPLOI
+===================================================
+
+OBJECTIF
+Source2Metal est une première initiative ouverte visant à rendre les livres
+d'ouvertures créés par l'utilisateur techniquement mieux fondés et plus robustes
+à l'ère NNUE, tout en augmentant le plaisir des échecs informatiques. Le projet
+ne prétend pas « vaincre » NNUE. Il transforme de façon contrôlée les sources en
+PGN RAW et METAL pour la construction de livres et l'apprentissage de Fritz.
+
+PREMIER DÉMARRAGE ET LANGUE
+Au premier démarrage Source2Metal commence toujours en anglais et demande :
+  Choose your default language
+Langues disponibles : English, Deutsch, Nederlands, Français, Español, 中文 et
+Русский. Le choix est enregistré dans Source2Metal.ini à côté de l'EXE. Aux
+démarrages suivants, le programme s'ouvre directement dans cette langue. Utilisez
+« Changer de langue » pour modifier le choix. Console, fichiers d'état et rapports
+n'utilisent que la langue choisie. Les noms techniques de dossiers restent en
+anglais et identiques pour toutes les langues.
+
+SOURCES PRISES EN CHARGE
+- PGN
+- CBH
+- 2CBH
+- ensembles CTG/CTO/CTB complets
+
+Source2Metal recherche récursivement vers le bas depuis le dossier racine choisi.
+Les dossiers parents ne sont jamais parcourus. Les sorties Source2Metal et TEMP
+reconnaissables sont ignorées. Les archives ZIP/RAR/7z ne sont pas ouvertes comme
+sources.
+
+MENU PRINCIPAL
+1. Traiter les sources [défaut]
+2. Utilitaires
+   - Extraire le paquet source
+   - Extraire le paquet SyzygyCheck séparé (ZIP)
+   - Extraire le paquet source SyzygyCheck (ZIP)
+   - Informations sur le fichier d'échange
+3. Changer de langue
+4. Informations
+0. Quitter
+
+MODES
+1. Inventaire/rapport uniquement.
+2. Construire RAW.
+3. Construire RAW + METAL [défaut].
+
+SORTIES
+GAME RAW - PGN, CBH et 2CBH sont traités comme sources GAME; CBH/2CBH passent
+par un adaptateur interne temporaire puis par la même validation RAW que PGN.
+CTG RAW - chaque ensemble CTG complet obtient son propre PGN RAW.
+ALL SOURCES RAW - si GAME RAW et CTG RAW existent, les produits déjà validés sont
+fusionnés sans déduplication supplémentaire entre classes.
+GAME METAL - statistiques tenant compte des transpositions; sortie composée de
+parties source réelles, complètes et légales avec leur résultat original.
+CTG METAL - chaque CTG reste une source de preuve distincte; sélection stricte
+d'abord, puis éventuellement un repli Small/Broad prudent et visible.
+GAME METAL et CTG METAL restent volontairement séparés.
+
+NOMS TECHNIQUES DES DOSSIERS
+Les noms physiques sont volontairement en anglais et identiques dans toutes les
+langues : REPORTS, Merged Sources, Separate Sources, TEMP, RAW et METAL.
+
+STATUTS
+RÉUSSI - traitement sans erreur ni saut nécessaire.
+RÉUSSI AVEC SOURCES IGNORÉES - réussite technique, mais une ou plusieurs sources
+n'ont volontairement produit aucun résultat responsable; ce n'est pas une erreur
+de parseur.
+RÉUSSI AVEC ERREURS - le traitement a continué malgré une défaillance technique
+d'une source ou d'un adaptateur.
+ÉCHEC - une erreur a empêché la poursuite du traitement.
+Une source sans résultat responsable reçoit STATUS.txt avec l'explication.
+
+FRITZ - APPRENDRE DEPUIS UNE BASE
+  Victoires       ACTIVÉES
+  Défaites        ACTIVÉES
+  Blancs          DÉSACTIVÉS
+  Noirs           DÉSACTIVÉS
+  Joueur          DÉSACTIVÉ
+  Nom du joueur   VIDE
+  Parties         TOUTES
+
+PAQUET SOURCE
+L'EXE Windows contient le paquet source de cette version. Choisissez Utilitaires >
+Extraire le paquet source Source2Metal. Utilisateurs avancés :
+  Source2Metal_v3.0.9.exe -extract-source
+
+CONTRÔLES
+- Les sources originales sont en lecture seule.
+- Contrôles structurels RAW/METAL lorsque cela s'applique.
+- GAME METAL reçoit un contrôle supplémentaire des parties réelles légales.
+- Les segments TEMP sont exclus de la liste de sommes de contrôle utilisateur.
+- Les petits rapports finaux sont écrits via un fichier temporaire.
+- Une courte ID stable peut éviter les collisions de noms de sources.
+- La console Windows est explicitement configurée en UTF-8 pour le chinois et le
+  cyrillique sur les consoles Windows 10/11 prises en charge.
+
+CRÉDITS
+Développement principal, architecture et réalisation technique :
+  OpenAI ChatGPT (GPT-5.6 Sol)
+Orientation pratique et tests :
+  Nocompany, Pays-Bas - joueur d'échecs informatiques
+Les auteurs et licences tiers restent crédités séparément dans
+THIRD_PARTY_NOTICES.txt et LICENSE_GPL-3.0.txt.
+
+PAQUET SOURCE SYZYGY
+Le menu Utilitaires peut aussi extraire le paquet source exact de
+SyzygyCheck v2.0.9 V9F intégré. Il conserve le noyau de vérification publié, la sélection
+des threads, les points de reprise, la progression compacte, les rapports, les
+contrôles documentaires et la mention de la source Ronald de Man.
+
+COHÉRENCE DE RELEASE
+`go test ./...` et l'auto-test intégré vérifient automatiquement les versions,
+les chemins des utilitaires, la documentation et les paquets intégrés.

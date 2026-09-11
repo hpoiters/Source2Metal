@@ -1,0 +1,26 @@
+Source2Metal v3.0.6 - release notes
+===================================
+
+Correctierelease ten opzichte van v3.0.5.
+
+Wijzigingen:
+- Het ingebedde, afzonderlijk uitpakbare SyzygyCheck-pakket is bijgewerkt naar
+  SyzygyCheck v2.0.5.
+- SyzygyCheck v2.0.5 herstelt uitsluitend de actieve voortgangsrenderer: de twee
+  voortgangsregels worden nu werkelijk in-place bijgewerkt. Succesvolle bestanden
+  laten geen historische voortgangsregels meer achter en een groot bestand kan
+  niet langer tientallen identieke regels laten scrollen.
+- De tijdelijke live-foutmelding en het definitieve foutresultaat onder de
+  afsluitende Klaar/Fertig/Done-regel blijven behouden zoals in v2.0.4.
+- De humane taal-ontsnappingsroute en de schone UI-reset na taalwissel blijven
+  ongewijzigd aanwezig in zowel Source2Metal als SyzygyCheck.
+- De bewezen tbcheck-checksumengine in SyzygyCheck is byte-for-byte ongewijzigd.
+- Source2Metal voert SyzygyCheck niet uit en wijzigt het pakket niet; het schrijft
+  uitsluitend de embedded ZIP byte-for-byte uit via Hulpprogramma's.
+- Geen wijzigingen aan Source2Metal-bronverwerking, RAW/METAL-logica of leerlogica.
+
+Ingebed SyzygyCheck-pakket (bronbestand voor de embed):
+SHA-256: 7c651caafb3121a3871f211044c35796e822c7b3ff2eeaeadd67d39d49c6c64f
+
+SyzygyCheck_v2.0.5.exe in dat pakket:
+SHA-256: 12552c412dd603a73bae41ec0512c24cd44810d69b8462709eb8db47d6665fca

@@ -33,33 +33,42 @@ Source2Metal processes supported chess sources and produces material intended fo
 
 SyzygyCheck is a separate utility included with Source2Metal releases. It checks local Syzygy tablebase files and reports damaged or invalid files.
 
+Its verification core is the original `tbcheck` program by Ronald de Man. The
+Source2Metal integration preserves the published SyzygyCheck package unchanged;
+the multilingual interface, progress display, reporting, recovery guidance and
+thread selection are the surrounding user layer.
+
 ## Current release
 
 The current stable release is:
 
-**Source2Metal v3.0.7**
+**Source2Metal v3.0.9**
 
 It includes:
 
-- Source2Metal v3.0.7
-- SyzygyCheck v2.0.7
+- Source2Metal v3.0.9
+- SyzygyCheck v2.0.9 V9F
 - source-code packages
 - SHA-256 integrity information
 - multilingual documentation
 
-The published v3.0.7 program logic is treated as the validated reference release. Work related to public distribution and code signing must not alter its functional behaviour.
+Source2Metal v3.0.9 is a maintenance release that replaces the embedded
+SyzygyCheck packages with the exact published v2.0.9 V9F artifacts. The
+Source2Metal source processing, RAW, GAME-METAL, CTG-METAL and learning logic
+remain unchanged from the validated v3.0.7 reference.
 
 ## Source and reproducibility
 
 Source2Metal is distributed together with source code.
 
-The v3.0.7 Windows executable has been verified against its supplied source and can be reproduced from that source with the documented build preparation.
+The v3.0.9 Windows executable is built and checked against its supplied source
+with the documented GitHub Actions build preparation.
 
 Release hashes are used to detect accidental or unauthorized modification.
 
 ## Code signing
 
-The Windows executable in the current Source2Metal v3.0.7 release is unsigned. Windows may therefore display a Microsoft Defender SmartScreen or "Unknown publisher" warning when the program is downloaded and started.
+The Windows executable in the current Source2Metal v3.0.9 release is unsigned. Windows may therefore display a Microsoft Defender SmartScreen or "Unknown publisher" warning when the program is downloaded and started.
 
 Source2Metal is published with public source code, reproducible GitHub Actions build verification and SHA-256 integrity information.
 
