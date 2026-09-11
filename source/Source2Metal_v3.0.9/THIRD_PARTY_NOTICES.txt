@@ -20,8 +20,8 @@ SyzygyCheck v2.0.9 V9F gebruikt het oorspronkelijke programma `tbcheck` als
 afzonderlijke verificatiekern. Een reeds aanwezige `tbcheck.exe` wordt alleen
 gebruikt wanneer de SHA-256 overeenkomt. Als geen lokale kopie aanwezig is,
 haalt SyzygyCheck tijdelijk de bewaarde v3.0.7-referentie op en valideert die
-vóór gebruik opnieuw met SHA-256. Tablebasebestanden, bestandsnamen en
-resultaten worden door dit mechanisme niet geüpload.
+vóór gebruik opnieuw met SHA-256.
+Tablebasebestanden, bestandsnamen en resultaten worden door dit mechanisme niet geüpload.
 
 Gebaseerd op de oorspronkelijke Syzygy-tablebase-verificatiecode van Ronald de Man.
 De gezaghebbende upstreambron en licentie-informatie staan op:
