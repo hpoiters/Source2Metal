@@ -114,6 +114,7 @@ jobs:
           $sourceZip = Join-Path $env:GITHUB_WORKSPACE 'build_inputs/Source2Metal_v3.0.9_SOURCE.zip'
           $exe = Join-Path $sourceDir 'Source2Metal_v3.0.9.exe'
           $notes = Join-Path $sourceDir 'DEVELOPMENT_HISTORY/RELEASE_NOTES_V3.0.9.txt'
+          $multilingualReadme = Join-Path $sourceDir 'README_Source2Metal_v3.0.9_7_LANGUAGES.html'
           $package = Join-Path $releaseDir 'Source2Metal_v3.0.9_RELEASE.zip'
           $hashFile = Join-Path $releaseDir 'SHA256_Source2Metal_v3.0.9.txt'
 
@@ -125,6 +126,7 @@ jobs:
           Copy-Item $exe $packageStage
           Copy-Item $sourceZip $packageStage
           Copy-Item $notes (Join-Path $packageStage 'RELEASE_NOTES_Source2Metal_v3.0.9.txt')
+          Copy-Item $multilingualReadme $packageStage
           Compress-Archive -Path (Join-Path $packageStage '*') -DestinationPath $package -CompressionLevel Optimal
 
           $packageHash = (Get-FileHash $package -Algorithm SHA256).Hash.ToLowerInvariant()

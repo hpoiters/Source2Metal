@@ -19,6 +19,10 @@ Wijzigingen:
 - Alle zeven INFO-bestanden, buildinformatie, reproduceerinstructies,
   bronverwijzingen en actuele versienummers zijn bijgewerkt naar
   Source2Metal v3.0.9 / SyzygyCheck v2.0.9 V9F.
+- De hoofdmap van de release-ZIP bevat een korte, inhoudelijk gelijke HTML-uitleg
+  in Engels, Duits, Nederlands, Frans, Spaans, Chinees en Russisch, met directe
+  springlinks vanuit de meertalige talenindex:
+  README_Source2Metal_v3.0.9_7_LANGUAGES.html.
 - De permanente release-consistentiecontrole bewaakt de V9F-mapstructuur, de
   releasebundle, de afzonderlijke bron-ZIP, de executable, de gepubliceerde
   SHA-256-lijst en de verplichte V9F-bronbestanden.

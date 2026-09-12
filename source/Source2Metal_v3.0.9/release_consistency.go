@@ -122,6 +122,7 @@ func releaseConsistencyCheck() error {
 		"release_consistency.go", "release_consistency_test.go",
 		"syzygycheck_package.zip", "syzygycheck_source.zip",
 		"assets/SyzygyCheck_package.zip", "assets/SyzygyCheck_SOURCE.zip",
+		"README_Source2Metal_v3.0.9_7_LANGUAGES.html",
 		"DEVELOPMENT_HISTORY/RELEASE_NOTES_V3.0.9.txt",
 		"DEVELOPMENT_INFO/RELEASE_CONSISTENCY_RULES_NL.txt",
 		"INFO_EN/Source2Metal_Info_EN.txt", "INFO_DE/Source2Metal_Info_DE.txt",
@@ -132,6 +133,33 @@ func releaseConsistencyCheck() error {
 	for _, name := range s2mRequired {
 		if _, err := zipRead(embeddedSourceZip, name); err != nil {
 			return fmt.Errorf("release consistency: Source2Metal source package: %w", err)
+		}
+	}
+	multilingualReadme, _ := zipRead(embeddedSourceZip, "README_Source2Metal_v3.0.9_7_LANGUAGES.html")
+	multilingualReadmeText := strings.Join(strings.Fields(string(multilingualReadme)), " ")
+	for _, marker := range []string{
+		"<!doctype html>", `id="languages"`,
+		"Source2Metal v3.0.9", "SyzygyCheck", "v2.0.9 V9F", "Ronald de Man",
+		"LANGUAGE INDEX", "SPRACHENÜBERSICHT", "TALENOVERZICHT",
+		"INDEX DES LANGUES", "ÍNDICE DE IDIOMAS", "语言索引", "УКАЗАТЕЛЬ ЯЗЫКОВ",
+		"The purpose of this release is", "Ziel dieser Version ist",
+		"Het doel van deze release is", "Le but de cette version est",
+		"El objetivo de esta versión es", "本版本的目标是", "Цель этого выпуска",
+		`href="#en"`, `href="#de"`, `href="#nl"`, `href="#fr"`,
+		`href="#es"`, `href="#zh"`, `href="#ru"`, `href="#languages"`,
+		`id="en" lang="en"`, `id="de" lang="de"`, `id="nl" lang="nl"`,
+		`id="fr" lang="fr"`, `id="es" lang="es"`, `id="zh" lang="zh"`,
+		`id="ru" lang="ru"`,
+		"Tablebase files, filenames and results are not uploaded.",
+		"Tablebase-Dateien, Dateinamen und Ergebnisse werden nicht hochgeladen.",
+		"bestandsnamen en resultaten worden niet geüpload.",
+		"leurs noms et les résultats ne sont pas téléversés.",
+		"sus nombres y los resultados no se suben.",
+		"不会上传 tablebase 文件、文件名或检查结果。",
+		"Файлы таблиц, их имена и результаты проверки не передаются.",
+	} {
+		if !strings.Contains(multilingualReadmeText, marker) {
+			return fmt.Errorf("release consistency: multilingual HTML release guide missing %q", marker)
 		}
 	}
 	typesSrc, _ := zipRead(embeddedSourceZip, "types.go")
