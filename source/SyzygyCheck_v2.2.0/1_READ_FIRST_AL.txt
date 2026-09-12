@@ -1,0 +1,58 @@
+SyzygyCheck v2.2.0 — READ FIRST / ZUERST LESEN / LEES DIT EERST
+LIRE D'ABORD / LEA ESTO PRIMERO / 请先阅读 / СНАЧАЛА ПРОЧИТАЙТЕ
+===============================================================================
+
+ENGLISH
+Keep the complete extracted package together. Start !SyzygyCheck_v2.2.0.exe
+from the folder containing the Syzygy files to be checked. Detailed information:
+Docs_AL\README_AL.txt. If a report shows FAIL or ERROR, open the exact recovery
+guide named in that report under Program_AL. Recommended developer source:
+SyzygyCheck_v2.2.0_SOURCE.zip at https://github.com/hpoiters/SyzygyCheck
+(source is not included in this package).
+
+DEUTSCH
+Lassen Sie das vollständig entpackte Paket zusammen. Starten Sie
+!SyzygyCheck_v2.2.0.exe in dem Ordner mit den zu prüfenden Syzygy-Dateien.
+Ausführliche Informationen: Docs_AL\README_AL.txt. Bei FAIL oder ERROR öffnen
+Sie im Ordner Program_AL genau die im Bericht genannte Wiederherstellungsdatei.
+Empfohlener Entwickler-Quellcode: SyzygyCheck_v2.2.0_SOURCE.zip unter
+https://github.com/hpoiters/SyzygyCheck (der Quellcode ist nicht in diesem Paket enthalten).
+
+NEDERLANDS
+Houd het volledig uitgepakte pakket bij elkaar. Start !SyzygyCheck_v2.2.0.exe
+in de map met de Syzygy-bestanden die u wilt controleren. Nadere informatie:
+Docs_AL\README_AL.txt. Meldt een rapport FAIL of ERROR, open dan in Program_AL
+exact de herstelhandleiding die het rapport noemt. Aanbevolen source voor ontwikkelaars:
+SyzygyCheck_v2.2.0_SOURCE.zip op https://github.com/hpoiters/SyzygyCheck
+(de source zit niet in dit pakket).
+
+FRANÇAIS
+Conservez ensemble tout le paquet décompressé. Lancez !SyzygyCheck_v2.2.0.exe
+dans le dossier contenant les fichiers Syzygy à vérifier. Informations détaillées :
+Docs_AL\README_AL.txt. En cas de FAIL ou ERROR, ouvrez dans Program_AL le guide
+de récupération indiqué exactement dans le rapport. Source recommandée pour développeurs :
+SyzygyCheck_v2.2.0_SOURCE.zip sur https://github.com/hpoiters/SyzygyCheck
+(non incluse dans ce paquet).
+
+ESPAÑOL
+Mantenga unido todo el paquete extraído. Ejecute !SyzygyCheck_v2.2.0.exe en la
+carpeta que contiene los archivos Syzygy que desea comprobar. Más información:
+Docs_AL\README_AL.txt. Si el informe muestra FAIL o ERROR, abra en Program_AL la
+guía de recuperación cuyo nombre aparece exactamente en el informe. Fuente recomendada:
+SyzygyCheck_v2.2.0_SOURCE.zip en https://github.com/hpoiters/SyzygyCheck
+(no está incluida en este paquete).
+
+中文
+请将解压后的完整软件包保存在一起。在包含待检查 Syzygy 文件的文件夹中运行
+!SyzygyCheck_v2.2.0.exe。详细说明见 Docs_AL\README_AL.txt。如果报告显示
+FAIL 或 ERROR，请在 Program_AL 中打开报告准确指定的恢复指南。推荐的开发者源代码：
+SyzygyCheck_v2.2.0_SOURCE.zip，位于 https://github.com/hpoiters/SyzygyCheck
+（本软件包不包含源代码）。
+
+РУССКИЙ
+Храните весь распакованный пакет вместе. Запускайте !SyzygyCheck_v2.2.0.exe
+из папки с проверяемыми файлами Syzygy. Подробная информация:
+Docs_AL\README_AL.txt. Если отчёт содержит FAIL или ERROR, откройте в Program_AL
+именно то руководство по восстановлению, которое указано в отчёте. Рекомендуемый архив исходного кода:
+SyzygyCheck_v2.2.0_SOURCE.zip на https://github.com/hpoiters/SyzygyCheck
+(в этот пакет исходный код не включён).

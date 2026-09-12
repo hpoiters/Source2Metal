@@ -1,0 +1,23 @@
+SyzygyCheck v2.2.0 — Recuperación de archivos Syzygy dañados
+================================================================
+
+Si SyzygyCheck informa de un fallo real de suma de comprobación (FAIL) o de un problema de lectura/proceso (ERROR), no intente reparar el archivo dentro del comprobador. Es preferible apartar el archivo problemático o borrarlo solo después de anotar su nombre exacto. Después descargue una copia nueva del mismo archivo .rtbw o .rtbz desde una fuente fiable.
+
+Fuentes de descarga fiables:
+- Espejo Syzygy de Lichess: https://tablebase.lichess.ovh/tables/standard/
+- Espejo de tablebases Sesse: https://tablebases.sesse.net/
+
+Procedimiento recomendado:
+1. Anote el nombre del archivo que SyzygyCheck marca como FAIL o ERROR.
+2. Aparte el archivo dañado o incompleto, o bórrelo después de comprobar el nombre.
+3. Descargue exactamente el mismo archivo de una fuente fiable.
+4. Coloque el archivo de reemplazo de nuevo en la carpeta Syzygy.
+5. Ejecute SyzygyCheck otra vez.
+
+Notas:
+- FAIL significa que existe una suma de comprobación incorporada, pero no coincide con la suma recalculada.
+- ERROR significa que el archivo no pudo comprobarse de forma fiable por un problema de lectura, estructura o proceso.
+- No conserve archivos de prueba dañados intencionadamente en una colección real de tablebases.
+- SyzygyCheck no modifica sus archivos reales de tablebase.
+
+Fuente del núcleo de verificación: Ronald de Man — https://github.com/syzygy1/tb

@@ -1,0 +1,68 @@
+SyzygyCheck v2.2.0 — post-build consistency and pre-publication check
+===============================================================================
+Date: 12 September 2026
+Status: PASSED LOCALLY AND PUBLISHED — repaired GitHub v2.2.0 release verified
+
+Required sequence
+-----------------
+1. Program, console/report text and documents completed.
+2. Complete candidate user ZIP built.
+3. Post-build consistency check performed.
+4. Candidate ZIP inspected and tested as an extracted user package.
+5. GitHub publication/replacement is permitted only after the same workflow gate passes.
+
+Code and visible behaviour
+--------------------------
+[PASS] Final three-line progress block is properly terminated.
+[PASS] Exactly one blank line separates final percentage/remaining time from the report-destination prompt.
+[PASS] An unavailable remembered custom result path produces a separate warning paragraph in all seven languages,
+       identifies the old path, makes Desktop the visible Enter-default and replaces the invalid preference.
+[PASS] All seven FAIL/ERROR reports use an exact Program_AL recovery path.
+[PASS] The checksum/verification core is unchanged.
+[PASS] Whole-drive recursive discovery skips only the immediate Windows metadata folders
+       $RECYCLE.BIN and System Volume Information; a regression test covers both folders.
+[PASS] Canonical Ronald de Man credit form retained; forbidden possessive variants excluded from current user texts.
+
+User release structure
+----------------------
+[PASS] Root executable: !SyzygyCheck_v2.2.0.exe
+[PASS] Root start text: 1_READ_FIRST_AL.txt
+[PASS] Detailed documentation directory: Docs_AL
+[PASS] Program support directory: Program_AL
+[PASS] Program_AL contains the seven recovery guides named by the reports.
+[PASS] Docs_AL contains README_AL, detailed English/Dutch manuals, seven pagefile guides, release notes,
+       Ronald de Man notice and license.
+[PASS] No .go file or source archive is present inside the user ZIP.
+[PASS] Developer source is published separately as SyzygyCheck_v2.2.0_SOURCE.zip; GitHub's automatic tag archives
+       remain available as additional formats.
+
+Local verification
+------------------
+[PASS] go test -count=1 ./...
+[PASS] go test -race -count=1 ./...
+[PASS] go vet ./...
+[PASS] Windows x64 PE32+ console executable built.
+[PASS] Independent second Windows build is byte-for-byte identical.
+[PASS] Windows executable SHA-256:
+       6e8d8429a55fbdb51e449a85829aa07d84b614fbe1894e1c7049428b4ba61b58
+[PASS] Candidate ZIP contains 24 valid entries and passes full archive integrity testing.
+[PASS] Candidate user ZIP SHA-256:
+       d80f8fd70f81b4f06cbd89547a7e346aa08688853b2ce2df25b30e93ccd6cb2c
+[NOTE] GitHub's Windows packaging step creates the published ZIP and writes its definitive hash to
+       SHA256_SyzygyCheck_v2.2.0.txt; its container bytes need not match this Linux-built candidate ZIP.
+[PASS] Workflow YAML parses successfully.
+[PASS] git diff --check reports no whitespace errors.
+
+GitHub in-place replacement gate
+--------------------------------
+The workflow first repeats tests, vet, Windows build, package assembly and structural checks. Only after success it:
+- uploads the release ZIP, source ZIP and SHA-256 file under temporary names and verifies their remote digests;
+- moves tag v2.2.0 to the checked repaired source commit;
+- replaces the existing RELEASE.zip, SOURCE.zip and SHA-256 asset only after those safe temporary uploads succeed;
+- updates the existing v2.2.0 release notes without creating a new release or a new Latest version.
+
+Published result
+----------------
+[PASS] The repaired v2.2.0 assets and tag were replaced in place.
+[PASS] The final RELEASE.zip and Windows executable match the hashes above.
+[PASS] SyzygyCheck v2.2.0 remains the standalone Latest release used by Source2Metal v3.0.10.

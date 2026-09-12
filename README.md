@@ -7,21 +7,28 @@ improving computer-chess opening-book material.
 
 The current stable release contains only the current user files:
 
-- `!Source2Metal_v3.0.9.exe`
-- the three-language HTML guide (English, Russian and Chinese)
-- a clearly named documentation folder
+- `!Source2Metal_v3.0.10.exe`
+- a short HTML introduction with jump links (English, Russian and Chinese)
+- a clearly named documentation folder with full manuals in all seven languages
 
 The leading exclamation mark keeps the executable near the top of a folder in
 Windows Explorer.
 
-Source2Metal v3.0.9 includes the validated **SyzygyCheck v2.0.9 V9F** as an
-unpackable utility. Its executable retains the name
-`!SyzygyCheck_v2.0.9_V9F.exe`.
+Source2Metal v3.0.10 includes the published and practically validated
+**SyzygyCheck v2.2.0** as its one unpackable utility. This is the same complete
+user package as the standalone SyzygyCheck v2.2.0 release. It contains
+`!SyzygyCheck_v2.2.0.exe`, `1_READ_FIRST_AL.txt`, `Docs_AL` and `Program_AL`.
+The checker can scan either one selected folder or that folder and all real
+subfolders, preserves relative paths in checkpoints and offers a selectable
+result-report destination.
 
-Source code is deliberately not duplicated inside the EXE or the end-user ZIP.
-It is available separately through GitHub's source download for this release.
-Only the current Source2Metal and SyzygyCheck source trees are present there;
-older versions remain available through Git history and earlier releases.
+Source code is deliberately not duplicated inside the EXE or
+`Source2Metal_v3.0.10_RELEASE.zip`. GitHub supplies the source separately and
+automatically through **Source code (zip)** and **Source code (tar.gz)**. A
+third, manually made source archive would duplicate those downloads and is
+therefore not published. Only the current Source2Metal and SyzygyCheck source
+trees are present; older versions remain available through Git history and
+earlier releases.
 
 ## Source material and third-party content
 

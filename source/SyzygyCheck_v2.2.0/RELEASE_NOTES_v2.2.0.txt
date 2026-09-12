@@ -1,0 +1,124 @@
+SyzygyCheck v2.2.0 — Controlemap and subfolder scanning
+===========================================
+
+v2.2.0 follows v2.1.0 and the successfully validated v2.0.9 V9F release. The verification/checksum core,
+thread functionality and compact live progress renderer are unchanged. V9F remains available untouched as the
+first practically validated release.
+
+v2.2.0 changes
+--------------
+- Before inventory, the user chooses:
+    1 = Controlemap only [default]
+    2 = Controlemap and all subfolders
+- A run never scans a parent folder.
+- Real subfolders are followed to any depth; symbolic links are excluded to preserve the hard boundary.
+- Whole-drive scans skip `$RECYCLE.BIN` and `System Volume Information`, preventing deleted or protected tablebase
+  filenames in Windows metadata from aborting the real scan.
+- Relative subfolder paths are preserved in checkpoint state for safe resume and duplicate filename handling.
+- Every FAIL and ERROR in the final report shows its full Windows path from the drive letter.
+- Immediately before saving the final report, the user chooses:
+    1 = Desktop [default on first use]
+    2 = Controlemap
+    3 = freely selected folder through a native Windows Explorer-style folder dialog
+- SyzygyCheck automatically creates a result collection subfolder inside the selected location.
+- The last selected destination becomes the Enter-default for the next run. A freely selected path is remembered
+  exactly; if it later disappears or is unavailable, a seven-language warning shows the previous path and states
+  that Desktop is now the default. Pressing Enter then saves to Desktop and replaces the invalid preference.
+- The new scope and destination menus are resize-safe, including long remembered paths and CJK console-cell widths.
+- That folder is named `CheckResult` in English, German, Dutch, French and Spanish; Chinese and Russian use a
+  translated name in their own script.
+- Consecutive reports retain their timestamped filenames and collect in that folder instead of being scattered
+  across the Desktop.
+- The executable filename inside the release ZIP always begins with an exclamation mark.
+- The final percentage/remaining-time block is followed by exactly one blank line before the report-destination
+  prompt, keeping the two interface sections visually separate.
+- The complete user ZIP now contains the required four-part structure:
+    !SyzygyCheck_v2.2.0.exe
+    1_READ_FIRST_AL.txt
+    Docs_AL\
+    Program_AL\
+- FAIL/ERROR reports show the exact packaged recovery path under Program_AL.
+- Source is not included in the user ZIP. The recommended source download is the clearly named
+  `SyzygyCheck_v2.2.0_SOURCE.zip` release asset; GitHub's automatically generated tag archives remain available too.
+
+Retained V9F refinements
+------------------------
+- Main-menu prompt simplified in all seven languages: only the Enter default is shown. The multilingual
+  `Change language` menu item already makes language switching obvious, so `Esc = language` is no longer
+  printed on the main-menu prompt.
+- Russian remaining times of at least one hour now use `ч (h)`.
+- Chinese remaining times of at least one hour now use `小时 (h)`.
+- English, German, Dutch, French and Spanish continue to use the compact international `h`.
+- Release documentation now distinguishes classic-console close protection from Windows Terminal behaviour.
+
+Verification core
+-----------------
+Based on the original Syzygy tablebase verification code by Ronald de Man.
+The AL layer does not reimplement the checksum logic; it adds the multilingual interface, progress display,
+self-test, checkpoint/resume, thread selection and reporting around the original verification core.
+
+Thread selection
+----------------
+At startup SyzygyCheck silently detects the logical processors available to the process and offers:
+
+  1 = all detected threads
+  2 = half [default; Enter selects this]
+  3 = a custom value from 1 to the detected maximum
+
+The selected count is visible in the run header using the properly localised equivalent of `Workers (threads)`
+and is passed directly to tbcheck as `--threads n`.
+
+Live display
+------------
+- compact three-line live progress block;
+- read speed on the same first line as the current file count;
+- read speed and remaining time share one right-hand column when width permits;
+- exactly one blank separator after a visible FAIL/ERROR;
+- current progress remains visible while older error lines can scroll upward;
+- checkpoint/resume, onboard intentional FAIL self-test and reporting are retained.
+
+Escape/back navigation
+----------------------
+Physical Esc remains a genuine back action in Windows choice screens. On the main menu its language shortcut
+still works but is no longer advertised because the visible language-change menu item is already sufficient.
+
+Window-close protection
+-----------------------
+During the real scan SyzygyCheck still makes a best-effort attempt to disable SC_CLOSE for a classic Windows
+console host. This does not control the outer top-right X of Windows Terminal, because that button belongs to
+Windows Terminal itself. In that host an accidental close can therefore still terminate the visible terminal.
+Checkpoint/resume remains the dependable protection against losing already confirmed work.
+
+Minimize, maximize, resizing and scrollback are not intentionally blocked.
+
+Read-speed meaning
+------------------
+The displayed value is effective verification throughput, not necessarily raw physical disk speed. Confirmed
+results and the final report use definitively verified bytes for the current session; bytes completed before a
+resumed session are excluded from that session average.
+
+Checkpoint behaviour
+--------------------
+Confirmed FAIL results are written into the checkpoint and are carried into a resumed run. A partially completed
+batch may be rechecked. A fully completed run without operational ERROR removes the checkpoint.
+
+Final practical validation
+--------------------------
+- V9F, i7-6800K, 11 workers: 57 files / 20.22 GB, 27 s, 777.4 MB/s average effective verification throughput,
+  exactly 2 expected checksum FAILs found, 0 read/process errors, onboard diagnostic TEST-FAIL passed.
+- Earlier cold V9C/V9D/V9E-line validation on the same i7-6800K with 12 workers reached 805.0 MB/s average
+  effective verification throughput after reboot.
+- Drobo: successful practical operation with 4 threads, acceptable throughput and reasonably normal mechanical
+  behaviour.
+- Large X299 / 5× NVMe RAID0 scaling remains useful as an additional performance measurement, but is not a
+  release blocker.
+
+Executable
+----------
+  !SyzygyCheck_v2.2.0.exe
+
+Release gate
+------------
+Before publication the workflow runs Go tests and vet, builds Windows x64, assembles the complete user ZIP, checks
+every required file and directory, rejects Go source inside the user ZIP, checks all seven exact recovery paths,
+and creates a SHA-256 file for the final release ZIP. Publication occurs only after this gate succeeds.

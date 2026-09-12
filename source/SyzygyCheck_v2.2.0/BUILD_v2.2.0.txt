@@ -1,0 +1,72 @@
+SyzygyCheck v2.2.0 — Windows x64 build
+================================================================
+
+Base: the unchanged, practically validated SyzygyCheck v2.0.9 V9F release.
+Verification core: original Ronald de Man tbcheck checksum engine; checksum logic unchanged.
+
+v2.2.0 changes
+--------------
+- Adds scan scope choice: Controlemap only [default], or Controlemap plus all subfolders.
+- Never scans parent folders and does not follow symbolic links outside the Controlemap.
+- Skips `$RECYCLE.BIN` and `System Volume Information` during a whole-drive recursive scan.
+- Preserves relative subfolder paths in checkpoint state and shows full absolute paths for every FAIL/ERROR.
+- Adds a final report destination choice: Desktop [first-run default], control folder or a freely selected folder.
+- Remembers the last destination as the next run's default, including the exact freely selected path.
+- If a remembered freely selected path becomes unavailable, shows a seven-language warning with that path and
+  the consequence that Desktop is now the default; Enter then stores that replacement preference.
+- Keeps the new choice menus within the resized console width, including long paths and CJK cell widths.
+- Uses the native Windows Explorer-style folder picker for the free choice.
+- Creates a language-aware result collection subfolder at every destination (`CheckResult` in Western languages).
+- Requires the executable filename to start with `!`.
+- Terminates the final three-line progress block and leaves exactly one blank line before the report-destination
+  section.
+- Uses exact packaged recovery paths under Program_AL in all seven result-report languages.
+
+Retained from V9F
+-----------------
+- The main-menu prompt is visually quieter in all seven languages: it shows only the normal Enter default.
+  The language-change option itself remains visibly multilingual; the physical Esc shortcut is retained internally.
+- Remaining times of one hour or more use local hour notation in Russian and Chinese while retaining the
+  international h as a bridge:
+    Russian:  1:18 ч (h)
+    Chinese:  1:18 小时 (h)
+  English, German, Dutch, French and Spanish retain: 1:18 h
+- Documentation now describes the V9E close protection accurately: SC_CLOSE protection applies to a classic
+  Windows console host. In Windows Terminal the visible top-right X belongs to Terminal and can still close the
+  window. Checkpoint/resume therefore remains the reliable protection against lost progress.
+
+Retained from V9C/V9D/V9E
+--------------------------
+- silent logical-processor detection;
+- all / half [default] / custom thread selection;
+- active count shown using the localised equivalent of `Workers (threads)`;
+- compact three-line live progress with aligned right-hand column;
+- checkpoint/resume with confirmed FAIL preservation;
+- physical Esc-back navigation in choice screens;
+- onboard intentional FAIL self-test;
+- end report with average effective verification throughput;
+- best-effort classic-console SC_CLOSE protection during the real scan.
+
+Build
+-----
+  go test ./...
+  go vet ./...
+  GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o '!SyzygyCheck_v2.2.0.exe' .
+
+User package
+------------
+The release ZIP contains exactly the runtime/documentation package, with these four root items:
+
+  !SyzygyCheck_v2.2.0.exe
+  1_READ_FIRST_AL.txt
+  Docs_AL\
+  Program_AL\
+
+Docs_AL contains README_AL.txt, the detailed English/Dutch manuals, all pagefile guides, release notes, credit notice
+and license. Program_AL contains all seven recovery guides referenced by result reports. The workflow verifies this
+structure after packaging and before publication.
+
+Source distribution
+-------------------
+Source is not copied into the user release ZIP. The workflow publishes the clearly named
+SyzygyCheck_v2.2.0_SOURCE.zip as the recommended source asset; GitHub's tag-generated archives remain available too.

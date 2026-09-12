@@ -1,0 +1,46 @@
+SyzygyCheck v2.2.0 — guide mémoire virtuelle / fichier d’échange
+====================================================================
+
+Pourquoi cet avertissement ?
+----------------------------
+Une collection Syzygy complète peut représenter plusieurs téraoctets et une vérification peut durer de
+nombreuses heures ou davantage. Windows et le moteur de vérification utilisent de la mémoire virtuelle
+en plus de la RAM physique. Un fichier d’échange désactivé ou très petit peut contribuer à des erreurs
+d’allocation mémoire ou à un arrêt inattendu pendant une longue vérification.
+
+SyzygyCheck ne modifie PAS automatiquement le fichier d’échange Windows. Au démarrage, il propose donc
+un choix simple : Entrée = continuer ; A = arrêter afin de vérifier d’abord les réglages Windows.
+
+Réglage simple recommandé
+-------------------------
+Pour la plupart des systèmes, le point de départ le plus simple et le plus sûr consiste à laisser
+Windows gérer automatiquement la taille du fichier d’échange et à conserver suffisamment d’espace libre
+sur le lecteur utilisé. Évitez de désactiver le fichier d’échange ou d’imposer une très petite limite fixe
+avant une vérification exceptionnellement importante.
+
+Windows 11 — étape par étape
+----------------------------
+1. Quittez SyzygyCheck s’il est encore ouvert.
+2. Ouvrez Démarrer et recherchez : Afficher les paramètres système avancés
+3. Ouvrez Propriétés système.
+4. Sélectionnez l’onglet Paramètres système avancés / Avancé.
+5. Sous Performances, choisissez Paramètres...
+6. Sélectionnez de nouveau l’onglet Avancé.
+7. Sous Mémoire virtuelle, choisissez Modifier...
+8. Activez : Gestion automatique du fichier d’échange pour tous les lecteurs.
+9. Confirmez avec OK/Appliquer.
+10. Si Windows demande un redémarrage, redémarrez avant de lancer une longue vérification Syzygy.
+
+Si la gestion automatique pose encore problème
+----------------------------------------------
+La gestion automatique est un bon réglage par défaut, mais pas une garantie absolue pour toute
+configuration Windows ou charge extrême. Si la vérification s’arrête à plusieurs reprises avec des
+erreurs mémoire/allocation malgré suffisamment d’espace disque libre, une taille initiale volontairement
+plus grande peut être envisagée comme étape avancée. SyzygyCheck ne choisit pas ces valeurs à votre place.
+
+Important
+---------
+- Le fichier d’échange ne remplace pas une RAM défectueuse ou un matériel instable.
+- Sur un disque presque plein, il ne peut pas s’agrandir indéfiniment.
+- Un redémarrage peut être nécessaire après modification.
+- En cas de doute, la gestion automatique par Windows est préférable à une petite limite fixe.

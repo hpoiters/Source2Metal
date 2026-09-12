@@ -1,0 +1,76 @@
+Source2Metal v3.0.10 — BENUTZERHANDBUCH (DEUTSCH)
+=================================================
+
+1. ZWECK
+Source2Metal ist ein portables Windows-x64-Werkzeug zum Inventarisieren und
+Verarbeiten von Computerschach-Quellen. Unterstützt werden PGN, vollständige
+CTG/CTO/CTB-Sätze, klassische CBH-Sätze und 2CBH-Sätze. Das Programm erzeugt
+neutrale RAW-PGNs sowie getrenntes GAME-METAL- und CTG-METAL-Lernmaterial.
+
+2. START
+Entpacken Sie Source2Metal_v3.0.10_RELEASE.zip vollständig. Lassen Sie EXE, kurze
+HTML-Einführung und Docs-Ordner zusammen. Legen Sie
+!Source2Metal_v3.0.10.exe in den Ordner mit den Quellen; Unterordner werden
+automatisch durchsucht. Eine Installation ist nicht erforderlich.
+
+.git, TEMP, Tijdelijk, Ordner mit der Endung _output und der eigene Ordner
+!Source2Metal_Output werden übersprungen. Quellen werden gelesen; Ergebnisse
+kommen in einen neuen Ausgabeordner mit Zeitstempel.
+
+3. VOLLSTÄNDIGE QUELLSÄTZE
+- PGN: eine .pgn-Datei.
+- CTG: zusammengehörige .ctg-, .cto- und .ctb-Dateien.
+- CBH: zusammengehörige .cbh-, .cbg-, .cbp- und .cbt-Dateien.
+- 2CBH: zusammengehörige .2cbh-, .2cbg- und .2lid-Dateien.
+Unvollständige Sätze werden gemeldet und nicht still als vollständig behandelt.
+
+4. HAUPTMENÜ
+1 = Quellen verarbeiten [Standard]
+2 = SyzygyCheck / Pagefile
+3 = Sprache ändern
+4 = Buildinformationen
+0 = Beenden
+
+5. VERARBEITUNG
+Wählen Sie zuerst die Workerzahl. Standard ist die Hälfte der für den Prozess
+verfügbaren logischen CPU-Threads.
+
+Modus 1 erstellt nur Inventar und Bericht.
+Modus 2 erstellt RAW: PGN/CBH/2CBH werden GAME RAW; jedes vollständige CTG-Set
+wird CTG RAW. Sind beide Klassen vorhanden, entsteht auch ALL SOURCES RAW.
+Modus 3 [Standard] erstellt RAW plus getrennte GAME-METAL- und CTG-METAL-Ergebnisse.
+
+Für Modus 2 und 3 wählen Sie RAW-Tiefe (1–120 ply; Standard 100), Mindestlänge
+(1–120 ply; Standard 24), optionalen Elo-Filter und maximale Elo-Differenz.
+Elo 0 erhält die Quellenauswahl; 1 verlangt beide Spieler >=2500; 2 verlangt
+beide Spieler >=2400.
+
+6. AUSGABE
+Ergebnisse stehen unter:
+  !Source2Metal_Output\JJJJ-MM-TT_HH-MM-SS\
+Der Laufordner enthält RAW und/oder METAL sowie REPORTS. Ergebnisse pro Quelle
+und zusammengeführte Ergebnisse bleiben getrennt erkennbar. Temporäre
+Adapterdateien werden am Ende entfernt. Berichte enthalten Einstellungen,
+Quellen, Status, Buildinformationen und SHA-256-Prüfsummen.
+
+GAME-METAL enthält vollständige legale Quellpartien mit Originalergebnis und
+nutzt Positions-/Transpositionsstatistik. CTG-METAL nutzt buchorientierte
+Evidenz. Beide bleiben wegen ihrer unterschiedlichen Bedeutung getrennt.
+
+Für Fritz „Aus Datenbank lernen“ mit Metal-PGN: Siege EIN, Niederlagen EIN,
+Weiß AUS, Schwarz AUS, Spieler AUS, Spielername leer, Partien ALLE.
+
+7. SyzygyCheck v2.2.0
+Wählen Sie Hauptmenü 2 und danach 1. Source2Metal schreibt
+SyzygyCheck_v2.2.0_UTILITY.zip neben die EXE. Entpacken Sie das vollständige
+Paket und lesen Sie 1_READ_FIRST_AL.txt. Source2Metal startet SyzygyCheck nicht.
+
+8. QUELLCODE, DATENSCHUTZ UND INTEGRITÄT
+Der Quellcode ist weder in der EXE noch in Source2Metal_v3.0.10_RELEASE.zip eingebettet.
+GitHub stellt ihn automatisch als Source code (zip) und Source code (tar.gz)
+bereit. Ein zusätzliches eigenes Quellcode-ZIP wird nicht veröffentlicht, da
+es diese Downloads nur duplizieren würde.
+Beide Programme arbeiten lokal und laden keine Quellen, Tablebase-Dateinamen
+oder Ergebnisse hoch. Prüfen Sie Downloads mit
+SHA256_Source2Metal_v3.0.10.txt. Die EXE ist derzeit nicht signiert; Windows
+kann deshalb „Unbekannter Herausgeber“ oder SmartScreen anzeigen.
