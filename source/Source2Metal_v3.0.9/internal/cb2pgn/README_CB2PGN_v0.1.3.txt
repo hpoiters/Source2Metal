@@ -16,7 +16,6 @@ Ondersteund
 * Tijdgestempelde uitvoermap
 * Rapport met aantallen, overgeslagen records en SHA-256
 * --selftest
-* --extract-source
 
 Belangrijkste wijziging t.o.v. v0.1.0
 -------------------------------------
@@ -37,7 +36,7 @@ de geintegreerde cbh2pgn-0.1 decoder van Dominik Klein
 
 Ook 0xDC/0x0C-variatiestack, 0x9F filler, null-moves, promoties en
 niet-standaard beginstellingen volgen de referentiecode. De originele
-cbh2pgn-0.1 bron staat ongewijzigd in de broncodebundel, zodat de Go-port
+cbh2pgn-0.1 bron staat ongewijzigd in de actuele bronboom, zodat de Go-port
 later regel voor regel controleerbaar blijft.
 
 Deze reparatie is intern/selftest-gevalideerd, maar de oude CBH-route blijft
@@ -65,16 +64,6 @@ databases verschijnt een keuzemenu. De uitvoer staat onder:
     CB2PGN_output\YYYY-MM-DD_HH-MM-SS\
 
 U kunt ook een .cbh/.cbg/.cbp/.cbt of .2cbh/.2cbg/.2lid op de EXE slepen.
-
-Broncode uit de EXE halen
--------------------------
-Open een opdrachtprompt in de map van de EXE en voer uit:
-
-    CB2PGN_Builder_v0.1.3.exe --extract-source
-
-De EXE schrijft dan zowel een broncodemap als een complete broncode-ZIP uit.
-Daarin staan de Go-bron, licenties, buildinstructie én de oorspronkelijke
-cbh2pgn-0.1 referentiebron.
 
 WIJZIGING v0.1.3
 ----------------

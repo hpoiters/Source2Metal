@@ -8,30 +8,29 @@ const (
 	syzygyCheckVariant         = "V9F"
 	syzygyCheckDisplay         = "2.0.9 V9F"
 	syzygyCheckExeFilename     = "!SyzygyCheck_v2.0.9_V9F.exe"
-	syzygyCheckPackageFilename = "SyzygyCheck_v2.0.9_V9F_FINAL_GitHub_Release_Bundle.zip"
-	syzygyCheckSourceFilename  = "SyzygyCheck_v2.0.9_V9F_FINAL_SOURCE.zip"
-	syzygyCheckSourceRoot      = "SyzygyCheck_v2.0.9_V9F_SOURCE/"
+	syzygyCheckPackageFilename = "SyzygyCheck_v2.0.9_V9F_UTILITY.zip"
+	releaseReadmeFilename      = "Readme-README-Прочтите-自述文件.html"
+	releaseDocsDir             = "Docs-DOCUMENTATION-Документация-文档"
 	defaultMaxPly              = 100
 	defaultMinPly              = 24
 	maxAllowedPly              = 120
-	buildDateUTC               = "2026-09-11T22:46:20Z"
+	buildDateUTC               = "2026-09-12T03:50:00Z"
 )
 
 type Config struct {
-	Input               string
-	Mode                string
-	MaxPly              int
-	MinPly              int
-	MinElo              int
-	MaxEloGap           int
-	Workers             int
-	NoPause             bool
-	SelfTest            bool
-	Interactive         bool
-	ExtractSource       bool
-	ExtractSyzygySource bool
-	BuildInfo           bool
-	PagefileHelp        bool
+	Input                string
+	Mode                 string
+	MaxPly               int
+	MinPly               int
+	MinElo               int
+	MaxEloGap            int
+	Workers              int
+	NoPause              bool
+	SelfTest             bool
+	Interactive          bool
+	ExtractSyzygyPackage bool
+	BuildInfo            bool
+	PagefileHelp         bool
 }
 
 type HardwareInfo struct {

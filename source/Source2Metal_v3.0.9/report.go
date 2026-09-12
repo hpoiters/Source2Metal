@@ -24,22 +24,36 @@ func writeReports(layout OutputLayout, inv Inventory, cfg Config, hw HardwareInf
 	if err := atomicWriteFile(filepath.Join(layout.ReportDir, "Source2Metal_BuildInfo.txt"), []byte(buildInfoText()), 0644); err != nil {
 		return err
 	}
-	extractInfo := fmt.Sprintf(`Source2Metal v%s - BRONCODEPAKKET
+	sourceInfo := fmt.Sprintf(L(`Source2Metal v%s - SOURCE CODE
 
-De Windows-EXE bevat het broncodepakket dat bij deze versie hoort.
+The source code is deliberately not duplicated inside the Windows EXE or user package.
+Download it separately from the Source2Metal release page on GitHub.
+`, `Source2Metal v%s - QUELLCODE
 
-Eenvoudigste methode:
-  start Source2Metal en kies Hulpprogramma's > Source2Metal-broncodepakket uitpakken.
+Der Quellcode wird bewusst nicht in der Windows-EXE oder im Benutzerpaket dupliziert.
+Laden Sie ihn separat von der Source2Metal-Versionsseite auf GitHub herunter.
+`, `Source2Metal v%s - BRONCODE
 
-Voor gevorderden:
-  Source2Metal_v%s.exe -extract-source
+De broncode wordt bewust niet dubbel opgenomen in de Windows-EXE of het gebruikerspakket.
+Download hem afzonderlijk van de Source2Metal-releasepagina op GitHub.
+`, `Source2Metal v%s - CODE SOURCE
 
-Ingebedde bron SHA-256:
-  %s
+Le code source n'est volontairement pas dupliqué dans l'EXE Windows ou le paquet utilisateur.
+Téléchargez-le séparément depuis la page de version Source2Metal sur GitHub.
+`, `Source2Metal v%s - CÓDIGO FUENTE
 
-Een bestaand identiek broncodepakket wordt niet opnieuw overschreven.
-`, version, version, embeddedSourceSHA256())
-	if err := atomicWriteFile(filepath.Join(layout.ReportDir, "Source2Metal_SourceExtract.txt"), []byte(localizeReportText(extractInfo)), 0644); err != nil {
+El código fuente no se duplica deliberadamente dentro del EXE de Windows ni del paquete de usuario.
+Descárguelo por separado desde la página de la versión Source2Metal en GitHub.
+`, `Source2Metal v%s - 源代码
+
+源代码不会在 Windows EXE 或用户包内重复保存。
+请从 GitHub 的 Source2Metal 发布页单独下载。
+`, `Source2Metal v%s - ИСХОДНЫЙ КОД
+
+Исходный код намеренно не дублируется внутри Windows EXE или пользовательского пакета.
+Загрузите его отдельно со страницы выпуска Source2Metal на GitHub.
+`), version)
+	if err := atomicWriteFile(filepath.Join(layout.ReportDir, "Source2Metal_SourceInfo.txt"), []byte(sourceInfo), 0644); err != nil {
 		return err
 	}
 	statusText := fmt.Sprintf("Source2Metal v%s\nStatus: %s\nRun-ID: %s\nModus: %s\nWorkers: %d/%d\nGAME RAW: %d records / %d geverifieerd\nCTG RAW: %d gebouwd / %d overgeslagen / %d mislukt / %d records\nGAME METAL: %d gebouwd / %d overgeslagen / %d mislukt / %d modelpartijen\nCTG METAL: %d gebouwd / %d overgeslagen / %d mislukt\nDuur: %s\n", version, localizeStatus(status), runID(c), cfg.Mode, cfg.Workers, hw.LogicalThreads, c.GamesAccepted, c.RawGamesVerified, c.CTGRawBuilt, c.CTGRawSkipped, c.CTGRawFailed, c.CTGRawGames, c.GameMetalBuilt, c.GameMetalSkipped, c.GameMetalFailed, c.GameMetalSelected, c.CTGMetalBuilt, c.CTGMetalSkipped, c.CTGMetalFailed, c.Elapsed)
@@ -186,7 +200,6 @@ func writeInventoryReport(path string, inv Inventory, cfg Config, hw HardwareInf
 	fmt.Fprintln(&b, L("- CTG METAL never lowers selection thresholds silently; any cautious fallback is reported visibly.", "- CTG METAL senkt Auswahlschwellen niemals still ab; ein vorsichtiger Fallback wird sichtbar gemeldet.", "- CTG METAL verlaagt selectiedrempels niet stilzwijgend; een eventuele voorzichtige fallback wordt zichtbaar gemeld.", "- CTG METAL n’abaisse jamais silencieusement les seuils de sélection ; tout repli prudent est signalé clairement.", "- CTG METAL nunca reduce silenciosamente los umbrales de selección; cualquier alternativa prudente se informa claramente.", "- CTG METAL 不会静默降低选择阈值；任何谨慎的后备模式都会明确报告。", "- CTG METAL никогда не снижает пороги отбора скрытно; любой осторожный резервный режим явно отображается."))
 	fmt.Fprintln(&b, "- GAME-METAL en CTG-METAL blijven herkenbaar gescheiden omdat zij verschillende soorten evidence coderen.")
 	fmt.Fprintln(&b, "- Fritz-inleerinstelling: Overwinningen + Verliespartijen AAN; Wit/Zwart/Speler UIT; spelernaam leeg; alle partijen.")
-	fmt.Fprintf(&b, "\nEmbedded source SHA-256     : %s\n", embeddedSourceSHA256())
 	return atomicWriteFile(path, []byte(localizeReportText(b.String())), 0644)
 }
 
@@ -203,8 +216,7 @@ Workers           : %d
 Logische threads  : %d
 RAM bytes         : %d
 Pagefile bytes    : %d
-Embedded source   : %s
-`, version, inv.Root, cfg.Mode, cfg.MaxPly, cfg.MinPly, cfg.MinElo, cfg.MaxEloGap, cfg.Workers, hw.LogicalThreads, hw.RAMBytes, hw.PagefileBytes, embeddedSourceSHA256())
+`, version, inv.Root, cfg.Mode, cfg.MaxPly, cfg.MinPly, cfg.MinElo, cfg.MaxEloGap, cfg.Workers, hw.LogicalThreads, hw.RAMBytes, hw.PagefileBytes)
 	return atomicWriteFile(path, []byte(localizeReportText(text)), 0644)
 }
 

@@ -8,16 +8,13 @@
 package cb2pgn
 
 import (
-	"archive/zip"
 	"bufio"
 	"bytes"
 	"crypto/sha256"
-	"embed"
 	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
@@ -29,9 +26,6 @@ import (
 
 const version = "0.1.3"
 const progressWidth = 32
-
-//go:embed main.go legacy_cbh.go README_CB2PGN_v0.1.3.txt THIRD_PARTY_NOTICES.txt BUILD.txt LICENSE_GPL-3.0.txt reference_cbh2pgn-0.1/*
-var sourceFS embed.FS
 
 // -----------------------------------------------------------------------------
 // Common legal chess core. Both CBH and 2CBH routes are forced through this
@@ -1414,89 +1408,15 @@ Belangrijk:
   - Alleen de hoofdvariant wordt geschreven; CBH-analysevarianten worden genegeerd.
   - Niet-standaard beginstellingen, Chess960 en speciale onbekende coderingen worden veilig overgeslagen en in het rapport geteld.
   - De oude CBH-route is in v0.1.3 opnieuw opgebouwd als zo letterlijk mogelijke Go-port van Dominik Klein's cbh2pgn 0.1: token=(raw-processedMoves) mod 256, de originele 234 één-byte tabellen, 0x29-tweebytezetten en de originele stuknummering na captures.
-  - De originele MIT-gelicentieerde cbh2pgn-0.1 bron is in de broncodebundel opgenomen als referentie.
+  - De originele MIT-gelicentieerde cbh2pgn-0.1 bron staat als referentie in de afzonderlijk downloadbare broncode.
   - Deze CBH-route blijft experimenteel totdat StrongGames2017 en een echte CBH/PGN-paarvergelijking slagen.
   - De 2CBH-route bouwt voort op de eerder exact 43/43 partijen en 3119/3119 ply gevalideerde decoder.
 
 Commando's:
   CB2PGN_Builder.exe <pad-naar-cbh-of-2cbh-bestand>
   CB2PGN_Builder.exe --selftest
-  CB2PGN_Builder.exe --extract-source
 `
 
-func embeddedSourceNames() ([]string, error) {
-	names := []string{}
-	err := fs.WalkDir(sourceFS, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if !d.IsDir() {
-			names = append(names, path)
-		}
-		return nil
-	})
-	sort.Strings(names)
-	return names, err
-}
-
-func extractSource(dir string) error {
-	names, e := embeddedSourceNames()
-	if e != nil {
-		return e
-	}
-	folder := filepath.Join(dir, "CB2PGN_Builder_v"+version+"_source")
-	if e = os.MkdirAll(folder, 0755); e != nil {
-		return e
-	}
-	for _, name := range names {
-		b, er := sourceFS.ReadFile(name)
-		if er != nil {
-			return er
-		}
-		dst := filepath.Join(folder, filepath.FromSlash(name))
-		if er = os.MkdirAll(filepath.Dir(dst), 0755); er != nil {
-			return er
-		}
-		if er = os.WriteFile(dst, b, 0644); er != nil {
-			return er
-		}
-	}
-	zipPath := filepath.Join(dir, "CB2PGN_Builder_v"+version+"_source.zip")
-	zf, er := os.Create(zipPath)
-	if er != nil {
-		return er
-	}
-	zw := zip.NewWriter(zf)
-	for _, name := range names {
-		b, rr := sourceFS.ReadFile(name)
-		if rr != nil {
-			_ = zw.Close()
-			_ = zf.Close()
-			return rr
-		}
-		w, rr := zw.Create(name)
-		if rr != nil {
-			_ = zw.Close()
-			_ = zf.Close()
-			return rr
-		}
-		if _, rr = w.Write(b); rr != nil {
-			_ = zw.Close()
-			_ = zf.Close()
-			return rr
-		}
-	}
-	if er = zw.Close(); er != nil {
-		_ = zf.Close()
-		return er
-	}
-	if er = zf.Close(); er != nil {
-		return er
-	}
-	fmt.Println("Broncodemap :", folder)
-	fmt.Println("Broncode-ZIP:", zipPath)
-	return nil
-}
 func selfTest() error {
 	initLocal()
 	b := startBoard()
@@ -1591,12 +1511,6 @@ func main() {
 	exe, _ := os.Executable()
 	dir := filepath.Dir(exe)
 	args := os.Args[1:]
-	if len(args) > 0 && args[0] == "--extract-source" {
-		if e := extractSource(dir); e != nil {
-			fmt.Println("FOUT:", e)
-		}
-		return
-	}
 	if len(args) > 0 && args[0] == "--selftest" {
 		if e := selfTest(); e != nil {
 			fmt.Println("SELFTEST FOUT:", e)

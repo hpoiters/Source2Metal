@@ -13,8 +13,7 @@ geïntegreerde bronbestanden behouden.
 De klassieke CBH-route in CB2PGN Builder v0.1.3 is een Go-port van Dominik
 Klein's cbh2pgn 0.1 (2022), oorspronkelijk onder de MIT License. De ongewijzigde
 referentiebron en MIT-license staan onder internal/cb2pgn/reference_cbh2pgn-0.1/
-en tevens in de exact bewaarde originele CB2PGN-sourcebundle onder
-legacy_sources/testdata/.
+in de actuele bronboom.
 
 SyzygyCheck v2.0.9 V9F gebruikt het oorspronkelijke programma `tbcheck` als
 afzonderlijke verificatiekern. Een reeds aanwezige `tbcheck.exe` wordt alleen

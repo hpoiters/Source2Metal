@@ -4,7 +4,7 @@ Source2Metal contains or distributes open-source material from several upstream 
 
 ## CTG-related code
 
-Parts of the CTG processing lineage are based on publicly available CTG implementations, including the DroidFish CtgBook lineage by Peter Österlund. The Source2Metal source package identifies the resulting Source2Metal code as GPL v3 or later.
+Parts of the CTG processing lineage are based on publicly available CTG implementations, including the DroidFish CtgBook lineage by Peter Österlund. The Source2Metal source tree identifies the resulting Source2Metal code as GPL v3 or later.
 
 The CTGExtractor lineage also contains portions adapted from `sshivaji/ctgreader` (Copyright © 2016 Shivkumar Shivaji) under the MIT License. Relevant notices are preserved in the source files.
 

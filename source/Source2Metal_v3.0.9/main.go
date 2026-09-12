@@ -33,15 +33,6 @@ func main() {
 			switch action {
 			case "run":
 				break menuLoop
-			case "extract":
-				p, err := extractEmbeddedSource()
-				if err != nil {
-					fmt.Println(L("ERROR:", "FEHLER:", "FOUT:", "ERREUR :", "ERROR:", "错误：", "ОШИБКА:"), err)
-				} else {
-					fmt.Println("\n"+L("Source package ready:", "Quellcodepaket fertig:", "Broncodepakket klaar:", "Paquet source prêt :", "Paquete de código fuente listo:", "源代码包已就绪：", "Пакет исходного кода готов:"), p)
-					fmt.Println("SHA-256:", embeddedSourceSHA256())
-				}
-				pause()
 			case "extract-syzygy-package":
 				p, err := extractSyzygyPackage()
 				if err != nil {
@@ -50,15 +41,6 @@ func main() {
 					fmt.Println("\n"+L("SyzygyCheck package ready:", "SyzygyCheck-Paket fertig:", "SyzygyCheck-pakket klaar:", "Paquet SyzygyCheck prêt :", "Paquete SyzygyCheck listo:", "SyzygyCheck 包已就绪：", "Пакет SyzygyCheck готов:"), p)
 					fmt.Println("SHA-256:", embeddedSyzygyPackageSHA256())
 					fmt.Println(L("Only this ZIP file was written; Source2Metal does not run SyzygyCheck.", "Es wurde nur diese ZIP-Datei geschrieben; Source2Metal startet SyzygyCheck nicht.", "Alleen dit ZIP-bestand is geschreven; Source2Metal start SyzygyCheck niet.", "Seul ce fichier ZIP a été écrit ; Source2Metal ne lance pas SyzygyCheck.", "Solo se ha escrito este archivo ZIP; Source2Metal no ejecuta SyzygyCheck.", "只写出了这个 ZIP 文件；Source2Metal 不会运行 SyzygyCheck。", "Записан только этот ZIP-файл; Source2Metal не запускает SyzygyCheck."))
-				}
-				pause()
-			case "extract-syzygy-source":
-				p, err := extractSyzygySourcePackage()
-				if err != nil {
-					fmt.Println(L("ERROR:", "FEHLER:", "FOUT:", "ERREUR :", "ERROR:", "错误：", "ОШИБКА:"), err)
-				} else {
-					fmt.Println("\n"+L("SyzygyCheck source package ready:", "SyzygyCheck-Quellcodepaket fertig:", "SyzygyCheck-broncodepakket klaar:", "Paquet source SyzygyCheck prêt :", "Paquete fuente SyzygyCheck listo:", "SyzygyCheck 源代码包已就绪：", "Пакет исходного кода SyzygyCheck готов:"), p)
-					fmt.Println("SHA-256:", embeddedSyzygySourceSHA256())
 				}
 				pause()
 			case "buildinfo":
@@ -76,28 +58,18 @@ func main() {
 			}
 		}
 	}
-	if cfg.ExtractSource {
-		p, err := extractEmbeddedSource()
-		if err != nil {
-			fatal(cfg, err)
-			return
-		}
-		fmt.Println(L("Source package extracted from EXE:", "Quellcodepaket aus EXE extrahiert:", "Broncode uit EXE geëxtraheerd:", "Paquet source extrait de l’EXE :", "Paquete fuente extraído del EXE:", "已从 EXE 解压源代码包：", "Пакет исходного кода извлечён из EXE:"), p)
-		fmt.Println("SHA-256:", embeddedSourceSHA256())
-		return
-	}
-	if cfg.ExtractSyzygySource {
-		p, err := extractSyzygySourcePackage()
-		if err != nil {
-			fatal(cfg, err)
-			return
-		}
-		fmt.Println(L("SyzygyCheck source package extracted from EXE:", "SyzygyCheck-Quellcodepaket aus EXE extrahiert:", "SyzygyCheck-broncode uit EXE geëxtraheerd:", "Paquet source SyzygyCheck extrait de l’EXE :", "Paquete fuente SyzygyCheck extraído del EXE:", "已从 EXE 解压 SyzygyCheck 源代码包：", "Пакет исходного кода SyzygyCheck извлечён из EXE:"), p)
-		fmt.Println("SHA-256:", embeddedSyzygySourceSHA256())
-		return
-	}
 	if cfg.BuildInfo {
 		fmt.Print(buildInfoText())
+		return
+	}
+	if cfg.ExtractSyzygyPackage {
+		p, err := extractSyzygyPackage()
+		if err != nil {
+			fatal(cfg, err)
+			return
+		}
+		fmt.Println(L("SyzygyCheck package extracted from EXE:", "SyzygyCheck-Paket aus EXE extrahiert:", "SyzygyCheck-pakket uit EXE uitgepakt:", "Paquet SyzygyCheck extrait de l’EXE :", "Paquete SyzygyCheck extraído del EXE:", "已从 EXE 解压 SyzygyCheck 包：", "Пакет SyzygyCheck извлечён из EXE:"), p)
+		fmt.Println("SHA-256:", embeddedSyzygyPackageSHA256())
 		return
 	}
 	if cfg.PagefileHelp {
@@ -132,9 +104,8 @@ func parseConfig() (Config, error) {
 	flag.IntVar(&c.Workers, "workers", 0, L("0=automatic (50% logical threads)", "0=automatisch (50% logische Threads)", "0=automatisch (50% logische threads)", "0=automatique (50% des threads logiques)", "0=automático (50% de hilos lógicos)", "0=自动（50% 逻辑线程）", "0=автоматически (50% логических потоков)"))
 	flag.BoolVar(&c.NoPause, "no-pause", false, L("do not pause", "nicht pausieren", "niet pauzeren", "ne pas mettre en pause", "no pausar", "不暂停", "не делать паузу"))
 	flag.BoolVar(&c.SelfTest, "selftest", false, L("internal test", "interner Test", "interne test", "test interne", "prueba interna", "内部测试", "внутренний тест"))
-	flag.BoolVar(&c.ExtractSource, "extract-source", false, L("extract embedded source next to the EXE", "eingebetteten Quellcode neben der EXE entpacken", "extraheer ingebedde broncode naast de exe", "extraire le code source intégré à côté de l’EXE", "extraer el código fuente integrado junto al EXE", "将嵌入的源代码解压到 EXE 旁边", "извлечь встроенный исходный код рядом с EXE"))
-	flag.BoolVar(&c.ExtractSyzygySource, "extract-syzygy-source", false, L("extract embedded SyzygyCheck source package next to the EXE", "eingebettetes SyzygyCheck-Quellcodepaket neben der EXE entpacken", "extraheer ingebed SyzygyCheck-broncodepakket naast de exe", "extraire le paquet source SyzygyCheck intégré à côté de l’EXE", "extraer el paquete fuente SyzygyCheck integrado junto al EXE", "将内嵌 SyzygyCheck 源代码包解压到 EXE 旁边", "извлечь встроенный пакет исходного кода SyzygyCheck рядом с EXE"))
-	flag.BoolVar(&c.BuildInfo, "build-info", false, L("show build and source-extraction information", "Build- und Quellcode-Extraktionsinformationen anzeigen", "toon build- en bronextractie-informatie", "afficher les informations de compilation et d’extraction de source", "mostrar información de compilación y extracción de fuente", "显示构建和源代码解压信息", "показать сведения о сборке и извлечении исходников"))
+	flag.BoolVar(&c.ExtractSyzygyPackage, "extract-syzygy-package", false, L("extract the embedded SyzygyCheck utility next to the EXE", "eingebettetes SyzygyCheck-Hilfsprogramm neben der EXE entpacken", "pak de ingebedde SyzygyCheck-utility naast de EXE uit", "extraire l’utilitaire SyzygyCheck intégré à côté de l’EXE", "extraer la utilidad SyzygyCheck integrada junto al EXE", "将内嵌 SyzygyCheck 实用工具解压到 EXE 旁边", "извлечь встроенную утилиту SyzygyCheck рядом с EXE"))
+	flag.BoolVar(&c.BuildInfo, "build-info", false, L("show build and source information", "Build- und Quellcodeinformationen anzeigen", "toon build- en broninformatie", "afficher les informations de compilation et de source", "mostrar información de compilación y fuente", "显示构建和源代码信息", "показать сведения о сборке и исходном коде"))
 	flag.BoolVar(&c.PagefileHelp, "pagefile-help", false, L("show Windows pagefile advice", "Windows-Pagefile-Hinweis anzeigen", "toon Windows-pagefile advies", "afficher les conseils sur le fichier d’échange Windows", "mostrar consejos sobre el archivo de paginación de Windows", "显示 Windows 页面文件建议", "показать рекомендации по файлу подкачки Windows"))
 	flag.Parse()
 	c.Interactive = len(os.Args) == 1
@@ -299,7 +270,7 @@ func run(cfg Config) error {
 	fmt.Printf(L("CTG RAW         : %d successful | %d skipped | %d failed\n", "CTG RAW         : %d erfolgreich | %d übersprungen | %d fehlgeschlagen\n", "CTG RAW         : %d geslaagd | %d overgeslagen | %d mislukt\n", "CTG RAW         : %d réussi | %d ignoré | %d échec\n", "CTG RAW         : %d correcto | %d omitido | %d fallido\n", "CTG RAW         ：%d 成功 | %d 已跳过 | %d 失败\n", "CTG RAW         : %d успешно | %d пропущено | %d ошибок\n"), c.CTGRawBuilt, c.CTGRawSkipped, c.CTGRawFailed)
 	fmt.Printf(L("GAME METAL      : %d successful | %d skipped | %d failed | %s model games\n", "GAME METAL      : %d erfolgreich | %d übersprungen | %d fehlgeschlagen | %s Modellpartien\n", "GAME METAL      : %d geslaagd | %d overgeslagen | %d mislukt | %s modelpartijen\n", "GAME METAL      : %d réussi | %d ignoré | %d échec | %s parties modèles\n", "GAME METAL      : %d correcto | %d omitido | %d fallido | %s partidas modelo\n", "GAME METAL      ：%d 成功 | %d 已跳过 | %d 失败 | %s 模型对局\n", "GAME METAL      : %d успешно | %d пропущено | %d ошибок | %s модельных партий\n"), c.GameMetalBuilt, c.GameMetalSkipped, c.GameMetalFailed, fmtInt(c.GameMetalSelected))
 	fmt.Printf(L("CTG METAL       : %d successful | %d skipped | %d failed\n", "CTG METAL       : %d erfolgreich | %d übersprungen | %d fehlgeschlagen\n", "CTG METAL       : %d geslaagd | %d overgeslagen | %d mislukt\n", "CTG METAL       : %d réussi | %d ignoré | %d échec\n", "CTG METAL       : %d correcto | %d omitido | %d fallido\n", "CTG METAL       ：%d 成功 | %d 已跳过 | %d 失败\n", "CTG METAL       : %d успешно | %d пропущено | %d ошибок\n"), c.CTGMetalBuilt, c.CTGMetalSkipped, c.CTGMetalFailed)
-	fmt.Println(L("Source package: choose Utilities > Extract source package, or use -extract-source", "Quellcodepaket: Hilfsprogramme > Quellcodepaket entpacken wählen oder -extract-source verwenden", "Broncodepakket: kies Hulpprogramma's > Broncodepakket uitpakken, of gebruik -extract-source", "Paquet source : choisissez Utilitaires > Extraire le paquet source, ou utilisez -extract-source", "Paquete fuente: elija Utilidades > Extraer paquete de código fuente, o use -extract-source", "源代码包：选择“实用工具 > 解压源代码包”，或使用 -extract-source", "Пакет исходного кода: выберите Утилиты > Извлечь пакет исходного кода или используйте -extract-source"))
+	fmt.Println(L("Source code: separate download on the Source2Metal GitHub release page", "Quellcode: separater Download auf der Source2Metal-GitHub-Versionsseite", "Broncode: afzonderlijke download op de Source2Metal-releasepagina van GitHub", "Code source : téléchargement séparé sur la page de version Source2Metal de GitHub", "Código fuente: descarga independiente en la página de la versión Source2Metal de GitHub", "源代码：可在 GitHub 的 Source2Metal 发布页单独下载", "Исходный код: отдельная загрузка на странице выпуска Source2Metal в GitHub"))
 	return nil
 }
 
@@ -366,7 +337,7 @@ func startupMenu() string {
 	fmt.Println(L("Practice & testing: Nocompany, Netherlands - computer chess player", "Praxis & Tests    : Nocompany, Niederlande - Computerschachspieler", "Praktijk & testen: Nocompany, Nederland - computerschaker", "Pratique & tests : Nocompany, Pays-Bas - joueur d'échecs informatiques", "Práctica y pruebas: Nocompany, Países Bajos - jugador de ajedrez informático", "实践与测试：Nocompany，荷兰 - 计算机国际象棋棋手", "Практика и тесты: Nocompany, Нидерланды - компьютерный шахматист"))
 	fmt.Println("\n" + L("MAIN MENU", "HAUPTMENÜ", "HOOFDMENU", "MENU PRINCIPAL", "MENÚ PRINCIPAL", "主菜单", "ГЛАВНОЕ МЕНЮ"))
 	fmt.Println(L("  1 = Process sources [default]", "  1 = Quellen verarbeiten [Standard]", "  1 = Bronnen verwerken [standaard]", "  1 = Traiter les sources [défaut]", "  1 = Procesar fuentes [predeterminado]", "  1 = 处理源文件 [默认]", "  1 = Обработать источники [по умолчанию]"))
-	fmt.Println(L("  2 = Utilities", "  2 = Hilfsprogramme", "  2 = Hulpprogramma's", "  2 = Utilitaires", "  2 = Utilidades", "  2 = 实用工具", "  2 = Утилиты"))
+	fmt.Println(L("  2 = SyzygyCheck / pagefile", "  2 = SyzygyCheck / Pagefile", "  2 = SyzygyCheck / pagefile", "  2 = SyzygyCheck / fichier d’échange", "  2 = SyzygyCheck / archivo de paginación", "  2 = SyzygyCheck / 页面文件", "  2 = SyzygyCheck / файл подкачки"))
 	fmt.Println(L("  3 = Change language (Изменить язык / 更改语言)", "  3 = Sprache ändern", "  3 = Taal wijzigen", "  3 = Changer de langue", "  3 = Cambiar idioma", "  3 = 更改语言 (Change language / Изменить язык)", "  3 = Изменить язык (Change language / 更改语言)"))
 	fmt.Println(L("  4 = Information", "  4 = Informationen", "  4 = Informatie", "  4 = Informations", "  4 = Información", "  4 = 信息", "  4 = Информация"))
 	fmt.Println(L("  0 = Exit", "  0 = Beenden", "  0 = Afsluiten", "  0 = Quitter", "  0 = Salir", "  0 = 退出", "  0 = Выход"))
@@ -378,7 +349,7 @@ func startupMenu() string {
 	}
 	switch x {
 	case "2":
-		return utilitiesMenu()
+		return syzygyAndPagefileMenu()
 	case "3":
 		return "language"
 	case "4":
@@ -391,24 +362,18 @@ func startupMenu() string {
 	}
 }
 
-func utilitiesMenu() string {
-	fmt.Println("\n" + L("UTILITIES", "HILFSPROGRAMME", "HULPPROGRAMMA'S", "UTILITAIRES", "UTILIDADES", "实用工具", "УТИЛИТЫ"))
-	fmt.Println(L("  1 = Extract Source2Metal source package", "  1 = Source2Metal-Quellcodepaket entpacken", "  1 = Source2Metal-broncodepakket uitpakken", "  1 = Extraire le paquet source Source2Metal", "  1 = Extraer paquete de código fuente Source2Metal", "  1 = 解压 Source2Metal 源代码包", "  1 = Извлечь пакет исходного кода Source2Metal"))
-	fmt.Println(L("  2 = Extract separate SyzygyCheck package (ZIP)", "  2 = Separates SyzygyCheck-Paket (ZIP) entpacken", "  2 = Los SyzygyCheck-pakket uitpakken (ZIP)", "  2 = Extraire le paquet SyzygyCheck séparé (ZIP)", "  2 = Extraer paquete SyzygyCheck independiente (ZIP)", "  2 = 解出独立 SyzygyCheck 包（ZIP）", "  2 = Извлечь отдельный пакет SyzygyCheck (ZIP)"))
-	fmt.Println(L("  3 = Extract SyzygyCheck source-code package (ZIP)", "  3 = SyzygyCheck-Quellcodepaket (ZIP) entpacken", "  3 = SyzygyCheck-broncodepakket uitpakken (ZIP)", "  3 = Extraire le paquet source SyzygyCheck (ZIP)", "  3 = Extraer paquete fuente SyzygyCheck (ZIP)", "  3 = 解压 SyzygyCheck 源代码包（ZIP）", "  3 = Извлечь пакет исходного кода SyzygyCheck (ZIP)"))
-	fmt.Println(L("  4 = Pagefile information", "  4 = Pagefile-Information", "  4 = Pagefile-informatie", "  4 = Informations sur le fichier d'échange", "  4 = Información del archivo de paginación", "  4 = 页面文件信息", "  4 = Информация о файле подкачки"))
+func syzygyAndPagefileMenu() string {
+	fmt.Println("\n" + L("SYZYGYCHECK / PAGEFILE", "SYZYGYCHECK / PAGEFILE", "SYZYGYCHECK / PAGEFILE", "SYZYGYCHECK / FICHIER D’ÉCHANGE", "SYZYGYCHECK / ARCHIVO DE PAGINACIÓN", "SYZYGYCHECK / 页面文件", "SYZYGYCHECK / ФАЙЛ ПОДКАЧКИ"))
+	fmt.Println(L("  1 = Extract separate SyzygyCheck package (ZIP)", "  1 = Separates SyzygyCheck-Paket (ZIP) entpacken", "  1 = Los SyzygyCheck-pakket uitpakken (ZIP)", "  1 = Extraire le paquet SyzygyCheck séparé (ZIP)", "  1 = Extraer paquete SyzygyCheck independiente (ZIP)", "  1 = 解出独立 SyzygyCheck 包（ZIP）", "  1 = Извлечь отдельный пакет SyzygyCheck (ZIP)"))
+	fmt.Println(L("  2 = Pagefile information", "  2 = Pagefile-Information", "  2 = Pagefile-informatie", "  2 = Informations sur le fichier d'échange", "  2 = Información del archivo de paginación", "  2 = 页面文件信息", "  2 = Информация о файле подкачки"))
 	fmt.Println(L("  0 = Back", "  0 = Zurück", "  0 = Terug", "  0 = Retour", "  0 = Volver", "  0 = 返回", "  0 = Назад"))
-	fmt.Print(L("Choice [0-4]: ", "Auswahl [0-4]: ", "Keuze [0-4]: ", "Choix [0-4] : ", "Elección [0-4]: ", "选择 [0-4]：", "Выбор [0-4]: "))
+	fmt.Print(L("Choice [0-2]: ", "Auswahl [0-2]: ", "Keuze [0-2]: ", "Choix [0-2] : ", "Elección [0-2]: ", "选择 [0-2]：", "Выбор [0-2]: "))
 	x, _ := stdin.ReadString('\n')
 	x = strings.TrimSpace(x)
 	switch x {
 	case "1":
-		return "extract"
-	case "2":
 		return "extract-syzygy-package"
-	case "3":
-		return "extract-syzygy-source"
-	case "4":
+	case "2":
 		return "pagefile"
 	default:
 		return "language-return"

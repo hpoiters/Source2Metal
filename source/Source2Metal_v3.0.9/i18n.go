@@ -273,8 +273,6 @@ func localizeUserText(s string) string {
 	add("TEMP opgeruimd.", "TEMP cleaned.", "TEMP aufgeräumt.", "TEMP nettoyé.", "TEMP limpiado.", "TEMP 已清理。", "TEMP очищен.")
 	add("Klaar. Resultaten", "Done. Results", "Fertig. Ergebnisse", "Terminé. Résultats", "Listo. Resultados", "完成。结果", "Готово. Результаты")
 	add("Workers gebruikt", "Workers used", "Verwendete Worker", "Workers utilisés", "Workers usados", "使用的 worker", "Использовано рабочих потоков")
-	add("Broncodepakket", "Source package", "Quellcodepaket", "Paquet source", "Paquete fuente", "源代码包", "Пакет исходного кода")
-	add("Broncodepakket uitpakken", "Extract source package", "Quellcodepaket entpacken", "Extraire le paquet source", "Extraer paquete fuente", "解压源代码包", "Извлечь пакет исходного кода")
 	add("ChessBase-adapters", "ChessBase adapters", "ChessBase-Adapter", "Adaptateurs ChessBase", "Adaptadores ChessBase", "ChessBase 适配器", "Адаптеры ChessBase")
 	add("OVERGESLAGEN", "SKIPPED", "ÜBERSPRUNGEN", "IGNORÉ", "OMITIDO", "已跳过", "ПРОПУЩЕНО")
 	add("MISLUKT", "FAILED", "FEHLGESCHLAGEN", "ÉCHEC", "FALLIDO", "失败", "ОШИБКА")
@@ -371,7 +369,6 @@ func localizeReportLine(line string) string {
 		{" - VOLLEDIG PROCESRAPPORT", " - FULL PROCESS REPORT", " - VOLLSTÄNDIGER PROZESSBERICHT", " - RAPPORT COMPLET DU PROCESSUS", " - INFORME COMPLETO DEL PROCESO", " - 完整处理报告", " - ПОЛНЫЙ ОТЧЁТ О ПРОЦЕССЕ"},
 		{" - INSTELLINGEN", " - SETTINGS", " - EINSTELLUNGEN", " - PARAMÈTRES", " - AJUSTES", " - 设置", " - НАСТРОЙКИ"},
 		{" - BRONINVENTARIS", " - SOURCE INVENTORY", " - QUELLENINVENTAR", " - INVENTAIRE DES SOURCES", " - INVENTARIO DE FUENTES", " - 源清单", " - ИНВЕНТАРЬ ИСТОЧНИКОВ"},
-		{" - BRONCODEPAKKET", " - SOURCE PACKAGE", " - QUELLCODEPAKET", " - PAQUET SOURCE", " - PAQUETE FUENTE", " - 源代码包", " - ПАКЕТ ИСХОДНОГО КОДА"},
 		{" - SHA-256 VAN DEFINITIEVE RUNBESTANDEN", " - SHA-256 OF FINAL RUN FILES", " - SHA-256 DER ENDGÜLTIGEN LAUFDATEIEN", " - SHA-256 DES FICHIERS FINAUX", " - SHA-256 DE LOS ARCHIVOS FINALES", " - 最终运行文件的 SHA-256", " - SHA-256 ИТОГОВЫХ ФАЙЛОВ ЗАПУСКА"},
 		{" - METAL ROUTES", " - METAL ROUTES", " - METAL-ROUTEN", " - VOIES METAL", " - RUTAS METAL", " - METAL 路径", " - ВЕТКИ METAL"},
 		{" adapterrapport", " adapter report", " Adapterbericht", " rapport d’adaptateur", " informe del adaptador", " 适配器报告", " отчёт адаптера"},
@@ -422,12 +419,6 @@ func localizeReportLine(line string) string {
 		"- Fritz-inleerinstelling: Overwinningen + Verliespartijen AAN; Wit/Zwart/Speler UIT; spelernaam leeg; alle partijen.":                     {"- Fritz learning setting: Wins + Losses ON; White/Black/Player OFF; player name empty; all games.", "- Fritz-Lerneinstellung: Siege + Niederlagen EIN; Weiß/Schwarz/Spieler AUS; Spielername leer; alle Partien.", "- Réglage d’apprentissage Fritz : Victoires + Défaites ACTIVÉES ; Blancs/Noirs/Joueur DÉSACTIVÉS ; nom du joueur vide ; toutes les parties.", "- Ajuste de aprendizaje de Fritz: Victorias + Derrotas ACTIVADAS; Blancas/Negras/Jugador DESACTIVADOS; nombre vacío; todas las partidas.", "- Fritz 学习设置：胜局 + 负局开启；白方/黑方/棋手关闭；棋手名留空；所有对局。", "- Настройка обучения Fritz: Победы + Поражения ВКЛ.; Белые/Чёрные/Игрок ВЫКЛ.; имя игрока пустое; все партии."},
 		"Overwinningen + Verliespartijen AAN; Wit/Zwart/Speler UIT; spelernaam leeg;":                                                              {"Wins + Losses ON; White/Black/Player OFF; player name empty;", "Siege + Niederlagen EIN; Weiß/Schwarz/Spieler AUS; Spielername leer;", "Victoires + Défaites ACTIVÉES ; Blancs/Noirs/Joueur DÉSACTIVÉS ; nom du joueur vide ;", "Victorias + Derrotas ACTIVADAS; Blancas/Negras/Jugador DESACTIVADOS; nombre vacío;", "胜局 + 负局开启；白方/黑方/棋手关闭；棋手名留空；", "Победы + Поражения ВКЛ.; Белые/Чёрные/Игрок ВЫКЛ.; имя игрока пустое;"},
 		"alle partijen.": {"all games.", "alle Partien.", "toutes les parties.", "todas las partidas.", "所有对局。", "все партии."},
-		"De Windows-EXE bevat het broncodepakket dat bij deze versie hoort.": {"The Windows EXE contains the source package belonging to this version.", "Die Windows-EXE enthält das zu dieser Version gehörende Quellcodepaket.", "L’EXE Windows contient le paquet source correspondant à cette version.", "El EXE de Windows contiene el paquete fuente correspondiente a esta versión.", "Windows EXE 内含与此版本对应的源代码包。", "Windows EXE содержит пакет исходного кода, соответствующий этой версии."},
-		"Eenvoudigste methode:": {"Easiest method:", "Einfachste Methode:", "Méthode la plus simple :", "Método más sencillo:", "最简单的方法：", "Самый простой способ:"},
-		`start Source2Metal en kies Hulpprogramma's > Source2Metal-broncodepakket uitpakken.`: {`start Source2Metal and choose Utilities > Extract Source2Metal source package.`, `Source2Metal starten und Hilfsprogramme > Source2Metal-Quellcodepaket entpacken wählen.`, `lancez Source2Metal et choisissez Utilitaires > Extraire le paquet source Source2Metal.`, `inicie Source2Metal y elija Utilidades > Extraer paquete de código fuente Source2Metal.`, `启动 Source2Metal 并选择“实用工具 > 解压 Source2Metal 源代码包”。`, `запустите Source2Metal и выберите «Утилиты > Извлечь пакет исходного кода Source2Metal».`},
-		"Voor gevorderden:":       {"For advanced users:", "Für Fortgeschrittene:", "Pour les utilisateurs avancés :", "Para usuarios avanzados:", "高级用户：", "Для опытных пользователей:"},
-		"Ingebedde bron SHA-256:": {"Embedded source SHA-256:", "SHA-256 der eingebetteten Quelle:", "SHA-256 de la source intégrée :", "SHA-256 de la fuente integrada:", "嵌入源代码 SHA-256：", "SHA-256 встроенного исходного кода:"},
-		"Een bestaand identiek broncodepakket wordt niet opnieuw overschreven.": {"An existing identical source package is not overwritten again.", "Ein vorhandenes identisches Quellcodepaket wird nicht erneut überschrieben.", "Un paquet source identique existant n’est pas réécrit.", "Un paquete fuente idéntico ya existente no se sobrescribe de nuevo.", "已存在的相同源代码包不会再次覆盖。", "Существующий идентичный пакет исходного кода повторно не перезаписывается."},
 	}
 	if v, ok := fixed[trim]; ok {
 		return indent + pick6(v)
@@ -524,8 +515,6 @@ func reportLabel(nl string) (string, bool) {
 		"Overgeslagen":              {"Skipped", "Übersprungen", "Ignoré", "Omitido", "已跳过", "Пропущено"},
 		"Variatietakken":            {"Variation branches", "Variantenäste", "Branches de variantes", "Ramas de variantes", "变化分支", "Ветви вариантов"},
 		"Fout":                      {"Error", "Fehler", "Erreur", "Error", "错误", "Ошибка"},
-		"Embedded source":           {"Embedded source", "Eingebettete Quelle", "Source intégrée", "Fuente integrada", "嵌入源代码", "Встроенный исходный код"},
-		"Embedded source SHA-256":   {"Embedded source SHA-256", "SHA-256 der eingebetteten Quelle", "SHA-256 de la source intégrée", "SHA-256 de la fuente integrada", "嵌入源代码 SHA-256", "SHA-256 встроенного исходного кода"},
 		"RAW resultaat":             {"RAW result", "RAW-Ergebnis", "Résultat RAW", "Resultado RAW", "RAW 结果", "Результат RAW"},
 		"RAW geproduceerd":          {"RAW produced", "RAW erzeugt", "RAW produit", "RAW producido", "已生成 RAW", "RAW создано"},
 		"RAW gezien":                {"RAW seen", "RAW gesehen", "RAW vus", "RAW vistos", "已查看 RAW", "RAW просмотрено"},

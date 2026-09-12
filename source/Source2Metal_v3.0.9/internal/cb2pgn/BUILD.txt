@@ -20,6 +20,3 @@ Windows amd64 build vanaf Windows cmd:
 
 Selftest:
   CB2PGN_Builder_v0.1.3.exe --selftest
-
-Ingebedde broncode terughalen:
-  CB2PGN_Builder_v0.1.3.exe --extract-source

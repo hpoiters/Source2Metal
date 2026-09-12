@@ -2,7 +2,7 @@
 
 Multilingual Windows integrity checker for Syzygy chess tablebases.
 
-SyzygyCheck uses Ronald de Man's original `tbcheck` as its verification core and builds a multilingual interface,
+SyzygyCheck uses the original `tbcheck` by Ronald de Man as its verification core and builds a multilingual interface,
 thread selection, live progress, checkpoint/resume, diagnostics and reporting around it.
 
 ## Highlights
@@ -14,7 +14,7 @@ thread selection, live progress, checkpoint/resume, diagnostics and reporting ar
 - Effective verification throughput and remaining time.
 - Checkpoint/resume with preservation of confirmed FAIL results.
 - Diagnostic onboard self-test before the real scan.
-- Detailed result report and recovery guides.
+- Detailed result report plus English, Russian and Chinese recovery guidance.
 
 ## Verification core and credit
 
@@ -36,4 +36,5 @@ The V9F practical validation completed 57/57 files (20.22 GB) with 11 workers in
 777.4 MB/s effective verification throughput, finding exactly the two intentional checksum FAILs and 0 read/process
 errors. The onboard diagnostic TEST-FAIL also passed.
 
-See `README_EN.txt`, `README_NL.txt`, `RELEASE_NOTES_v2.0.9.txt` and the language-specific guides for details.
+See `Readme-README-Прочтите-自述文件.html`, `RELEASE_NOTES_v2.0.9.txt`
+and the English, Russian and Chinese pagefile/recovery guides for details.
