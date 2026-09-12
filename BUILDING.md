@@ -1,6 +1,6 @@
 # Building Source2Metal v3.0.10
 
-The release workflow uses Go 1.26.6, Windows/amd64, `CGO_ENABLED=0` and
+The release workflow uses Go 1.24.6, Windows/amd64, `CGO_ENABLED=0` and
 `-trimpath`. Source code is not embedded in the executable.
 
 Build from `source/Source2Metal_v3.0.10`:
