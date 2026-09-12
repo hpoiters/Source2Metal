@@ -1,7 +1,12 @@
 # Building Source2Metal v3.0.10
 
 The release workflow uses Go 1.24.6, Windows/amd64, `CGO_ENABLED=0` and
-`-trimpath`. Source code is not embedded in the executable.
+`-trimpath`. It reproduces the exact user-tested executable on an Ubuntu
+builder, requires SHA-256
+`06b1c0bdc8d1bcb7511bc9741465bb9c87691fbd4d0107495669698aed1d4cb5`,
+and then transfers that exact file to a clean Windows runner for native
+self-testing, SyzygyCheck extraction and release packaging. Source code is not
+embedded in the executable.
 
 Build from `source/Source2Metal_v3.0.10`:
 
