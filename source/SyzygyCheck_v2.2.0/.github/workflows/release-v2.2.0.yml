@@ -1,0 +1,206 @@
+name: Repair SyzygyCheck v2.2.0 release in place
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[repair release v2.2.0]')
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Test and vet
+        shell: pwsh
+        run: |
+          go test ./...
+          go vet ./...
+
+      - name: Build Windows executable
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "dist/package/Docs_AL" | Out-Null
+          New-Item -ItemType Directory -Force -Path "dist/package/Program_AL" | Out-Null
+          go build -trimpath -ldflags="-s -w" -o "dist/package/!SyzygyCheck_v2.2.0.exe" .
+          if (-not (Test-Path -LiteralPath "dist/package/!SyzygyCheck_v2.2.0.exe")) {
+            throw "The required executable beginning with ! was not built."
+          }
+
+      - name: Assemble complete user package
+        shell: pwsh
+        run: |
+          Copy-Item -LiteralPath "1_READ_FIRST_AL.txt" -Destination "dist/package/1_READ_FIRST_AL.txt"
+
+          $docs = @(
+            "README_AL.txt"
+            "README_EN.txt"
+            "README_NL.txt"
+            "RELEASE_NOTES_v2.2.0.txt"
+            "RONALD_DE_MAN_NOTICE.txt"
+            "LICENSE"
+          )
+          $docs += @(Get-ChildItem -File -Filter "PAGEFILE_GUIDE_*.txt" | ForEach-Object { $_.Name })
+          foreach ($name in $docs) {
+            Copy-Item -LiteralPath $name -Destination (Join-Path "dist/package/Docs_AL" $name)
+          }
+
+          $recovery = @(Get-ChildItem -File -Filter "SYZYGY_*.txt" | ForEach-Object { $_.Name })
+          foreach ($name in $recovery) {
+            Copy-Item -LiteralPath $name -Destination (Join-Path "dist/package/Program_AL" $name)
+          }
+
+          Compress-Archive -Path "dist/package/*" -DestinationPath "dist/SyzygyCheck_v2.2.0_RELEASE.zip"
+
+      - name: Assemble clearly named source package
+        shell: pwsh
+        run: |
+          git archive --format=zip --prefix=SyzygyCheck_v2.2.0_SOURCE/ `
+            --output="dist/SyzygyCheck_v2.2.0_SOURCE.zip" HEAD
+
+      - name: Enforce release structure and references
+        shell: pwsh
+        run: |
+          $required = @(
+            "!SyzygyCheck_v2.2.0.exe"
+            "1_READ_FIRST_AL.txt"
+            "Docs_AL/README_AL.txt"
+            "Docs_AL/README_EN.txt"
+            "Docs_AL/README_NL.txt"
+            "Docs_AL/RELEASE_NOTES_v2.2.0.txt"
+            "Docs_AL/PAGEFILE_GUIDE_EN.txt"
+            "Docs_AL/PAGEFILE_GUIDE_DE.txt"
+            "Docs_AL/PAGEFILE_GUIDE_NL.txt"
+            "Docs_AL/PAGEFILE_GUIDE_FR.txt"
+            "Docs_AL/PAGEFILE_GUIDE_ES.txt"
+            "Docs_AL/PAGEFILE_GUIDE_ZH.txt"
+            "Docs_AL/PAGEFILE_GUIDE_RU.txt"
+            "Program_AL/SYZYGY_RECOVERY_EN.txt"
+            "Program_AL/SYZYGY_WIEDERHERSTELLUNG_DE.txt"
+            "Program_AL/SYZYGY_HERSTEL_NL.txt"
+            "Program_AL/SYZYGY_RECUPERATION_FR.txt"
+            "Program_AL/SYZYGY_RECUPERACION_ES.txt"
+            "Program_AL/SYZYGY_RECOVERY_ZH.txt"
+            "Program_AL/SYZYGY_RECOVERY_RU.txt"
+          )
+
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $archive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path "dist/SyzygyCheck_v2.2.0_RELEASE.zip").Path)
+          try {
+            $names = @($archive.Entries | ForEach-Object { $_.FullName.Replace('\', '/') })
+            foreach ($name in $required) {
+              if ($names -notcontains $name) {
+                throw "Required release entry is missing: $name"
+              }
+            }
+            if (@($names | Where-Object { $_ -match '(^|/).+\.go$' -or $_ -match '_SOURCE\.zip$' }).Count -ne 0) {
+              throw "Developer source leaked into the user release ZIP."
+            }
+            $allowedRoots = @("!SyzygyCheck_v2.2.0.exe", "1_READ_FIRST_AL.txt", "Docs_AL", "Program_AL")
+            $actualRoots = @($names | ForEach-Object { ($_ -split '/')[0] } | Where-Object { $_ } | Sort-Object -Unique)
+            foreach ($root in $actualRoots) {
+              if ($allowedRoots -notcontains $root) {
+                throw "Unexpected root item in release ZIP: $root"
+              }
+            }
+          } finally {
+            $archive.Dispose()
+          }
+
+      - name: Create SHA-256 list
+        shell: pwsh
+        run: |
+          $release = Get-FileHash -Algorithm SHA256 -LiteralPath "dist/SyzygyCheck_v2.2.0_RELEASE.zip"
+          $source = Get-FileHash -Algorithm SHA256 -LiteralPath "dist/SyzygyCheck_v2.2.0_SOURCE.zip"
+          @(
+            "$($release.Hash.ToLower())  SyzygyCheck_v2.2.0_RELEASE.zip"
+            "$($source.Hash.ToLower())  SyzygyCheck_v2.2.0_SOURCE.zip"
+          ) |
+            Set-Content -Encoding ascii "dist/SHA256_SyzygyCheck_v2.2.0.txt"
+
+      - name: Replace existing v2.2.0 release assets and tag
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $releaseName = "SyzygyCheck_v2.2.0_RELEASE.zip"
+          $sourceName = "SyzygyCheck_v2.2.0_SOURCE.zip"
+          $shaName = "SHA256_SyzygyCheck_v2.2.0.txt"
+          $releaseTempName = "SyzygyCheck_v2.2.0_RELEASE.$env:GITHUB_RUN_ID.new.zip"
+          $sourceTempName = "SyzygyCheck_v2.2.0_SOURCE.$env:GITHUB_RUN_ID.new.zip"
+          $shaTempName = "SHA256_SyzygyCheck_v2.2.0.$env:GITHUB_RUN_ID.new.txt"
+
+          Copy-Item -LiteralPath "dist/$releaseName" -Destination "dist/$releaseTempName"
+          Copy-Item -LiteralPath "dist/$sourceName" -Destination "dist/$sourceTempName"
+          Copy-Item -LiteralPath "dist/$shaName" -Destination "dist/$shaTempName"
+          gh release upload v2.2.0 "dist/$releaseTempName" "dist/$sourceTempName" "dist/$shaTempName"
+
+          $releaseHash = (Get-FileHash -Algorithm SHA256 -LiteralPath "dist/$releaseTempName").Hash.ToLower()
+          $sourceHash = (Get-FileHash -Algorithm SHA256 -LiteralPath "dist/$sourceTempName").Hash.ToLower()
+          $shaHash = (Get-FileHash -Algorithm SHA256 -LiteralPath "dist/$shaTempName").Hash.ToLower()
+          $releaseData = gh api "repos/$env:GITHUB_REPOSITORY/releases/tags/v2.2.0" | ConvertFrom-Json
+          $tempRelease = $releaseData.assets | Where-Object { $_.name -eq $releaseTempName } | Select-Object -First 1
+          $tempSource = $releaseData.assets | Where-Object { $_.name -eq $sourceTempName } | Select-Object -First 1
+          $tempSha = $releaseData.assets | Where-Object { $_.name -eq $shaTempName } | Select-Object -First 1
+          if ($null -eq $tempRelease -or $tempRelease.digest -ne "sha256:$releaseHash") {
+            throw "Temporary release ZIP upload is missing or its remote digest differs. Existing asset was preserved."
+          }
+          if ($null -eq $tempSha -or $tempSha.digest -ne "sha256:$shaHash") {
+            throw "Temporary SHA-256 upload is missing or its remote digest differs. Existing asset was preserved."
+          }
+          if ($null -eq $tempSource -or $tempSource.digest -ne "sha256:$sourceHash") {
+            throw "Temporary source ZIP upload is missing or its remote digest differs. Existing asset was preserved."
+          }
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f v2.2.0 "$env:GITHUB_SHA"
+          git push origin refs/tags/v2.2.0 --force
+
+          $oldRelease = $releaseData.assets | Where-Object { $_.name -eq $releaseName } | Select-Object -First 1
+          $oldSource = $releaseData.assets | Where-Object { $_.name -eq $sourceName } | Select-Object -First 1
+          $oldSha = $releaseData.assets | Where-Object { $_.name -eq $shaName } | Select-Object -First 1
+          if ($null -ne $oldRelease) {
+            gh release delete-asset v2.2.0 $releaseName --yes
+          }
+          if ($null -ne $oldSha) {
+            gh release delete-asset v2.2.0 $shaName --yes
+          }
+          if ($null -ne $oldSource) {
+            gh release delete-asset v2.2.0 $sourceName --yes
+          }
+
+          gh api --method PATCH "repos/$env:GITHUB_REPOSITORY/releases/assets/$($tempRelease.id)" -f "name=$releaseName" | Out-Null
+          gh api --method PATCH "repos/$env:GITHUB_REPOSITORY/releases/assets/$($tempSource.id)" -f "name=$sourceName" | Out-Null
+          gh api --method PATCH "repos/$env:GITHUB_REPOSITORY/releases/assets/$($tempSha.id)" -f "name=$shaName" | Out-Null
+
+          $finalData = gh api "repos/$env:GITHUB_REPOSITORY/releases/tags/v2.2.0" | ConvertFrom-Json
+          $finalRelease = $finalData.assets | Where-Object { $_.name -eq $releaseName } | Select-Object -First 1
+          $finalSource = $finalData.assets | Where-Object { $_.name -eq $sourceName } | Select-Object -First 1
+          $finalSha = $finalData.assets | Where-Object { $_.name -eq $shaName } | Select-Object -First 1
+          if ($null -eq $finalRelease -or $finalRelease.digest -ne "sha256:$releaseHash") {
+            throw "Final release ZIP name or digest verification failed."
+          }
+          if ($null -eq $finalSha -or $finalSha.digest -ne "sha256:$shaHash") {
+            throw "Final SHA-256 asset name or digest verification failed."
+          }
+          if ($null -eq $finalSource -or $finalSource.digest -ne "sha256:$sourceHash") {
+            throw "Final source ZIP name or digest verification failed."
+          }
+
+          gh release edit v2.2.0 `
+            --title "SyzygyCheck v2.2.0" `
+            --notes-file "RELEASE_NOTES_v2.2.0.txt"

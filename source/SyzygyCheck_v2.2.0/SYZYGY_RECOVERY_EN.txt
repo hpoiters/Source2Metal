@@ -1,0 +1,23 @@
+SyzygyCheck v2.2.0 — Recovering damaged Syzygy files
+======================================================
+
+If SyzygyCheck reports a real checksum failure (FAIL) or a read/process problem (ERROR), do not try to repair the file inside the checker. Preferably move the problem file aside, or delete it only after noting its exact name. Then download a fresh copy of the same .rtbw or .rtbz file from a reliable source.
+
+Reliable download sources:
+- Lichess Syzygy mirror: https://tablebase.lichess.ovh/tables/standard/
+- Sesse tablebase mirror: https://tablebases.sesse.net/
+
+Recommended procedure:
+1. Note the filename reported as FAIL or ERROR.
+2. Move the damaged or incomplete file aside, or delete it after confirming the name.
+3. Download the exact same file again from a reliable source.
+4. Put the replacement file back in the Syzygy folder.
+5. Run SyzygyCheck again.
+
+Notes:
+- FAIL means the embedded checksum exists but does not match the recalculated checksum.
+- ERROR means the file could not be checked reliably because of a read, structure, or process problem.
+- Do not keep intentionally damaged test files in a real tablebase collection.
+- SyzygyCheck does not modify your real tablebase files.
+
+Verification core source: Ronald de Man — https://github.com/syzygy1/tb

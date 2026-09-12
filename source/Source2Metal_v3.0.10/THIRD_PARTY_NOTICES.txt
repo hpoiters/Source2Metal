@@ -1,0 +1,32 @@
+Source2Metal v3.0.10 - third-party notices
+================================================
+
+CTG parsing in de Ctg2Metal-lijn is gebaseerd op publiek reverse-engineered
+CTG-algoritmen en de GPLv3+-DroidFish CtgBook-lijn van Peter Osterlund.
+Source2Metal wordt daarom als geheel onder GPL v3 of later verspreid.
+
+De CTGExtractor v2.4-bron vermeldt daarnaast delen die zijn aangepast uit
+sshivaji/ctgreader (2016 Shivkumar Shivaji), oorspronkelijk onder de MIT License.
+De relevante copyright-/licentievermelding blijft in de originele en
+geïntegreerde bronbestanden behouden.
+
+De klassieke CBH-route in CB2PGN Builder v0.1.3 is een Go-port van Dominik
+Klein's cbh2pgn 0.1 (2022), oorspronkelijk onder de MIT License. De ongewijzigde
+referentiebron en MIT-license staan onder internal/cb2pgn/reference_cbh2pgn-0.1/
+in de actuele bronboom.
+
+SyzygyCheck v2.2.0 gebruikt het oorspronkelijke programma `tbcheck` als
+afzonderlijke verificatiekern. Een reeds aanwezige `tbcheck.exe` wordt alleen
+gebruikt wanneer de SHA-256 overeenkomt. Als geen lokale kopie aanwezig is,
+haalt SyzygyCheck tijdelijk de bewaarde v3.0.7-referentie op en valideert die
+vóór gebruik opnieuw met SHA-256. De keuze om alleen de controlemap of ook alle
+echte submappen te inventariseren verandert deze verificatiekern niet.
+Tablebasebestanden, bestandsnamen en resultaten worden door dit mechanisme niet geüpload.
+
+Gebaseerd op de oorspronkelijke Syzygy-tablebase-verificatiecode van Ronald de Man.
+De gezaghebbende upstreambron en licentie-informatie staan op:
+https://github.com/syzygy1/tb
+
+De upstream `src`-code van Ronald de Man valt, afgezien van afzonderlijk
+aangeduide bestanden van derden, onder GNU GPL versie 2 only. De upstream
+COPYING.txt en bronrepository zijn voor dit onderdeel gezaghebbend.

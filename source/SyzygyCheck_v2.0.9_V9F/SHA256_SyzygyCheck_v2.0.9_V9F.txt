@@ -1,4 +1,0 @@
-SyzygyCheck v2.0.9 V9F - SHA-256
-==================================
-
-b384f37f5c67df5ac1e02ab55190e85a8034fd530d2be6a6d0c2fce5ea391c35  !SyzygyCheck_v2.0.9_V9F.exe

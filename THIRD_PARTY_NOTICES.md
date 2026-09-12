@@ -14,12 +14,14 @@ The classic CBH route in CB2PGN Builder is a Go port of Dominik Klein's `cbh2pgn
 
 ## Syzygy `tbcheck`
 
-SyzygyCheck v2.0.9 V9F uses the original `tbcheck` program as its separate
+SyzygyCheck v2.2.0 uses the original `tbcheck` program as its separate
 verification core. It first accepts an already present copy only when its
 SHA-256 is the expected value. If no local copy is present, it obtains a
 temporary copy from the preserved Source2Metal v3.0.7 reference and validates
 that copy by SHA-256 before use. Tablebase files, filenames and results are not
-uploaded by this helper mechanism.
+uploaded by this helper mechanism. The v2.2.0 interface can inventory one
+selected folder or that folder and all real subfolders; this does not change
+the verification core.
 
 Based on the original Syzygy tablebase verification code by Ronald de Man.
 `tbcheck` originates from the Syzygy tablebase generator project:

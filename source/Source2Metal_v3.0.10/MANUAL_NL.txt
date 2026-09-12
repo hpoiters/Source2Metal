@@ -1,0 +1,77 @@
+Source2Metal v3.0.10 — GEBRUIKERSHANDLEIDING (NEDERLANDS)
+=========================================================
+
+1. DOEL
+Source2Metal is een draagbaar Windows x64-gereedschap voor het inventariseren
+en verwerken van computerschaakbronnen. Het ondersteunt PGN, complete
+CTG/CTO/CTB-sets, klassieke CBH-sets en 2CBH-sets. Het kan neutrale RAW-PGN's
+en afzonderlijk GAME-METAL- en CTG-METAL-leermateriaal maken.
+
+2. STARTEN
+Pak Source2Metal_v3.0.10_RELEASE.zip volledig uit. Houd de EXE, de korte HTML-intro
+en de Docs-map bij elkaar. Zet !Source2Metal_v3.0.10.exe in de map met uw
+bronbestanden; submappen worden automatisch doorzocht. Start de EXE. Installatie
+is niet nodig.
+
+Het programma slaat .git, TEMP, Tijdelijk, mappen die eindigen op _output en de
+eigen map !Source2Metal_Output over. Bronbestanden worden gelezen; resultaten
+komen in een nieuwe uitvoermap met tijdstempel.
+
+3. COMPLETE BRONSETS
+- PGN: één .pgn-bestand.
+- CTG: bij elkaar horende .ctg-, .cto- en .ctb-bestanden.
+- CBH: bij elkaar horende .cbh-, .cbg-, .cbp- en .cbt-bestanden.
+- 2CBH: bij elkaar horende .2cbh-, .2cbg- en .2lid-bestanden.
+Onvolledige sets worden gemeld en niet stilzwijgend als compleet behandeld.
+
+4. HOOFDMENU
+1 = Bronnen verwerken [standaard]
+2 = SyzygyCheck / pagefile
+3 = Taal wijzigen
+4 = Buildinformatie
+0 = Afsluiten
+
+5. VERWERKINGSKEUZEN
+Kies eerst het aantal workers. Standaard wordt de helft gebruikt van de voor
+het proces beschikbare logische CPU-threads.
+
+Modus 1 inventariseert alleen de bronnen en schrijft een rapport.
+Modus 2 bouwt RAW: PGN/CBH/2CBH worden GAME RAW; iedere complete CTG-set wordt
+CTG RAW. Zijn beide klassen aanwezig, dan ontstaat ook een ALL SOURCES RAW-merge.
+Modus 3 [standaard] bouwt RAW plus afzonderlijke GAME-METAL- en CTG-METAL-resultaten.
+
+Kies voor modus 2 en 3 de maximale RAW-diepte (1–120 ply; standaard 100), de
+minimumlengte van partijen (1–120 ply; standaard 24), het optionele Elo-filter
+en het optionele maximale Elo-verschil. Elo-keuze 0 behoudt de bronselectie;
+keuze 1 vereist beide spelers >=2500; keuze 2 vereist beide spelers >=2400.
+
+6. UITVOER
+Resultaten komen onder:
+  !Source2Metal_Output\JJJJ-MM-DD_UU-MM-SS\
+De runmap bevat RAW- en/of METAL-resultaten plus REPORTS. Resultaten per bron en
+samengevoegde resultaten blijven herkenbaar gescheiden. Tijdelijke adapterfiles
+worden na afloop verwijderd. Rapporten bevatten instellingen, bronnen, status,
+buildinformatie en SHA-256-checksums.
+
+GAME-METAL bevat complete legale bronpartijen met hun oorspronkelijke uitslag
+en gebruikt positie-/transpositiestatistiek. CTG-METAL gebruikt boekgerichte
+evidentie. Ze blijven bewust gescheiden omdat hun bewijsbetekenis verschilt.
+
+Voor Fritz “Bijleren uit database” met Metal-PGN: Overwinningen AAN,
+Verliespartijen AAN, Wit UIT, Zwart UIT, Speler UIT, spelernaam leeg,
+Partijen ALLE.
+
+7. SyzygyCheck v2.2.0
+Kies hoofdmenu-optie 2 en daarna optie 1. Source2Metal schrijft
+SyzygyCheck_v2.2.0_UTILITY.zip naast de EXE. Pak dat volledige pakket uit en
+lees 1_READ_FIRST_AL.txt. Source2Metal start SyzygyCheck niet zelf.
+
+8. SOURCE, PRIVACY EN INTEGRITEIT
+De broncode zit niet in de EXE of Source2Metal_v3.0.10_RELEASE.zip. GitHub biedt
+die automatisch afzonderlijk aan als Source code (zip) en Source code (tar.gz).
+Er wordt geen extra eigen source-ZIP gepubliceerd, want die zou deze downloads
+alleen dupliceren.
+Source2Metal en SyzygyCheck werken lokaal en uploaden geen bronbestanden,
+tablebasebestandsnamen of resultaten. Controleer de gebruikersrelease en EXE met
+SHA256_Source2Metal_v3.0.10.txt. De EXE is nog niet ondertekend; Windows kan
+daarom Onbekende uitgever of een SmartScreen-waarschuwing tonen.
