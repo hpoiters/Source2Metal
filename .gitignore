@@ -1,4 +1,5 @@
 release_v*/
+__pycache__/
 source/Source2Metal_v*/!Source2Metal_v*.exe
 source/Source2Metal_v*/syzygycheck_package.zip
 source/Source2Metal_v*/SyzygyCheck_v2.2.0_UTILITY.zip

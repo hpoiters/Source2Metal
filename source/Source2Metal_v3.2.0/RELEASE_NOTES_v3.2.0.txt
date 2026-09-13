@@ -1,6 +1,5 @@
-Source2Metal v3.2.0-rc1 — REVIEW CANDIDATE
+Source2Metal v3.2.0 — BIN2PGN integration
 
-Status: not published; Windows practice approval required.
 Base: Source2Metal v3.0.10 with unchanged SyzygyCheck v2.2.0 utility.
 
 Changes:
@@ -26,8 +25,14 @@ Integration tests cover short lines, duplicate books, identical basenames,
 multiline CTG input, merged record accounting and malformed BIN failure.
 The supplied 48,443 CTG RAW records replayed legally: 22,884 unique complete
 sequences and 25,559 duplicates in merged BOOK RAW.
-These checks do not replace the integrated Windows test on real Eman BIN files.
+Windows CI tests the source and actual packaged EXE, including all seven
+languages, paths with spaces/Unicode, duplicate BIN books, malformed input,
+GAME-filter exemption, saved language choice and exact SyzygyCheck extraction.
+Windows BIN fixtures are synthetic. The historical standalone Eman tests have
+not been repeated on Eman input files with this integrated version.
 
 Packaging:
 Root EXE, short HTML introduction, Docs folder with seven manuals.
-Source remains outside the user package. Review workflow cannot publish.
+Source remains outside the user package and is available through GitHub's two
+automatic source downloads. Release assets: RELEASE.zip and SHA256.txt.
+Earlier releases, including v3.0.9 and v3.0.10, remain unchanged.

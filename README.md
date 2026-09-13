@@ -3,20 +3,20 @@
 Source2Metal is an open-source Windows toolset for building, analysing and
 improving computer-chess opening-book material.
 
-## BIN integration review candidate
+## Source2Metal v3.2.0
 
-This branch prepares v3.2.0-rc1 for Windows practice testing. It is not a
-published release. The stable v3.0.10 release remains unchanged.
-The review package contains:
+This release integrates BIN2PGN v0.1.3 for Polyglot BIN conversion to BOOK RAW.
+Earlier releases, including v3.0.9 and v3.0.10, remain unchanged.
+The user package contains:
 
-- `!Source2Metal_v3.2.0-rc1.exe`
+- `!Source2Metal_v3.2.0.exe`
 - a short HTML introduction with jump links (English, Russian and Chinese)
 - a clearly named documentation folder with full manuals in all seven languages
 
 The leading exclamation mark keeps the executable near the top of a folder in
 Windows Explorer.
 
-Source2Metal v3.2.0-rc1 includes the published and practically validated
+Source2Metal v3.2.0 includes the published and practically validated
 **SyzygyCheck v2.2.0** as its one unpackable utility. This is the same complete
 user package as the standalone SyzygyCheck v2.2.0 release. It contains
 `!SyzygyCheck_v2.2.0.exe`, `1_READ_FIRST_AL.txt`, `Docs_AL` and `Program_AL`.
@@ -25,7 +25,7 @@ subfolders, preserves relative paths in checkpoints and offers a selectable
 result-report destination.
 
 Source code is deliberately not duplicated inside the EXE or
-`Source2Metal_v3.2.0-rc1_RELEASE.zip`. GitHub supplies the source separately and
+`Source2Metal_v3.2.0_RELEASE.zip`. GitHub supplies the source separately and
 automatically through **Source code (zip)** and **Source code (tar.gz)**. A
 third, manually made source archive would duplicate those downloads and is
 therefore not published. Only the current Source2Metal and SyzygyCheck source
@@ -48,7 +48,7 @@ output.
 - PGN processing for Fritz and ChessBase opening-book workflows
 - SyzygyCheck for integrity checking of local RTBW and RTBZ files
 
-BIN supports RAW only in this candidate. It does not generate BIN-METAL or
+BIN supports RAW only in this release. It does not generate BIN-METAL or
 change GAME-METAL/CTG-METAL selection. GAME length and Elo filters do not apply
 to BIN. RAW outputs are grouped under GAME Sources and BOOK Sources.
 Merged BOOK RAW removes exact complete move-sequence duplicates across CTG and
@@ -62,8 +62,9 @@ tablebase files, filenames and results are not uploaded.
 
 ## Verification and code signing
 
-The review workflow tests the source, builds a Windows executable and uploads
-review artifacts only. It cannot publish a release. The executable is unsigned, so
+The release workflow tests the source, builds and runs the Windows executable,
+checks the unpacked user package in all seven languages, and publishes only
+after these checks pass on the main branch. The executable is unsigned, so
 Windows may display a Microsoft Defender SmartScreen or "Unknown publisher"
 warning. See [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md).
 

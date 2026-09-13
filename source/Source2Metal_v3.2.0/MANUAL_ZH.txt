@@ -1,4 +1,4 @@
-Source2Metal v3.2.0-rc1 — 用户手册（中文）
+Source2Metal v3.2.0 — 用户手册（中文）
 =====================================
 
 1. 用途
@@ -7,8 +7,8 @@ Source2Metal 是一款便携式 Windows x64 程序，支持 PGN、CBH、2CBH、C
 BIN2PGN 0.1.3：BIN 仅生成 BOOK RAW，不生成 BIN-METAL。GAME 的长度和 Elo 筛选不适用于 BIN。
 
 2. 启动
-完整解压 Source2Metal_v3.2.0-rc1_RELEASE.zip。请将 EXE、简短 HTML 介绍和 Docs 文件夹保存在
-一起。把 !Source2Metal_v3.2.0-rc1.exe 放入源文件所在文件夹；程序会自动搜索其
+完整解压 Source2Metal_v3.2.0_RELEASE.zip。请将 EXE、简短 HTML 介绍和 Docs 文件夹保存在
+一起。把 !Source2Metal_v3.2.0.exe 放入源文件所在文件夹；程序会自动搜索其
 子文件夹。无需安装。
 
 程序会跳过 .git、TEMP、Tijdelijk、名称以 _output 结尾的文件夹，以及它自己的
@@ -68,8 +68,8 @@ SyzygyCheck_v2.2.0_UTILITY.zip。请完整解压并阅读 1_READ_FIRST_AL.txt。
 Source2Metal 本身不会运行 SyzygyCheck。
 
 8. 源代码、隐私与完整性
-源代码不嵌入 EXE，也不放入 Source2Metal_v3.2.0-rc1_RELEASE.zip。GitHub 会自动提供
+源代码不嵌入 EXE，也不放入 Source2Metal_v3.2.0_RELEASE.zip。GitHub 会自动提供
 Source code (zip) 和 Source code (tar.gz)。不会另外发布自定义源代码 ZIP，因为那只会
 重复这两个下载。两个程序都在本地工作，不上传源文件、tablebase 文件名或结果。
-请用 SHA256_Source2Metal_v3.2.0-rc1.txt 验证用户发布包和 EXE。
+请用 SHA256_Source2Metal_v3.2.0.txt 验证用户发布包和 EXE。
 EXE 目前未签名，因此 Windows 可能显示“未知发布者”或 SmartScreen 警告。

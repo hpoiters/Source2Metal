@@ -12,6 +12,14 @@ The CTGExtractor lineage also contains portions adapted from `sshivaji/ctgreader
 
 The classic CBH route in CB2PGN Builder is a Go port of Dominik Klein's `cbh2pgn 0.1`, originally under the MIT License. The preserved reference source and license are included in the Source2Metal source tree.
 
+## BIN2PGN
+
+The integrated Polyglot BIN converter derives from the project's BIN2PGN
+v0.1.3 source supplied in the MakeMem archive dated 2026-09-10 10:45.
+Its conversion and legal-move verification code is retained as an internal
+Go package. No opening-book data is distributed. Polyglot weights are not
+reinterpreted as played-game results or Fritz learning scores.
+
 ## Syzygy `tbcheck`
 
 SyzygyCheck v2.2.0 uses the original `tbcheck` program as its separate

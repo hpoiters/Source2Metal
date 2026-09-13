@@ -1,4 +1,4 @@
-Source2Metal v3.2.0-rc1 — USER MANUAL (ENGLISH)
+Source2Metal v3.2.0 — USER MANUAL (ENGLISH)
 ================================================
 
 1. PURPOSE
@@ -7,8 +7,8 @@ Source2Metal is a portable Windows x64 tool for processing PGN, CBH, 2CBH, CTG a
 BIN2PGN 0.1.3: BIN produces BOOK RAW only; no BIN-METAL. GAME length and Elo filters do not apply to BIN.
 
 2. START
-Extract Source2Metal_v3.2.0-rc1_RELEASE.zip completely. Keep the EXE, the short HTML
-introduction and the Docs folder together. Put !Source2Metal_v3.2.0-rc1.exe in the
+Extract Source2Metal_v3.2.0_RELEASE.zip completely. Keep the EXE, the short HTML
+introduction and the Docs folder together. Put !Source2Metal_v3.2.0.exe in the
 folder that contains your source files; subfolders are searched automatically.
 Start the EXE. No installation is required.
 
@@ -72,10 +72,10 @@ SyzygyCheck_v2.2.0_UTILITY.zip next to the EXE. Unzip that complete package and
 read its 1_READ_FIRST_AL.txt. Source2Metal does not run SyzygyCheck itself.
 
 8. SOURCE, PRIVACY AND INTEGRITY
-The source code is not embedded in the EXE or Source2Metal_v3.2.0-rc1_RELEASE.zip.
+The source code is not embedded in the EXE or Source2Metal_v3.2.0_RELEASE.zip.
 GitHub provides it automatically as Source code (zip) and Source code (tar.gz).
 No extra custom source ZIP is published because that would duplicate them.
 Source2Metal and SyzygyCheck work locally and do not upload source files,
-tablebase filenames or results. Use SHA256_Source2Metal_v3.2.0-rc1.txt to verify
+tablebase filenames or results. Use SHA256_Source2Metal_v3.2.0.txt to verify
 the user release and executable. The EXE is currently unsigned, so Windows
 may show an Unknown publisher or SmartScreen warning.

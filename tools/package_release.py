@@ -1,14 +1,12 @@
-"""Build the review user ZIP and check local HTML targets; never publish."""
+"""Build the user ZIP and check local HTML targets; publishing is a CI step."""
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import unquote, urlsplit
 import hashlib
-import re
-import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "3.2.0-rc1"
+VERSION = "3.2.0"
 SOURCE = ROOT / "source" / f"Source2Metal_v{VERSION}"
 OUTPUT = ROOT / f"release_v{VERSION}"
 INTRO = "Readme-README-Прочтите-自述文件.html"
@@ -50,7 +48,7 @@ def main():
         files[f"{DOCS}/{name}"] = p
     for name in (f"RELEASE_NOTES_v{VERSION}.txt", "LICENSE_GPL-3.0.txt", "THIRD_PARTY_NOTICES.txt"):
         files[f"{DOCS}/{name}"] = SOURCE / name
-    for name in ("LICENSE", "PRIVACY.md", "THIRD_PARTY_NOTICES.md", "CODE_SIGNING_POLICY.md", "BUILDING.md"):
+    for name in ("PRIVACY.md", "THIRD_PARTY_NOTICES.md", "CODE_SIGNING_POLICY.md", "BUILDING.md"):
         files[f"{DOCS}/{name}"] = ROOT / name
     for arcname, p in files.items():
         if not p.is_file() or p.stat().st_size == 0:
@@ -87,7 +85,7 @@ def main():
             raise ValueError("Source code/book data in user ZIP")
     sha = OUTPUT / f"SHA256_Source2Metal_v{VERSION}.txt"
     sha.write_text(f"{digest(SOURCE / EXE)}  {EXE}\n{digest(archive)}  {archive.name}\n", encoding="utf-8")
-    print(f"Review ZIP OK: {len(files)} files; 7 manuals; all local HTML links checked")
+    print(f"Release ZIP OK: {len(files)} files; 7 manuals; all local HTML links checked")
     print(sha.read_text(encoding="utf-8"))
 
 

@@ -1,4 +1,4 @@
-Source2Metal v3.2.0-rc1 — GEBRUIKERSHANDLEIDING (NEDERLANDS)
+Source2Metal v3.2.0 — GEBRUIKERSHANDLEIDING (NEDERLANDS)
 =========================================================
 
 1. DOEL
@@ -7,8 +7,8 @@ Source2Metal is een draagbaar Windows x64-programma voor PGN, CBH, 2CBH, CTG en 
 BIN2PGN 0.1.3: BIN levert alleen BOOK RAW; geen BIN-METAL. GAME-lengte- en Elo-filters gelden niet voor BIN.
 
 2. STARTEN
-Pak Source2Metal_v3.2.0-rc1_RELEASE.zip volledig uit. Houd de EXE, de korte HTML-intro
-en de Docs-map bij elkaar. Zet !Source2Metal_v3.2.0-rc1.exe in de map met uw
+Pak Source2Metal_v3.2.0_RELEASE.zip volledig uit. Houd de EXE, de korte HTML-intro
+en de Docs-map bij elkaar. Zet !Source2Metal_v3.2.0.exe in de map met uw
 bronbestanden; submappen worden automatisch doorzocht. Start de EXE. Installatie
 is niet nodig.
 
@@ -73,11 +73,11 @@ SyzygyCheck_v2.2.0_UTILITY.zip naast de EXE. Pak dat volledige pakket uit en
 lees 1_READ_FIRST_AL.txt. Source2Metal start SyzygyCheck niet zelf.
 
 8. SOURCE, PRIVACY EN INTEGRITEIT
-De broncode zit niet in de EXE of Source2Metal_v3.2.0-rc1_RELEASE.zip. GitHub biedt
+De broncode zit niet in de EXE of Source2Metal_v3.2.0_RELEASE.zip. GitHub biedt
 die automatisch afzonderlijk aan als Source code (zip) en Source code (tar.gz).
 Er wordt geen extra eigen source-ZIP gepubliceerd, want die zou deze downloads
 alleen dupliceren.
 Source2Metal en SyzygyCheck werken lokaal en uploaden geen bronbestanden,
 tablebasebestandsnamen of resultaten. Controleer de gebruikersrelease en EXE met
-SHA256_Source2Metal_v3.2.0-rc1.txt. De EXE is nog niet ondertekend; Windows kan
+SHA256_Source2Metal_v3.2.0.txt. De EXE is nog niet ondertekend; Windows kan
 daarom Onbekende uitgever of een SmartScreen-waarschuwing tonen.

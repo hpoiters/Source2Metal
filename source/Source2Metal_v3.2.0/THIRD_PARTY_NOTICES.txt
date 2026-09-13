@@ -1,4 +1,4 @@
-Source2Metal v3.2.0-rc1 - third-party notices
+Source2Metal v3.2.0 - third-party notices
 ================================================
 
 CTG parsing in de Ctg2Metal-lijn is gebaseerd op publiek reverse-engineered
