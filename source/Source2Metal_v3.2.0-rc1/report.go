@@ -57,6 +57,7 @@ Descárguelo por separado desde la página de la versión Source2Metal en GitHub
 		return err
 	}
 	statusText := fmt.Sprintf("Source2Metal v%s\nStatus: %s\nRun-ID: %s\nModus: %s\nWorkers: %d/%d\nGAME RAW: %d records / %d geverifieerd\nCTG RAW: %d gebouwd / %d overgeslagen / %d mislukt / %d records\nGAME METAL: %d gebouwd / %d overgeslagen / %d mislukt / %d modelpartijen\nCTG METAL: %d gebouwd / %d overgeslagen / %d mislukt\nDuur: %s\n", version, localizeStatus(status), runID(c), cfg.Mode, cfg.Workers, hw.LogicalThreads, c.GamesAccepted, c.RawGamesVerified, c.CTGRawBuilt, c.CTGRawSkipped, c.CTGRawFailed, c.CTGRawGames, c.GameMetalBuilt, c.GameMetalSkipped, c.GameMetalFailed, c.GameMetalSelected, c.CTGMetalBuilt, c.CTGMetalSkipped, c.CTGMetalFailed, c.Elapsed)
+	statusText += bookSummary(c) + binSummary(c) + binScopeText() + "\n"
 	if err := atomicWriteFile(filepath.Join(layout.ReportDir, "STATUS.txt"), []byte(localizeReportText(statusText)), 0644); err != nil {
 		return err
 	}
@@ -172,6 +173,9 @@ func writeInventoryReport(path string, inv Inventory, cfg Config, hw HardwareInf
 		fmt.Fprintf(&b, "SHA-256                     : %s\n", c.GameMetalSHA256)
 	}
 
+	fmt.Fprintln(&b, binScopeText())
+	fmt.Fprint(&b, binSummary(c), bookSummary(c))
+	fmt.Fprintln(&b, bookPolicyText())
 	fmt.Fprintln(&b, "\nCTG RAW")
 	fmt.Fprintf(&b, "Gebouwd/overgeslagen/fout   : %s / %s / %s\n", fmtInt(c.CTGRawBuilt), fmtInt(c.CTGRawSkipped), fmtInt(c.CTGRawFailed))
 	fmt.Fprintf(&b, "Partijen                    : %s\n", fmtInt(c.CTGRawGames))

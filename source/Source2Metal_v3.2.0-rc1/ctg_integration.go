@@ -43,7 +43,7 @@ func buildRawBooks(inv Inventory, layout OutputLayout, cfg Config, c *Counters) 
 		fmt.Println(L("No complete CTG sets for CTG RAW; skipped.", "Keine vollständigen CTG-Sets für CTG RAW; übersprungen.", "Geen complete CTG-sets voor CTG RAW; overgeslagen.", "Aucun ensemble CTG complet pour CTG RAW ; ignoré.", "No hay conjuntos CTG completos para CTG RAW; omitido.", "没有用于 CTG RAW 的完整 CTG 集；已跳过。", "Нет полных наборов CTG для CTG RAW; пропущено."))
 		return nil, nil
 	}
-	if err := os.MkdirAll(layout.RawSeparateDir, 0755); err != nil {
+	if err := os.MkdirAll(layout.RawBooksDir, 0755); err != nil {
 		return nil, err
 	}
 	var outputs []string
@@ -54,7 +54,7 @@ func buildRawBooks(inv Inventory, layout OutputLayout, cfg Config, c *Counters) 
 			return outputs, err
 		}
 		tmpOut := filepath.Join(workDir, "raw.pgn")
-		finalOut := uniqueSourceFile(layout.RawSeparateDir, s.Base, KindCTG, "RAW", s.Path)
+		finalOut := uniqueSourceFile(layout.RawBooksDir, s.Base, KindCTG, "RAW", s.Path)
 		fmt.Printf("\nCTG RAW %d/%d: %s\n", i+1, len(sets), s.Base)
 		pr := newProgressRenderer()
 		res, err := ctgraw.BuildNeutralWithProgress(s.Base, s.Path, s.Aux[0], s.Aux[1], tmpOut, cfg.MaxPly, func(text string, final bool) {
@@ -76,7 +76,7 @@ func buildRawBooks(inv Inventory, layout OutputLayout, cfg Config, c *Counters) 
 			} else {
 				c.CTGRawFailed++
 			}
-			failDir, ferr := finalizeFailDir(workDir, layout.RawSeparateDir, s.Base+" [CTG]", "RAW", status, reason, "")
+			failDir, ferr := finalizeFailDir(workDir, layout.RawBooksDir, s.Base+" [CTG]", "RAW", status, reason, "")
 			if ferr != nil {
 				return outputs, ferr
 			}
@@ -93,7 +93,7 @@ func buildRawBooks(inv Inventory, layout OutputLayout, cfg Config, c *Counters) 
 			if verr != nil {
 				reason += "\n\nEindcontrolefout: " + verr.Error()
 			}
-			failDir, ferr := finalizeFailDir(workDir, layout.RawSeparateDir, s.Base+" [CTG]", "RAW", "MISLUKT", reason, "")
+			failDir, ferr := finalizeFailDir(workDir, layout.RawBooksDir, s.Base+" [CTG]", "RAW", "MISLUKT", reason, "")
 			if ferr != nil {
 				return outputs, ferr
 			}

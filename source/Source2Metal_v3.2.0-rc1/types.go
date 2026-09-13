@@ -3,7 +3,7 @@ package main
 import "time"
 
 const (
-	version                    = "3.0.10"
+	version                    = "3.2.0-rc1"
 	syzygyCheckVersion         = "2.2.0"
 	syzygyCheckDisplay         = "2.2.0"
 	syzygyCheckExeFilename     = "!SyzygyCheck_v2.2.0.exe"
@@ -13,7 +13,7 @@ const (
 	defaultMaxPly              = 100
 	defaultMinPly              = 24
 	maxAllowedPly              = 120
-	buildDateUTC               = "2026-09-12T22:30:00Z"
+	buildDateUTC               = "2026-09-13T00:00:00Z"
 )
 
 type Config struct {
@@ -48,6 +48,7 @@ type SourceKind string
 
 const (
 	KindPGN  SourceKind = "PGN"
+	KindBIN  SourceKind = "BIN"
 	KindCTG  SourceKind = "CTG"
 	KindCBH  SourceKind = "CBH"
 	Kind2CBH SourceKind = "2CBH"
@@ -83,6 +84,8 @@ type SourceTrace struct {
 }
 
 type Counters struct {
+	BINRawBuilt, BINRawFailed, BINRawGames, BINRawVerified        int64
+	BookMergedGames, BookMergedDuplicates                         int64
 	FilesPGN, SetsCTG, FilesCBH, Files2CBH                        int64
 	GamesSeen, GamesAccepted, GamesDuplicate                      int64
 	GamesNoResult, GamesSetup, GamesShort                         int64

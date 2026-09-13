@@ -1,0 +1,81 @@
+Source2Metal v3.2.0-rc1 — USER MANUAL (ENGLISH)
+================================================
+
+1. PURPOSE
+Source2Metal is a portable Windows x64 tool for processing PGN, CBH, 2CBH, CTG and Polyglot BIN sources. PGN/CBH/2CBH produce GAME RAW and GAME-METAL. CTG and BIN produce BOOK RAW; CTG also has its own METAL route.
+
+BIN2PGN 0.1.3: BIN produces BOOK RAW only; no BIN-METAL. GAME length and Elo filters do not apply to BIN.
+
+2. START
+Extract Source2Metal_v3.2.0-rc1_RELEASE.zip completely. Keep the EXE, the short HTML
+introduction and the Docs folder together. Put !Source2Metal_v3.2.0-rc1.exe in the
+folder that contains your source files; subfolders are searched automatically.
+Start the EXE. No installation is required.
+
+The program skips .git, TEMP, Tijdelijk, folders ending in _output and its own
+!Source2Metal_Output folder. Source files are read; results are written to a
+new timestamped output folder.
+
+3. COMPLETE SOURCE SETS
+- PGN: one .pgn file.
+- CTG: matching .ctg, .cto and .ctb files.
+- CBH: matching .cbh, .cbg, .cbp and .cbt files.
+- 2CBH: matching .2cbh, .2cbg and .2lid files.
+Incomplete sets are reported and are not silently treated as complete.
+
+- BIN: Polyglot .bin (16 bytes/record).
+
+4. MAIN MENU
+1 = Process sources [default]
+2 = SyzygyCheck / pagefile
+3 = Change language
+4 = Information
+0 = Exit
+
+5. PROCESSING CHOICES
+Choose workers; the default is half the available logical CPU threads. BIN conversion and BOOK merging run sequentially.
+
+Mode 1: inventory and reports only.
+Mode 2: GAME RAW + BOOK RAW, with separate and merged results.
+Mode 3 [default]: mode 2 plus existing GAME-METAL and CTG-METAL.
+
+Maximum RAW depth: 1–120 ply, default 100. GAME minimum length: 1–120 ply, default 24. Elo: 0 keeps source selection; 1 requires both players >=2500; 2 requires both >=2400. Maximum Elo gap: 0 means no limit.
+
+BIN2PGN 0.1.3: BIN produces BOOK RAW only; no BIN-METAL. GAME length and Elo filters do not apply to BIN.
+
+6. OUTPUT
+Results are written under:
+  !Source2Metal_Output\YYYY-MM-DD_HH-MM-SS\
+The run folder contains RAW and/or METAL results plus REPORTS. Per-source and
+merged results remain distinguishable. Temporary adapter files are removed at
+the end. Reports include settings, sources, status, build information and
+SHA-256 checksums.
+
+GAME-METAL contains complete legal source games with their original result and
+uses position/transposition statistics. CTG-METAL uses book-oriented evidence.
+They are deliberately kept separate because their evidence semantics differ.
+
+For Fritz “Learn from database” with Metal PGN: Wins ON, Losses ON, White OFF,
+Black OFF, Player OFF, player name empty, Games ALL.
+
+BOOK RAW combines CTG and BIN. Complete legal move sequences are deduplicated within the merged BOOK file; prefixes and transpositions remain distinct. If results or headers differ, the first record is retained (CTG before BIN). Separate source files remain available. CTG results come from book statistics; BIN uses *. Neither is a played-game result. ALL SOURCES RAW combines GAME RAW and merged BOOK RAW when both exist, without cross-class deduplication. BIN does not produce METAL.
+
+RAW/1 - Separate Sources - RAW PGNs/GAME Sources/ (PGN, CBH, 2CBH)
+RAW/1 - Separate Sources - RAW PGNs/BOOK Sources/ (CTG, BIN)
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged GAME Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged BOOK Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged ALL Sources - RAW.pgn
+
+7. SyzygyCheck v2.2.0
+Choose main-menu option 2 and then option 1. Source2Metal writes
+SyzygyCheck_v2.2.0_UTILITY.zip next to the EXE. Unzip that complete package and
+read its 1_READ_FIRST_AL.txt. Source2Metal does not run SyzygyCheck itself.
+
+8. SOURCE, PRIVACY AND INTEGRITY
+The source code is not embedded in the EXE or Source2Metal_v3.2.0-rc1_RELEASE.zip.
+GitHub provides it automatically as Source code (zip) and Source code (tar.gz).
+No extra custom source ZIP is published because that would duplicate them.
+Source2Metal and SyzygyCheck work locally and do not upload source files,
+tablebase filenames or results. Use SHA256_Source2Metal_v3.2.0-rc1.txt to verify
+the user release and executable. The EXE is currently unsigned, so Windows
+may show an Unknown publisher or SmartScreen warning.

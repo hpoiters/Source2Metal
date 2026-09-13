@@ -102,5 +102,5 @@ Utilidad incluida:
 Включённая утилита:
   SyzygyCheck v%s можно извлечь через пункт 2 главного меню.
 `)
-	return fmt.Sprintf(tpl, version, buildDateUTC, syzygyCheckDisplay)
+	return fmt.Sprintf(tpl, version, buildDateUTC, syzygyCheckDisplay) + "\n" + binScopeText()
 }

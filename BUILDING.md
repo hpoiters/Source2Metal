@@ -1,43 +1,45 @@
-# Building Source2Metal v3.0.10
+# Building the Source2Metal v3.2.0-rc1 review candidate
 
-The release workflow uses Go 1.24.6, Windows/amd64, `CGO_ENABLED=0` and
-`-trimpath`. It reproduces the exact user-tested executable on an Ubuntu
-builder, requires SHA-256
-`06b1c0bdc8d1bcb7511bc9741465bb9c87691fbd4d0107495669698aed1d4cb5`,
-and then transfers that exact file to a clean Windows runner for native
-self-testing, SyzygyCheck extraction and release packaging. Source code is not
-embedded in the executable.
+Use Go 1.24.6. The candidate integrates BIN2PGN v0.1.3 for BOOK RAW only.
+Stable v3.0.10 and its published executable are unchanged.
 
-Build from `source/Source2Metal_v3.0.10`:
+In source/Source2Metal_v3.2.0-rc1, run prepare_syzygy_package.ps1 once.
+It downloads and verifies the published SyzygyCheck v2.2.0 user package.
+This unchanged package is the only embedded utility; source code is separate.
 
+Run tests on the host before setting the Windows target:
+```text
+go test ./...
+go vet ./...
+```
+
+Windows build:
 ```text
 set GOOS=windows
 set GOARCH=amd64
 set CGO_ENABLED=0
-go test ./...
-go vet ./...
-go build -trimpath -buildvcs=false -ldflags="-s -w" -o !Source2Metal_v3.0.10.exe .
-!Source2Metal_v3.0.10.exe -selftest
+go build -trimpath -buildvcs=false -ldflags="-s -w" -o !Source2Metal_v3.2.0-rc1.exe .
+!Source2Metal_v3.2.0-rc1.exe -selftest -no-pause
 ```
 
-Before testing or building, run `prepare_syzygy_package.ps1` once in the source
-directory. It downloads `SyzygyCheck_v2.2.0_RELEASE.zip` and accepts it only
-when its SHA-256 is the pinned release value. The downloaded build input is
-not stored in Git and is not duplicated in the Source2Metal source archive.
-During compilation it becomes the one utility embedded in the Source2Metal EXE.
-It contains `!SyzygyCheck_v2.2.0.exe`, `1_READ_FIRST_AL.txt`, `Docs_AL` and
-`Program_AL`, but no source archive, MakeMem file, validation bundle or
-historical executable.
+From the repository root, package and check all documentation links:
+```text
+python tools/package_review.py
+```
 
-The matching SyzygyCheck source and build information are in
-`source/SyzygyCheck_v2.2.0`. Earlier versions remain recoverable through Git
-history and earlier releases instead of being duplicated in the current tree.
+The review workflow runs on Windows, checks tests and selftest, verifies
+SyzygyCheck extraction, then uploads the candidate and checksums as workflow
+artifacts. It has read-only repository permissions and no release-publishing
+step. No tag, Latest release or existing release is changed.
 
-The GitHub Actions workflow checks the source, all 22 files in the utility, the
-short HTML introduction and its jump links, all seven full manuals, recovery-
-guide paths, executable names, fixed published hashes and forbidden obsolete
-references before it creates the new release. The workflow uploads only
-`Source2Metal_v3.0.10_RELEASE.zip` and its SHA-256 file. GitHub automatically
-adds **Source code (zip)** and **Source code (tar.gz)**; no duplicating custom
-source ZIP is created. Authenticode signing changes binary bytes and therefore
-requires a new SHA-256 value.
+The 7 manuals and HTML introduction describe five input formats, BIN RAW only,
+GAME/BOOK output groups, BOOK exact-line deduplication, and unchanged separate
+GAME-METAL/CTG-METAL routes. The Windows practice test on real BIN inputs is
+still required before approval. Optional external CTG RAW integration fixtures
+can be provided through SOURCE2METAL_CTG_RAW_TEST_DIR when running go test.
+
+BIN2PGN provenance: v0.1.3 source supplied in MakeMem 2026-09-10 10:45.
+The kernel was converted into an internal Go package; its CLI was removed.
+The application's multiline PGN reader and an adapter around the existing
+legal SAN parser merge CTG/BIN lines. CTG statistical results and BIN '*' are
+preserved in retained records. No book weights are reinterpreted as game wins.

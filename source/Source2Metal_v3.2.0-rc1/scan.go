@@ -40,6 +40,8 @@ func scanSources(root string) (Inventory, error) {
 			return err
 		}
 		switch ext {
+		case ".bin":
+			inv.Sources = append(inv.Sources, Source{Kind: KindBIN, Path: path, Base: strings.TrimSuffix(d.Name(), filepath.Ext(d.Name())), Bytes: st.Size(), Complete: true})
 		case ".pgn":
 			low := strings.ToLower(d.Name())
 			if strings.HasPrefix(low, "source2metal_raw") || strings.HasPrefix(low, "source2metal_metal") {

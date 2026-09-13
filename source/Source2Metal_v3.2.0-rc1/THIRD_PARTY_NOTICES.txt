@@ -1,4 +1,4 @@
-Source2Metal v3.0.10 - third-party notices
+Source2Metal v3.2.0-rc1 - third-party notices
 ================================================
 
 CTG parsing in de Ctg2Metal-lijn is gebaseerd op publiek reverse-engineered
@@ -30,3 +30,9 @@ https://github.com/syzygy1/tb
 De upstream `src`-code van Ronald de Man valt, afgezien van afzonderlijk
 aangeduide bestanden van derden, onder GNU GPL versie 2 only. De upstream
 COPYING.txt en bronrepository zijn voor dit onderdeel gezaghebbend.
+BIN2PGN integration
+The internal BIN2PGN package is derived from the project's standalone v0.1.3
+source supplied in the MakeMem 2026-09-10 10:45 archive. Its command-line shell
+was removed; Source2Metal calls the conversion kernel directly. BOOK merging
+uses Source2Metal's multiline PGN reader with the BIN2PGN legal SAN parser.
+No Polyglot opening books or user test material are included in the release.

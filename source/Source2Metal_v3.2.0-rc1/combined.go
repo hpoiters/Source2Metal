@@ -39,7 +39,7 @@ func buildCombined(rawGames string, rawBooks []string, layout OutputLayout, c *C
 		_, err = bw.WriteString("\n\n")
 		return err
 	}
-	fmt.Println(L("MERGED RAW: merge GAME RAW + all CTG RAW sources (streaming; no cross-class deduplication).", "ZUSAMMENGEFÜHRTES RAW: GAME RAW + alle CTG-RAW-Quellen zusammenführen (Streaming; keine klassenübergreifende Deduplizierung).", "SAMENGEVOEGDE RAW: gezamenlijke GAME-RAW + alle CTG-RAW-bronnen samenvoegen (streaming; geen cross-class deduplicatie).", "RAW FUSIONNÉ : fusionner GAME RAW + toutes les sources CTG RAW (streaming ; pas de déduplication interclasse).", "RAW COMBINADO: combinar GAME RAW + todas las fuentes CTG RAW (streaming; sin deduplicación entre clases).", "合并 RAW：合并 GAME RAW 与所有 CTG RAW 源（流式处理；不进行跨类别去重）。", "ОБЪЕДИНЁННЫЙ RAW: объединение GAME RAW + всех источников CTG RAW (потоково; без межклассовой дедупликации)."))
+	fmt.Println(bookPolicyText())
 	if err := appendOne(rawGames); err != nil {
 		_ = f.Close()
 		return "", err
@@ -69,7 +69,7 @@ func buildCombined(rawGames string, rawBooks []string, layout OutputLayout, c *C
 	}
 	c.CombinedBytes = st.Size()
 	c.CombinedSHA256 = sha
-	expected := c.GamesAccepted + c.CTGRawGames
+	expected := c.GamesAccepted + c.BookMergedGames
 	found, verr := countGeneratedPGNRecords(out)
 	if verr != nil {
 		return "", fmt.Errorf("RAW_COMBINED eindcontrole: %w", verr)
@@ -79,6 +79,6 @@ func buildCombined(rawGames string, rawBooks []string, layout OutputLayout, c *C
 	}
 	c.CombinedGames = found
 	c.CombinedVerified = found
-	fmt.Printf(L("Merged ALL SOURCES RAW check: OK - %s records (= GAME RAW + CTG RAW).\n", "Prüfung ALL SOURCES RAW: OK - %s Datensätze (= GAME RAW + CTG RAW).\n", "Samengevoegde ALLE Sources RAW controle: OK - %s records (= GAME-RAW + CTG-RAW).\n", "Contrôle ALL SOURCES RAW fusionné : OK - %s enregistrements (= GAME RAW + CTG RAW).\n", "Comprobación ALL SOURCES RAW combinado: OK - %s registros (= GAME RAW + CTG RAW).\n", "合并 ALL SOURCES RAW 检查：OK - %s 条记录（= GAME RAW + CTG RAW）。\n", "Проверка объединённого ALL SOURCES RAW: OK - %s записей (= GAME RAW + CTG RAW).\n"), fmtInt(found))
+	fmt.Printf(L("Merged ALL SOURCES RAW check: OK - %s records (= GAME RAW + BOOK RAW).\n", "Prüfung ALL SOURCES RAW: OK - %s Datensätze (= GAME RAW + BOOK RAW).\n", "Samengevoegde ALLE Sources RAW controle: OK - %s records (= GAME-RAW + BOOK-RAW).\n", "Contrôle ALL SOURCES RAW fusionné : OK - %s enregistrements (= GAME RAW + BOOK RAW).\n", "Comprobación ALL SOURCES RAW combinado: OK - %s registros (= GAME RAW + BOOK RAW).\n", "合并 ALL SOURCES RAW 检查：OK - %s 条记录（= GAME RAW + BOOK RAW）。\n", "Проверка объединённого ALL SOURCES RAW: OK - %s записей (= GAME RAW + BOOK RAW).\n"), fmtInt(found))
 	return out, nil
 }

@@ -21,165 +21,7 @@ func relOutput(layout OutputLayout, p string) string {
 
 func writeOutputExplanations(layout OutputLayout, cfg Config, c Counters) error {
 	if _, err := os.Stat(layout.RawDir); err == nil {
-		rawTemplate := L(
-			`Source2Metal v%s - RAW RESULTS EXPLAINED
-
-GAME RAW
-PGN, CBH and 2CBH are treated as GAME sources. CBH/2CBH are temporarily
-translated to PGN by the integrated adapter and then pass through the same RAW
-validation as PGN. Per-source and merged results remain visible.
-
-CTG RAW
-Each complete CTG/CTO/CTB set receives its own RAW PGN. Output size follows the
-book content and source structure that can actually be decoded.
-
-ALL SOURCES RAW
-When both GAME RAW and CTG RAW exist, Source2Metal also creates
-"Source2Metal - Merged ALL Sources - RAW.pgn". This is a streaming merge of
-already validated products. No additional cross-class deduplication is performed
-between GAME and CTG because their origin and representation differ.
-
-ACTIVE SETTINGS
-Maximum RAW depth : %d ply
-Minimum game      : %d ply
-Elo filter        : %d (0 = keep source selection)
-Max Elo difference: %d (0 = no limit)
-`,
-			`Source2Metal v%s - ERKLÄRUNG DER RAW-ERGEBNISSE
-
-GAME RAW
-PGN, CBH und 2CBH werden als GAME-Quellen behandelt. CBH/2CBH werden durch den
-integrierten Adapter vorübergehend in PGN übersetzt und danach wie PGN durch
-dieselbe RAW-Prüfung geführt. Ergebnisse pro Quelle und zusammengeführt bleiben
-sichtbar.
-
-CTG RAW
-Jedes vollständige CTG/CTO/CTB-Set erhält eine eigene RAW-PGN. Die Ausgabegröße
-folgt dem tatsächlich dekodierbaren Buchinhalt und der Quellenstruktur.
-
-ALL SOURCES RAW
-Wenn GAME RAW und CTG RAW vorhanden sind, erstellt Source2Metal zusätzlich
-"Source2Metal - Merged ALL Sources - RAW.pgn". Bereits geprüfte Produkte werden
-gestreamt zusammengeführt. Zwischen GAME und CTG findet bewusst keine zusätzliche
-klassenübergreifende Deduplizierung statt.
-
-AKTIVE EINSTELLUNGEN
-Maximale RAW-Tiefe : %d ply
-Mindestpartie      : %d ply
-Elo-Filter         : %d (0 = Quellenauswahl beibehalten)
-Max. Elo-Differenz : %d (0 = keine Grenze)
-`,
-			`Source2Metal v%s - UITLEG RAW RESULTATEN
-
-GAME RAW
-PGN, CBH en 2CBH worden als GAME-bronnen behandeld. CBH/2CBH worden via de
-geïntegreerde adapter tijdelijk naar PGN vertaald en daarna door dezelfde RAW-
-controle verwerkt. Per bron en samengevoegd blijven de resultaten zichtbaar.
-
-CTG RAW
-Iedere complete CTG/CTO/CTB-set krijgt een eigen RAW-PGN. De uitvoergrootte
-volgt de werkelijk decodeerbare boekinhoud en bronstructuur.
-
-ALLE SOURCES RAW
-Als zowel GAME RAW als CTG RAW bestaan, maakt Source2Metal daarnaast
-"Source2Metal - Merged ALL Sources - RAW.pgn". Dit is een streaming samenvoeging
-van reeds gecontroleerde producten. Tussen GAME en CTG vindt bewust geen extra
-cross-class deduplicatie plaats omdat herkomst en representatie verschillen.
-
-ACTIEVE INSTELLINGEN
-Maximale RAW-diepte : %d ply
-Minimum partij      : %d ply
-Elo-filter          : %d (0 = bronselectie behouden)
-Max Elo-verschil    : %d (0 = geen grens)
-`,
-			`Source2Metal v%s - EXPLICATION DES RÉSULTATS RAW
-
-GAME RAW
-PGN, CBH et 2CBH sont traités comme sources GAME. CBH/2CBH sont temporairement
-convertis en PGN par l’adaptateur intégré puis soumis à la même validation RAW
-que PGN. Les résultats par source et fusionnés restent visibles.
-
-CTG RAW
-Chaque ensemble CTG/CTO/CTB complet reçoit son propre PGN RAW. La taille suit le
-contenu du livre et la structure réellement décodables.
-
-ALL SOURCES RAW
-Lorsque GAME RAW et CTG RAW existent, Source2Metal crée aussi
-"Source2Metal - Merged ALL Sources - RAW.pgn". Les produits déjà validés sont
-fusionnés en flux, sans déduplication supplémentaire entre GAME et CTG.
-
-PARAMÈTRES ACTIFS
-Profondeur RAW max. : %d ply
-Partie minimale     : %d ply
-Filtre Elo          : %d (0 = conserver la sélection source)
-Écart Elo max.      : %d (0 = aucune limite)
-`,
-			`Source2Metal v%s - EXPLICACIÓN DE RESULTADOS RAW
-
-GAME RAW
-PGN, CBH y 2CBH se tratan como fuentes GAME. CBH/2CBH se convierten temporalmente
-a PGN mediante el adaptador integrado y después pasan la misma validación RAW
-que PGN. Los resultados por fuente y combinados siguen siendo visibles.
-
-CTG RAW
-Cada conjunto CTG/CTO/CTB completo obtiene su propio PGN RAW. El tamaño sigue el
-contenido y la estructura que realmente pueden decodificarse.
-
-ALL SOURCES RAW
-Cuando existen GAME RAW y CTG RAW, Source2Metal crea también
-"Source2Metal - Merged ALL Sources - RAW.pgn". Es una combinación por streaming
-de productos ya validados, sin deduplicación adicional entre GAME y CTG.
-
-AJUSTES ACTIVOS
-Profundidad RAW máx.: %d ply
-Partida mínima      : %d ply
-Filtro Elo          : %d (0 = mantener selección de origen)
-Diferencia Elo máx. : %d (0 = sin límite)
-`,
-			`Source2Metal v%s - RAW 结果说明
-
-GAME RAW
-PGN、CBH 和 2CBH 作为 GAME 源处理。CBH/2CBH 先由集成适配器临时转换为 PGN，
-然后使用与 PGN 相同的 RAW 验证。每个源以及合并后的结果都会保留可见。
-
-CTG RAW
-每个完整 CTG/CTO/CTB 文件组都会生成自己的 RAW PGN。输出大小由实际可以解码的
-开局库内容和源结构决定。
-
-ALL SOURCES RAW
-当 GAME RAW 和 CTG RAW 都存在时，Source2Metal 还会创建
-"Source2Metal - Merged ALL Sources - RAW.pgn"。这是对已经验证结果的流式合并；
-GAME 与 CTG 之间不额外进行跨类别去重，因为二者来源和表示方式不同。
-
-当前设置
-最大 RAW 深度 : %d ply
-最短对局      : %d ply
-Elo 过滤器    : %d（0 = 保留源选择）
-最大 Elo 差   : %d（0 = 无限制）
-`,
-			`Source2Metal v%s - ПОЯСНЕНИЕ РЕЗУЛЬТАТОВ RAW
-
-GAME RAW
-PGN, CBH и 2CBH обрабатываются как GAME-источники. CBH/2CBH временно
-преобразуются в PGN встроенным адаптером и затем проходят ту же RAW-проверку,
-что и PGN. Результаты по источникам и объединённые результаты остаются видимыми.
-
-CTG RAW
-Каждый полный набор CTG/CTO/CTB получает собственный RAW PGN. Размер вывода
-определяется реально декодируемым содержимым книги и структурой источника.
-
-ALL SOURCES RAW
-Если существуют GAME RAW и CTG RAW, Source2Metal также создаёт
-"Source2Metal - Merged ALL Sources - RAW.pgn". Уже проверенные продукты
-объединяются потоково, без дополнительной межклассовой дедупликации GAME и CTG.
-
-АКТИВНЫЕ НАСТРОЙКИ
-Макс. глубина RAW : %d ply
-Минимальная партия: %d ply
-Фильтр Elo        : %d (0 = сохранить исходный отбор)
-Макс. разница Elo : %d (0 = без ограничения)
-`)
-		rawText := fmt.Sprintf(rawTemplate, version, cfg.MaxPly, cfg.MinPly, cfg.MinElo, cfg.MaxEloGap)
+		rawText := fmt.Sprintf("Source2Metal v%s - RAW\n\n", version) + rawLayoutText() + "\n" + bookPolicyText() + "\n\n" + binScopeText() + "\n" + binSummary(c) + bookSummary(c)
 		if err := atomicWriteFile(filepath.Join(layout.RawDir, "INFO - RAW RESULTS.txt"), []byte(rawText), 0644); err != nil {
 			return err
 		}
@@ -568,11 +410,14 @@ func writeFullProcessReport(path string, layout OutputLayout, inv Inventory, cfg
 	fmt.Fprintln(&b, L("PGN/CBH/2CBH -> legal position analysis -> combined GAME evidence -> real model games -> GAME METAL", "PGN/CBH/2CBH -> legale Positionsanalyse -> gemeinsame GAME-Evidenz -> echte Modellpartien -> GAME METAL", "PGN/CBH/2CBH -> legale positie-analyse -> gezamenlijke GAME evidence -> echte modelpartijen -> GAME METAL", "PGN/CBH/2CBH -> analyse de positions légales -> preuve GAME combinée -> vraies parties modèles -> GAME METAL", "PGN/CBH/2CBH -> análisis legal de posiciones -> evidencia GAME combinada -> partidas modelo reales -> GAME METAL", "PGN/CBH/2CBH -> 合法局面分析 -> 合并 GAME 证据 -> 真实模型对局 -> GAME METAL", "PGN/CBH/2CBH -> анализ легальных позиций -> объединённые данные GAME -> реальные модельные партии -> GAME METAL"))
 	fmt.Fprintln(&b, L("CTG/CTO/CTB -> CTG RAW extractor -------------------------------------------> per-source CTG RAW", "CTG/CTO/CTB -> CTG-RAW-Extraktor ------------------------------------------> CTG RAW pro Quelle", "CTG/CTO/CTB -> CTG RAW-extractor -------------------------------------------> per-bron CTG RAW", "CTG/CTO/CTB -> extracteur CTG RAW -----------------------------------------> CTG RAW par source", "CTG/CTO/CTB -> extractor CTG RAW ------------------------------------------> CTG RAW por fuente", "CTG/CTO/CTB -> CTG RAW 提取器 ---------------------------------------------> 每源 CTG RAW", "CTG/CTO/CTB -> экстрактор CTG RAW ----------------------------------------> CTG RAW по источнику"))
 	fmt.Fprintln(&b, L("CTG/CTO/CTB -> strict CTG Metal selection -> optional visible cautious fallback -> per-source CTG METAL", "CTG/CTO/CTB -> strikte CTG-Metal-Auswahl -> ggf. sichtbarer vorsichtiger Fallback -> CTG METAL pro Quelle", "CTG/CTO/CTB -> strikte CTG Metal-selectie -> evt. zichtbare voorzichtige fallback -> per-bron CTG METAL", "CTG/CTO/CTB -> sélection CTG Metal stricte -> repli prudent visible éventuel -> CTG METAL par source", "CTG/CTO/CTB -> selección CTG Metal estricta -> posible alternativa prudente visible -> CTG METAL por fuente", "CTG/CTO/CTB -> 严格 CTG Metal 选择 -> 可选且明确显示的谨慎后备方案 -> 每源 CTG METAL", "CTG/CTO/CTB -> строгий отбор CTG Metal -> при необходимости явно показанный осторожный резерв -> CTG METAL по источнику"))
-	fmt.Fprintln(&b, L("GAME RAW + CTG RAW -> merged ALL Sources RAW (without cross-class dedup)", "GAME RAW + CTG RAW -> zusammengeführtes ALL Sources RAW (ohne klassenübergreifende Deduplizierung)", "GAME RAW + CTG RAW -> samengevoegde ALLE Sources RAW (zonder cross-class dedup)", "GAME RAW + CTG RAW -> ALL Sources RAW fusionné (sans déduplication interclasse)", "GAME RAW + CTG RAW -> ALL Sources RAW combinado (sin deduplicación entre clases)", "GAME RAW + CTG RAW -> 合并 ALL Sources RAW（不进行跨类别去重）", "GAME RAW + CTG RAW -> объединённый ALL Sources RAW (без межклассовой дедупликации)"))
+	fmt.Fprintln(&b, L("GAME RAW + BOOK RAW -> merged ALL Sources RAW (without cross-class dedup)", "GAME RAW + BOOK RAW -> zusammengeführtes ALL Sources RAW (ohne klassenübergreifende Deduplizierung)", "GAME RAW + BOOK RAW -> samengevoegde ALLE Sources RAW (zonder cross-class dedup)", "GAME RAW + BOOK RAW -> ALL Sources RAW fusionné (sans déduplication interclasse)", "GAME RAW + BOOK RAW -> ALL Sources RAW combinado (sin deduplicación entre clases)", "GAME RAW + BOOK RAW -> 合并 ALL Sources RAW（不进行跨类别去重）", "GAME RAW + BOOK RAW -> объединённый ALL Sources RAW (без межклассовой дедупликации)"))
 
 	fmt.Fprintln(&b, "\n"+L("SUMMARY RESULTS", "ZUSAMMENGEFASSTE ERGEBNISSE", "SAMENGEVATTE RESULTATEN", "RÉSULTATS RÉSUMÉS", "RESULTADOS RESUMIDOS", "结果摘要", "СВОДНЫЕ РЕЗУЛЬТАТЫ"))
 	fmt.Fprintln(&b, "----------------------")
 	fmt.Fprintf(&b, L("GAME RAW          : %s records | verified %s | %s\n", "GAME RAW          : %s Datensätze | verifiziert %s | %s\n", "GAME RAW          : %s records | geverifieerd %s | %s\n", "GAME RAW          : %s enregistrements | vérifiés %s | %s\n", "GAME RAW          : %s registros | verificados %s | %s\n", "GAME RAW          ：%s 记录 | 已验证 %s | %s\n", "GAME RAW          : %s записей | проверено %s | %s\n"), fmtInt(c.GamesAccepted), fmtInt(c.RawGamesVerified), relOutput(layout, layout.RawGamesFile))
+	fmt.Fprint(&b, binSummary(c), bookSummary(c))
+	fmt.Fprintln(&b, binScopeText())
+	fmt.Fprintln(&b, bookPolicyText())
 	fmt.Fprintf(&b, L("CTG RAW           : %s built | %s skipped | %s failed | %s records | verified %s\n", "CTG RAW           : %s erstellt | %s übersprungen | %s fehlgeschlagen | %s Datensätze | verifiziert %s\n", "CTG RAW           : %s gebouwd | %s overgeslagen | %s mislukt | %s records | geverifieerd %s\n", "CTG RAW           : %s créés | %s ignorés | %s échecs | %s enregistrements | vérifiés %s\n", "CTG RAW           : %s creados | %s omitidos | %s fallidos | %s registros | verificados %s\n", "CTG RAW           ：%s 已生成 | %s 已跳过 | %s 失败 | %s 记录 | 已验证 %s\n", "CTG RAW           : %s создано | %s пропущено | %s ошибок | %s записей | проверено %s\n"), fmtInt(c.CTGRawBuilt), fmtInt(c.CTGRawSkipped), fmtInt(c.CTGRawFailed), fmtInt(c.CTGRawGames), fmtInt(c.RawBooksVerified))
 	if c.CombinedGames > 0 {
 		fmt.Fprintf(&b, L("ALL SOURCES RAW   : %s records | verified %s\n", "ALL SOURCES RAW   : %s Datensätze | verifiziert %s\n", "ALLE SOURCES RAW  : %s records | geverifieerd %s\n", "ALL SOURCES RAW   : %s enregistrements | vérifiés %s\n", "ALL SOURCES RAW   : %s registros | verificados %s\n", "ALL SOURCES RAW   ：%s 记录 | 已验证 %s\n", "ALL SOURCES RAW   : %s записей | проверено %s\n"), fmtInt(c.CombinedGames), fmtInt(c.CombinedVerified))
@@ -595,11 +440,15 @@ func writeFullProcessReport(path string, layout OutputLayout, inv Inventory, cfg
 		fmt.Fprintf(&b, "\n%02d. %s [%s]\n", i+1, t.Base, t.Kind)
 		fmt.Fprintf(&b, L("    Source            : %s\n", "    Quelle            : %s\n", "    Bron              : %s\n", "    Source            : %s\n", "    Fuente            : %s\n", "    源                ：%s\n", "    Источник          : %s\n"), t.SourcePath)
 		fmt.Fprintf(&b, L("    RAW result        : %s\n", "    RAW-Ergebnis      : %s\n", "    RAW resultaat     : %s\n", "    Résultat RAW      : %s\n", "    Resultado RAW     : %s\n", "    RAW 结果          ：%s\n", "    Результат RAW     : %s\n"), relOutput(layout, t.RawPath))
-		if t.Kind == KindCTG {
+		if t.Kind == KindCTG || t.Kind == KindBIN {
 			fmt.Fprintf(&b, L("    RAW produced      : %s | verified %s\n", "    RAW erzeugt       : %s | verifiziert %s\n", "    RAW geproduceerd  : %s | geverifieerd %s\n", "    RAW produit       : %s | vérifié %s\n", "    RAW producido     : %s | verificado %s\n", "    已生成 RAW        ：%s | 已验证 %s\n", "    RAW создано       : %s | проверено %s\n"), fmtInt(t.RawAccepted), fmtInt(t.RawVerified))
 		} else {
 			fmt.Fprintf(&b, L("    RAW seen          : %s\n", "    RAW gesehen       : %s\n", "    RAW gezien        : %s\n", "    RAW vus           : %s\n", "    RAW vistos        : %s\n", "    已查看 RAW        ：%s\n", "    RAW просмотрено   : %s\n"), fmtInt(t.RawSeen))
 			fmt.Fprintf(&b, L("    RAW per source    : %s | local dup %s | cross-source dup %s | rejected %s | verified %s\n", "    RAW pro Quelle    : %s | lokale Dup %s | quellenübergreifende Dup %s | abgelehnt %s | verifiziert %s\n", "    RAW per bron      : %s | lokale dup %s | cross-source dup %s | afgewezen %s | geverifieerd %s\n", "    RAW par source    : %s | doublon local %s | doublon inter-source %s | rejeté %s | vérifié %s\n", "    RAW por fuente    : %s | duplicado local %s | duplicado entre fuentes %s | rechazado %s | verificado %s\n", "    每源 RAW          ：%s | 本地重复 %s | 跨源重复 %s | 已拒绝 %s | 已验证 %s\n", "    RAW по источнику  : %s | лок. дубликаты %s | межисточн. дубликаты %s | отклонено %s | проверено %s\n"), fmtInt(t.RawAccepted), fmtInt(t.RawLocalDuplicate), fmtInt(t.RawCrossDuplicate), fmtInt(t.RawRejected), fmtInt(t.RawVerified))
+		}
+		if t.Kind == KindBIN {
+			fmt.Fprintln(&b, binScopeText())
+			continue
 		}
 		fmt.Fprintf(&b, L("    METAL result      : %s\n", "    METAL-Ergebnis    : %s\n", "    METAL resultaat   : %s\n", "    Résultat METAL    : %s\n", "    Resultado METAL   : %s\n", "    METAL 结果        ：%s\n", "    Результат METAL   : %s\n"), relOutput(layout, t.MetalPath))
 		if t.Kind == KindCTG {

@@ -98,7 +98,7 @@ func buildRawGames(inv Inventory, outputPath string, cfg Config, c *Counters, ex
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
 		return "", err
 	}
-	rawSeparateDir := filepath.Join(filepath.Dir(filepath.Dir(outputPath)), "1 - Separate Sources - RAW PGNs")
+	rawSeparateDir := filepath.Join(filepath.Dir(filepath.Dir(outputPath)), "1 - Separate Sources - RAW PGNs", "GAME Sources")
 	if err := os.MkdirAll(rawSeparateDir, 0755); err != nil {
 		return "", err
 	}

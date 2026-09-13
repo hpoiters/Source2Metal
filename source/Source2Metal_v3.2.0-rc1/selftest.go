@@ -6,12 +6,16 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"source2metal/internal/bin2pgn"
 	"source2metal/internal/cb2pgn"
 	"source2metal/internal/ctgmetal"
 	"source2metal/internal/ctgraw"
 )
 
 func selfTest() error {
+	if err := bin2pgn.SelfTest(); err != nil {
+		return err
+	}
 	if err := releaseConsistencyCheck(); err != nil {
 		return err
 	}

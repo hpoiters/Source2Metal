@@ -187,6 +187,7 @@ func run(cfg Config) error {
 	fmt.Println(L("Complete CTG/CTO/CTB sets build separate CTG RAW and feed the CTG-METAL route.", "Vollständige CTG/CTO/CTB-Sets erstellen separates CTG RAW und speisen die CTG-METAL-Route.", "Complete CTG/CTO/CTB-sets bouwen afzonderlijke CTG RAW en voeden de CTG-METAL-route.", "Les ensembles CTG/CTO/CTB complets construisent un CTG RAW séparé et alimentent la voie CTG-METAL.", "Los conjuntos CTG/CTO/CTB completos crean CTG RAW separado y alimentan la ruta CTG-METAL.", "完整的 CTG/CTO/CTB 集会构建独立的 CTG RAW，并供给 CTG-METAL 路径。", "Полные наборы CTG/CTO/CTB создают отдельный CTG RAW и питают ветку CTG-METAL."))
 
 	var rawGamesPath string
+	fmt.Println(binScopeText())
 	var rawBookPaths []string
 	var cbSources []Source
 	if cfg.Mode == "raw" || cfg.Mode == "all" {
@@ -212,6 +213,23 @@ func run(cfg Config) error {
 			_ = writeReports(layout, inv, cfg, hw, c, "MISLUKT")
 			return err
 		}
+		binPaths, binErr := buildBINRaw(inv, layout, cfg, &c)
+		if binErr != nil {
+			c.Elapsed = time.Since(started)
+			_ = writeReports(layout, inv, cfg, hw, c, "MISLUKT")
+			return binErr
+		}
+		rawBookPaths = append(rawBookPaths, binPaths...)
+		bookPath, mergeErr := mergeBookRAW(rawBookPaths, layout, &c)
+		if mergeErr != nil {
+			c.Elapsed = time.Since(started)
+			_ = writeReports(layout, inv, cfg, hw, c, "MISLUKT")
+			return mergeErr
+		}
+		rawBookPaths = nil
+		if bookPath != "" {
+			rawBookPaths = []string{bookPath}
+		}
 		if combined, e := buildCombined(rawGamesPath, rawBookPaths, layout, &c); e != nil {
 			c.Elapsed = time.Since(started)
 			pruneEmptyOutputDirs(layout)
@@ -220,7 +238,7 @@ func run(cfg Config) error {
 		} else if combined != "" {
 			fmt.Println(U("ALLE SOURCES RAW gemaakt:"), combined)
 		} else {
-			fmt.Println(U("ALLE SOURCES RAW niet nodig: daarvoor zijn zowel GAME RAW als CTG RAW nodig."))
+			fmt.Println(bookPolicyText())
 		}
 	} else {
 		fmt.Println("\n" + U("3/6 RAW bouwen: overgeslagen"))
@@ -267,6 +285,7 @@ func run(cfg Config) error {
 	fmt.Printf(L("Workers used    : %d / %d logical threads\n", "Worker verwendet: %d / %d logische Threads\n", "Workers gebruikt: %d / %d logische threads\n", "Workers utilisés : %d / %d threads logiques\n", "Workers usados   : %d / %d hilos lógicos\n", "使用的 worker    ：%d / %d 逻辑线程\n", "Рабочие потоки  : %d / %d логических потоков\n"), cfg.Workers, hw.LogicalThreads)
 	fmt.Printf(L("CBH adapter     : %d successful | %d failed\n", "CBH-Adapter     : %d erfolgreich | %d fehlgeschlagen\n", "CBH adapter     : %d geslaagd | %d mislukt\n", "Adaptateur CBH  : %d réussi | %d échec\n", "Adaptador CBH   : %d correcto | %d fallido\n", "CBH 适配器      ：%d 成功 | %d 失败\n", "Адаптер CBH    : %d успешно | %d ошибок\n"), c.CBHSetsBuilt, c.CBHSetsFailed)
 	fmt.Printf(L("2CBH adapter    : %d successful | %d failed\n", "2CBH-Adapter    : %d erfolgreich | %d fehlgeschlagen\n", "2CBH adapter    : %d geslaagd | %d mislukt\n", "Adaptateur 2CBH : %d réussi | %d échec\n", "Adaptador 2CBH  : %d correcto | %d fallido\n", "2CBH 适配器     ：%d 成功 | %d 失败\n", "Адаптер 2CBH   : %d успешно | %d ошибок\n"), c.TwoCBHSetsBuilt, c.TwoCBHSetsFailed)
+	fmt.Print(binSummary(c), bookSummary(c))
 	fmt.Printf(L("CTG RAW         : %d successful | %d skipped | %d failed\n", "CTG RAW         : %d erfolgreich | %d übersprungen | %d fehlgeschlagen\n", "CTG RAW         : %d geslaagd | %d overgeslagen | %d mislukt\n", "CTG RAW         : %d réussi | %d ignoré | %d échec\n", "CTG RAW         : %d correcto | %d omitido | %d fallido\n", "CTG RAW         ：%d 成功 | %d 已跳过 | %d 失败\n", "CTG RAW         : %d успешно | %d пропущено | %d ошибок\n"), c.CTGRawBuilt, c.CTGRawSkipped, c.CTGRawFailed)
 	fmt.Printf(L("GAME METAL      : %d successful | %d skipped | %d failed | %s model games\n", "GAME METAL      : %d erfolgreich | %d übersprungen | %d fehlgeschlagen | %s Modellpartien\n", "GAME METAL      : %d geslaagd | %d overgeslagen | %d mislukt | %s modelpartijen\n", "GAME METAL      : %d réussi | %d ignoré | %d échec | %s parties modèles\n", "GAME METAL      : %d correcto | %d omitido | %d fallido | %s partidas modelo\n", "GAME METAL      ：%d 成功 | %d 已跳过 | %d 失败 | %s 模型对局\n", "GAME METAL      : %d успешно | %d пропущено | %d ошибок | %s модельных партий\n"), c.GameMetalBuilt, c.GameMetalSkipped, c.GameMetalFailed, fmtInt(c.GameMetalSelected))
 	fmt.Printf(L("CTG METAL       : %d successful | %d skipped | %d failed\n", "CTG METAL       : %d erfolgreich | %d übersprungen | %d fehlgeschlagen\n", "CTG METAL       : %d geslaagd | %d overgeslagen | %d mislukt\n", "CTG METAL       : %d réussi | %d ignoré | %d échec\n", "CTG METAL       : %d correcto | %d omitido | %d fallido\n", "CTG METAL       ：%d 成功 | %d 已跳过 | %d 失败\n", "CTG METAL       : %d успешно | %d пропущено | %d ошибок\n"), c.CTGMetalBuilt, c.CTGMetalSkipped, c.CTGMetalFailed)
@@ -275,6 +294,9 @@ func run(cfg Config) error {
 }
 
 func classifyRunStatus(cfg Config, c Counters) string {
+	if c.BINRawFailed > 0 {
+		return "MISLUKT"
+	}
 	if c.CBHSetsFailed > 0 || c.TwoCBHSetsFailed > 0 || c.CTGRawFailed > 0 || c.CTGMetalFailed > 0 || c.GameMetalFailed > 0 {
 		return "GESLAAGD_MET_FOUTEN"
 	}
@@ -296,8 +318,9 @@ func interactiveChoices(c Config, inv Inventory, hw HardwareInfo) (Config, error
 
 	fmt.Println("\n" + L("MODE", "MODUS", "MODUS", "MODE", "MODO", "模式", "РЕЖИМ"))
 	fmt.Println("  1 = " + U("alleen inventaris/rapport"))
-	fmt.Println(L("  2 = Build RAW: PGN/CBH/2CBH -> GAME RAW and CTG -> CTG RAW (+ ALL SOURCES RAW if both are present)", "  2 = RAW erstellen: PGN/CBH/2CBH -> GAME RAW und CTG -> CTG RAW (+ ALLE SOURCES RAW, wenn beide vorhanden sind)", "  2 = RAW bouwen: PGN/CBH/2CBH -> GAME RAW en CTG -> CTG RAW (+ ALLE SOURCES RAW indien beide aanwezig)", "  2 = Construire RAW : PGN/CBH/2CBH -> GAME RAW et CTG -> CTG RAW (+ ALL SOURCES RAW si les deux sont présents)", "  2 = Crear RAW: PGN/CBH/2CBH -> GAME RAW y CTG -> CTG RAW (+ ALL SOURCES RAW si ambos están presentes)", "  2 = 构建 RAW：PGN/CBH/2CBH -> GAME RAW，CTG -> CTG RAW（若两者均存在则生成 ALL SOURCES RAW）", "  2 = Создать RAW: PGN/CBH/2CBH -> GAME RAW и CTG -> CTG RAW (+ ALL SOURCES RAW, если присутствуют оба типа)"))
-	fmt.Println(L("  3 = RAW + METAL [default] - PGN/CBH/2CBH/CTG integration active", "  3 = RAW + METAL [Standard] - PGN/CBH/2CBH/CTG-Integration aktiv", "  3 = RAW + METAL [standaard] - PGN/CBH/2CBH/CTG-integratie actief", "  3 = RAW + METAL [défaut] - intégration PGN/CBH/2CBH/CTG active", "  3 = RAW + METAL [predeterminado] - integración PGN/CBH/2CBH/CTG activa", "  3 = RAW + METAL [默认] - PGN/CBH/2CBH/CTG 集成已启用", "  3 = RAW + METAL [по умолчанию] - интеграция PGN/CBH/2CBH/CTG активна"))
+	fmt.Println(rawModeText())
+	fmt.Println(binScopeText())
+	fmt.Println(L("  3 = RAW + METAL [default] - PGN/CBH/2CBH/CTG/BIN integration active", "  3 = RAW + METAL [Standard] - PGN/CBH/2CBH/CTG/BIN-Integration aktiv", "  3 = RAW + METAL [standaard] - PGN/CBH/2CBH/CTG/BIN-integratie actief", "  3 = RAW + METAL [défaut] - intégration PGN/CBH/2CBH/CTG/BIN active", "  3 = RAW + METAL [predeterminado] - integración PGN/CBH/2CBH/CTG/BIN activa", "  3 = RAW + METAL [默认] - PGN/CBH/2CBH/CTG/BIN 集成已启用", "  3 = RAW + METAL [по умолчанию] - интеграция PGN/CBH/2CBH/CTG/BIN активна"))
 	fmt.Print(L("Choice [1-3] (Enter = 3): ", "Auswahl [1-3] (Enter = 3): ", "Keuze [1-3] (Enter = 3): ", "Choix [1-3] (Entrée = 3) : ", "Elección [1-3] (Intro = 3): ", "选择 [1-3]（回车 = 3）：", "Выбор [1-3] (Enter = 3): "))
 	s, _ := stdin.ReadString('\n')
 	s = strings.TrimSpace(s)

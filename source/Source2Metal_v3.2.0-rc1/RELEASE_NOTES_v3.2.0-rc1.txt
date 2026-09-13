@@ -1,0 +1,33 @@
+Source2Metal v3.2.0-rc1 — REVIEW CANDIDATE
+
+Status: not published; Windows practice approval required.
+Base: Source2Metal v3.0.10 with unchanged SyzygyCheck v2.2.0 utility.
+
+Changes:
+- Integrates the practically tested standalone BIN2PGN v0.1.3 kernel.
+- Scans Polyglot BIN as the fifth source format.
+- Writes complete legal BOOK RAW lines and verifies reachable move coverage.
+- Does not apply GAME minimum-length or Elo filters to BIN.
+- Groups separate RAW under GAME Sources and BOOK Sources.
+- Merges CTG/BIN BOOK RAW with exact complete-move-sequence deduplication.
+- Preserves first-record headers/results (CTG before BIN); all separate files remain.
+- ALL SOURCES RAW combines GAME RAW with merged BOOK RAW when both exist.
+  Cross-class deduplication remains disabled.
+- Updates all seven manuals, menus, output explanations and reports.
+
+Scope:
+BIN RAW only. No BIN-METAL, no weight-to-Fritz calibration, no single combined
+GAME/CTG/BIN METAL product. Existing GAME-METAL and CTG-METAL selection remains.
+CTG RAW result tags are statistical, not actual played-game outcomes.
+
+Validation:
+Original BIN2PGN tests and selftest passed again.
+Integration tests cover short lines, duplicate books, identical basenames,
+multiline CTG input, merged record accounting and malformed BIN failure.
+The supplied 48,443 CTG RAW records replayed legally: 22,884 unique complete
+sequences and 25,559 duplicates in merged BOOK RAW.
+These checks do not replace the integrated Windows test on real Eman BIN files.
+
+Packaging:
+Root EXE, short HTML introduction, Docs folder with seven manuals.
+Source remains outside the user package. Review workflow cannot publish.

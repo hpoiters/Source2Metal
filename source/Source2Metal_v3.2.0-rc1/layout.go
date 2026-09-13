@@ -22,7 +22,7 @@ func createLayout(root, stamp string) (OutputLayout, error) {
 		ReportDir:        filepath.Join(run, "REPORTS"),
 		TempDir:          filepath.Join(run, "TEMP"),
 		RawGamesDir:      rawMerged,
-		RawBooksDir:      rawSeparate,
+		RawBooksDir:      filepath.Join(rawSeparate, "BOOK Sources"),
 		RawCombinedDir:   rawMerged,
 	}
 	l.RawGamesFile = filepath.Join(rawMerged, "Source2Metal - Merged GAME Sources - RAW.pgn")

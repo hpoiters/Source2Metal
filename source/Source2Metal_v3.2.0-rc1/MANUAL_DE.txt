@@ -1,0 +1,82 @@
+Source2Metal v3.2.0-rc1 — BENUTZERHANDBUCH (DEUTSCH)
+=================================================
+
+1. ZWECK
+Source2Metal ist ein portables Windows-x64-Werkzeug für PGN, CBH, 2CBH, CTG und Polyglot BIN. PGN/CBH/2CBH erzeugen GAME RAW und GAME-METAL. CTG und BIN erzeugen BOOK RAW; CTG hat zusätzlich eine eigene METAL-Route.
+
+BIN2PGN 0.1.3: BIN erzeugt nur BOOK RAW; kein BIN-METAL. GAME-Längen- und Elo-Filter gelten nicht für BIN.
+
+2. START
+Entpacken Sie Source2Metal_v3.2.0-rc1_RELEASE.zip vollständig. Lassen Sie EXE, kurze
+HTML-Einführung und Docs-Ordner zusammen. Legen Sie
+!Source2Metal_v3.2.0-rc1.exe in den Ordner mit den Quellen; Unterordner werden
+automatisch durchsucht. Eine Installation ist nicht erforderlich.
+
+.git, TEMP, Tijdelijk, Ordner mit der Endung _output und der eigene Ordner
+!Source2Metal_Output werden übersprungen. Quellen werden gelesen; Ergebnisse
+kommen in einen neuen Ausgabeordner mit Zeitstempel.
+
+3. VOLLSTÄNDIGE QUELLSÄTZE
+- PGN: eine .pgn-Datei.
+- CTG: zusammengehörige .ctg-, .cto- und .ctb-Dateien.
+- CBH: zusammengehörige .cbh-, .cbg-, .cbp- und .cbt-Dateien.
+- 2CBH: zusammengehörige .2cbh-, .2cbg- und .2lid-Dateien.
+Unvollständige Sätze werden gemeldet und nicht still als vollständig behandelt.
+
+- BIN: Polyglot .bin (16 bytes/record).
+
+4. HAUPTMENÜ
+1 = Quellen verarbeiten [Standard]
+2 = SyzygyCheck / Pagefile
+3 = Sprache ändern
+4 = Information
+0 = Beenden
+
+5. VERARBEITUNG
+Worker wählen; Standard ist die Hälfte der verfügbaren logischen CPU-Threads. BIN-Konvertierung und BOOK-Zusammenführung laufen sequenziell.
+
+Modus 1: nur Inventar und Berichte.
+Modus 2: GAME RAW + BOOK RAW, einzeln und zusammengeführt.
+Modus 3 [Standard]: Modus 2 plus bestehendes GAME-METAL und CTG-METAL.
+
+RAW-Tiefe: 1–120 ply, Standard 100. GAME-Mindestlänge: 1–120 ply, Standard 24. Elo: 0 erhält Quellenauswahl; 1 verlangt beide >=2500; 2 beide >=2400. Maximale Elo-Differenz: 0 ohne Grenze.
+
+BIN2PGN 0.1.3: BIN erzeugt nur BOOK RAW; kein BIN-METAL. GAME-Längen- und Elo-Filter gelten nicht für BIN.
+
+6. AUSGABE
+Ergebnisse stehen unter:
+  !Source2Metal_Output\JJJJ-MM-TT_HH-MM-SS\
+Der Laufordner enthält RAW und/oder METAL sowie REPORTS. Ergebnisse pro Quelle
+und zusammengeführte Ergebnisse bleiben getrennt erkennbar. Temporäre
+Adapterdateien werden am Ende entfernt. Berichte enthalten Einstellungen,
+Quellen, Status, Buildinformationen und SHA-256-Prüfsummen.
+
+GAME-METAL enthält vollständige legale Quellpartien mit Originalergebnis und
+nutzt Positions-/Transpositionsstatistik. CTG-METAL nutzt buchorientierte
+Evidenz. Beide bleiben wegen ihrer unterschiedlichen Bedeutung getrennt.
+
+Für Fritz „Aus Datenbank lernen“ mit Metal-PGN: Siege EIN, Niederlagen EIN,
+Weiß AUS, Schwarz AUS, Spieler AUS, Spielername leer, Partien ALLE.
+
+BOOK RAW vereint CTG und BIN. Vollständige legale Zugfolgen werden in der zusammengeführten BOOK-Datei dedupliziert; Präfixe und Transpositionen bleiben getrennt. Bei unterschiedlichen Ergebnissen oder Kopfzeilen bleibt der erste Datensatz erhalten (CTG vor BIN). Einzeldateien bleiben verfügbar. CTG-Ergebnisse stammen aus Buchstatistiken; BIN verwendet *. Beides sind keine Ergebnisse gespielter Partien. ALL SOURCES RAW vereint GAME RAW und zusammengeführtes BOOK RAW, wenn beide vorhanden sind, ohne klassenübergreifende Deduplizierung. BIN erzeugt kein METAL.
+
+RAW/1 - Separate Sources - RAW PGNs/GAME Sources/ (PGN, CBH, 2CBH)
+RAW/1 - Separate Sources - RAW PGNs/BOOK Sources/ (CTG, BIN)
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged GAME Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged BOOK Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged ALL Sources - RAW.pgn
+
+7. SyzygyCheck v2.2.0
+Wählen Sie Hauptmenü 2 und danach 1. Source2Metal schreibt
+SyzygyCheck_v2.2.0_UTILITY.zip neben die EXE. Entpacken Sie das vollständige
+Paket und lesen Sie 1_READ_FIRST_AL.txt. Source2Metal startet SyzygyCheck nicht.
+
+8. QUELLCODE, DATENSCHUTZ UND INTEGRITÄT
+Der Quellcode ist weder in der EXE noch in Source2Metal_v3.2.0-rc1_RELEASE.zip eingebettet.
+GitHub stellt ihn automatisch als Source code (zip) und Source code (tar.gz)
+bereit. Ein zusätzliches eigenes Quellcode-ZIP wird nicht veröffentlicht, da
+es diese Downloads nur duplizieren würde.
+Beide Programme arbeiten lokal und laden keine Quellen, Tablebase-Dateinamen
+oder Ergebnisse hoch. Prüfen Sie Downloads mit
+SHA256_Source2Metal_v3.2.0-rc1.txt. Die EXE ist derzeit nicht signiert; Windows
+kann deshalb „Unbekannter Herausgeber“ oder SmartScreen anzeigen.
