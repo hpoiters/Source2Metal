@@ -1,23 +1,23 @@
-name: Build and verify Source2Metal v3.2.0
+name: Build and verify Source2Metal v3.2.1
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - integration/bin2pgn-v3.2.0-rc1
+      - fix/pgn-resilience-final
       - main
     paths:
-      - 'source/Source2Metal_v3.2.0/**'
+      - 'source/Source2Metal_v3.2.1/**'
       - 'tools/**'
       - '*.md'
-      - '.github/workflows/build-release-v3.2.0.yml'
+      - '.github/workflows/build-release-v3.2.1.yml'
 
 permissions:
   contents: write
 
 concurrency:
-  group: source2metal-3.2.0-${{ github.ref }}
-  cancel-in-progress: false
+  group: source2metal-3.2.1-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   windows-release:
@@ -32,11 +32,11 @@ jobs:
         with:
           python-version: '3.12'
       - name: Fetch and verify unchanged SyzygyCheck package
-        working-directory: source/Source2Metal_v3.2.0
+        working-directory: source/Source2Metal_v3.2.1
         shell: pwsh
         run: ./prepare_syzygy_package.ps1
       - name: Tests and vet
-        working-directory: source/Source2Metal_v3.2.0
+        working-directory: source/Source2Metal_v3.2.1
         shell: pwsh
         run: |
           go test ./...
@@ -44,23 +44,23 @@ jobs:
           go vet ./...
           if ($LASTEXITCODE -ne 0) { throw 'Vet failed' }
       - name: Build and exercise Windows executable
-        working-directory: source/Source2Metal_v3.2.0
+        working-directory: source/Source2Metal_v3.2.1
         shell: pwsh
         env:
           CGO_ENABLED: '0'
         run: |
-          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '!Source2Metal_v3.2.0.exe' .
+          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '!Source2Metal_v3.2.1.exe' .
           if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
-          & './!Source2Metal_v3.2.0.exe' -selftest -no-pause
+          & './!Source2Metal_v3.2.1.exe' -selftest -no-pause
           if ($LASTEXITCODE -ne 0) { throw 'Selftest failed' }
-          & './!Source2Metal_v3.2.0.exe' -extract-syzygy-package -no-pause
+          & './!Source2Metal_v3.2.1.exe' -extract-syzygy-package -no-pause
           if ($LASTEXITCODE -ne 0) { throw 'Extraction failed' }
           $actual = (Get-FileHash 'SyzygyCheck_v2.2.0_UTILITY.zip' -Algorithm SHA256).Hash.ToLower()
           if ($actual -ne 'd80f8fd70f81b4f06cbd89547a7e346aa08688853b2ce2df25b30e93ccd6cb2c') { throw 'SyzygyCheck package changed' }
       - name: Package and validate documentation
         run: python tools/package_release.py
       - name: Test unpacked user release in seven languages
-        run: python tools/smoke_release.py release_v3.2.0/Source2Metal_v3.2.0_RELEASE.zip
+        run: python tools/smoke_release.py release_v3.2.1/Source2Metal_v3.2.1_RELEASE.zip
       - name: Publish new version after all checks
         if: github.ref == 'refs/heads/main'
         shell: pwsh
@@ -69,6 +69,6 @@ jobs:
         run: python tools/publish_release.py
       - uses: actions/upload-artifact@v4
         with:
-          name: Source2Metal-v3.2.0-verified-release
-          path: release_v3.2.0/*
+          name: Source2Metal-v3.2.1-verified-release
+          path: release_v3.2.1/*
           if-no-files-found: error

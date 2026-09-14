@@ -6,7 +6,7 @@ Source2Metal is currently unsigned. An open-source signing application to
 SignPath Foundation was not approved because the project did not yet meet its
 public-visibility requirement. This policy is retained for a possible later
 application; it does not imply current approval or certification.
-The Source2Metal v3.2.0 executable is unsigned.
+The Source2Metal v3.2.1 executable is unsigned.
 No file should be described as SignPath-signed unless its Authenticode signature has actually been verified.
 
 For any future release signed after explicit project approval:
