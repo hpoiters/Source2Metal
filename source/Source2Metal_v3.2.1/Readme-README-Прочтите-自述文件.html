@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Source2Metal v3.2.0 — English · Русский · 中文</title>
+  <title>Source2Metal v3.2.1 — English · Русский · 中文</title>
   <style>
     :root { color-scheme: light dark; font-family: "Segoe UI", Arial, sans-serif; }
     body { max-width: 900px; margin: 0 auto; padding: 28px; line-height: 1.55; }
@@ -21,7 +21,7 @@
 </head>
 <body>
   <header>
-    <h1>Source2Metal v3.2.0</h1>
+    <h1>Source2Metal v3.2.1</h1>
     <p class="subtitle">English · Русский · 中文</p>
   </header>
 
@@ -47,114 +47,31 @@
   <main>
     <section id="en" lang="en">
       <h2>English</h2>
-      <p>This version adds Polyglot BIN through BIN2PGN v0.1.3: complete legal BOOK RAW lines, separate outputs and merged CTG/BIN BOOK RAW with exact-line deduplication. BIN does not generate METAL. GAME-METAL and CTG-METAL remain separate. Read the manuals for the GAME Sources / BOOK Sources layout and filtering rules.</p>
-      <p>
-        This is the portable Windows release of Source2Metal v3.2.0. No
-        installation is required. Extract the ZIP and start
-        <code>!Source2Metal_v3.2.0.exe</code>. The leading exclamation mark keeps
-        the program near the top of a folder in Windows Explorer.
-      </p>
-      <p>
-        Source2Metal converts supported computer-chess sources and includes the
-        published and practically validated SyzygyCheck v2.2.0 as the one
-        unpackable utility.
-        Choose <strong>main-menu option 2 &gt; Extract separate SyzygyCheck package</strong>.
-        Source2Metal writes <code>SyzygyCheck_v2.2.0_UTILITY.zip</code>. Unzip it;
-        its executable is <code>!SyzygyCheck_v2.2.0.exe</code>, accompanied by
-        <code>1_READ_FIRST_AL.txt</code>, <code>Docs_AL</code> and
-        <code>Program_AL</code>.
-        Its verification core is based on the original Syzygy tablebase
-        verification code by Ronald de Man.
-      </p>
-      <p>
-        SyzygyCheck can verify only the selected control folder or that folder
-        and all real subfolders. It supports safe checkpoint/resume, full paths
-        for FAIL and ERROR, thread selection, live effective read speed and a
-        selectable result-report destination. It never changes tablebase files.
-      </p>
-      <p>
-        Source code is deliberately not duplicated inside the EXE or this user
-        package. Beside <code>Source2Metal_v3.2.0_RELEASE.zip</code>, GitHub
-        automatically provides <strong>Source code (zip)</strong> and
-        <strong>Source code (tar.gz)</strong>. No extra custom source ZIP is
-        published because it would duplicate them. The EXE is unsigned, so
-        Windows may show a warning; verify the user release and executable
-        with the published SHA-256 file. Source2Metal and SyzygyCheck work locally
-        and do not upload tablebase files, filenames or results.
-      </p>
+      <p>v3.2.1 fixes PGN batch resilience: an unusable game no longer aborts a long run, structural RAW verification no longer depends on a source Event tag, and at 10% unusable games in one source the interactive mode can stop only that source while all remaining files continue.</p>
+      <p>This version also includes Polyglot BIN through BIN2PGN v0.1.3: complete legal BOOK RAW lines, separate outputs and merged CTG/BIN BOOK RAW with exact-line deduplication. BIN does not generate METAL. GAME-METAL and CTG-METAL remain separate.</p>
+      <p>This is the portable Windows release of Source2Metal v3.2.1. No installation is required. Extract the ZIP and start <code>!Source2Metal_v3.2.1.exe</code>.</p>
+      <p>Source2Metal includes the published and practically validated SyzygyCheck v2.2.0 as the one unpackable utility. Choose <strong>main-menu option 2 &gt; Extract separate SyzygyCheck package</strong>.</p>
+      <p>Source code is deliberately not duplicated inside the EXE or this user package. Beside <code>Source2Metal_v3.2.1_RELEASE.zip</code>, GitHub automatically provides <strong>Source code (zip)</strong> and <strong>Source code (tar.gz)</strong>. The EXE is unsigned, so Windows may show a warning; verify the release with the published SHA-256 file.</p>
       <p class="back"><a href="#languages">Back to the language index</a></p>
     </section>
 
     <section id="ru" lang="ru">
       <h2>Русский</h2>
-      <p>Добавлена поддержка Polyglot BIN через BIN2PGN v0.1.3: полные легальные линии BOOK RAW, отдельные файлы и объединённый CTG/BIN BOOK RAW с удалением дубликатов полных линий. BIN не создаёт METAL. GAME-METAL и CTG-METAL остаются раздельными. Структура GAME Sources / BOOK Sources и правила фильтрации описаны в руководствах.</p>
-      <p>
-        Это переносимая версия Source2Metal v3.2.0 для Windows. Установка не
-        требуется. Распакуйте ZIP и запустите
-        <code>!Source2Metal_v3.2.0.exe</code>. Восклицательный знак помещает
-        программу ближе к началу списка файлов в Проводнике Windows.
-      </p>
-      <p>
-        Source2Metal преобразует поддерживаемые источники компьютерных шахмат и
-        содержит опубликованную и практически проверенную SyzygyCheck v2.2.0 как
-        единственную извлекаемую утилиту. Выберите <strong>пункт 2 главного меню
-        &gt; Извлечь отдельный пакет SyzygyCheck</strong>. Source2Metal создаст
-        <code>SyzygyCheck_v2.2.0_UTILITY.zip</code>. Распакуйте его; внутри находятся
-        <code>!SyzygyCheck_v2.2.0.exe</code>, <code>1_READ_FIRST_AL.txt</code>,
-        <code>Docs_AL</code> и <code>Program_AL</code>.
-        Ядро проверки основано на оригинальном коде проверки таблиц Syzygy,
-        созданном Ronald de Man.
-      </p>
-      <p>
-        SyzygyCheck может проверить только выбранную контрольную папку либо её
-        вместе со всеми настоящими подпапками. Поддерживаются безопасное
-        продолжение с контрольной точки, полные пути для FAIL и ERROR, выбор
-        потоков, текущая эффективная скорость чтения и выбор места сохранения
-        отчёта. Файлы таблиц программа не изменяет.
-      </p>
-      <p>
-        Исходный код намеренно не дублируется внутри EXE или пользовательского
-        пакета. Помимо <code>Source2Metal_v3.2.0_RELEASE.zip</code>, GitHub
-        автоматически предоставляет <strong>Source code (zip)</strong> и
-        <strong>Source code (tar.gz)</strong>. Дополнительный архив исходного кода
-        не публикуется, так как он лишь дублировал бы их. EXE не подписан, поэтому
-        Windows может показать предупреждение; проверьте пользовательский пакет и EXE
-        по опубликованному SHA-256. Source2Metal и SyzygyCheck работают локально
-        и не передают файлы таблиц, их имена или результаты проверки.
-      </p>
+      <p>v3.2.1 повышает устойчивость пакетной обработки PGN: одна непригодная партия больше не прерывает длительный запуск, структурная проверка RAW больше не зависит от тега Event источника, а при 10% непригодных партий в одном источнике интерактивный режим позволяет остановить только этот источник и продолжить все остальные файлы.</p>
+      <p>Поддержка Polyglot BIN через BIN2PGN v0.1.3 сохраняется: полные легальные линии BOOK RAW, отдельные файлы и объединённый CTG/BIN BOOK RAW с удалением дубликатов полных линий. BIN не создаёт METAL.</p>
+      <p>Это переносимая версия Source2Metal v3.2.1 для Windows. Установка не требуется. Распакуйте ZIP и запустите <code>!Source2Metal_v3.2.1.exe</code>.</p>
+      <p>Source2Metal содержит опубликованную и практически проверенную SyzygyCheck v2.2.0 как единственную извлекаемую утилиту.</p>
+      <p>Исходный код намеренно не дублируется внутри EXE или пользовательского пакета. Помимо <code>Source2Metal_v3.2.1_RELEASE.zip</code>, GitHub автоматически предоставляет <strong>Source code (zip)</strong> и <strong>Source code (tar.gz)</strong>. EXE не подписан; проверяйте пакет по опубликованному SHA-256.</p>
       <p class="back"><a href="#languages">К указателю языков</a></p>
     </section>
 
     <section id="zh" lang="zh">
       <h2>中文</h2>
-      <p>本版通过 BIN2PGN v0.1.3 支持 Polyglot BIN，生成合法完整的 BOOK RAW 变例，并提供各源文件及按完整走子序列去重的合并 CTG/BIN BOOK RAW。BIN 不生成 METAL。GAME-METAL 与 CTG-METAL 仍保持独立。GAME Sources / BOOK Sources 目录和筛选规则详见手册。</p>
-      <p>
-        这是 Source2Metal v3.2.0 的便携式 Windows 版本，无需安装。解压 ZIP 后运行
-        <code>!Source2Metal_v3.2.0.exe</code>。文件名前的感叹号可使程序在 Windows
-        文件资源管理器中靠前显示。
-      </p>
-      <p>
-        Source2Metal 可转换受支持的计算机国际象棋源文件，并内含经过实际验证的
-        SyzygyCheck v2.2.0 正式发布包，作为唯一可解出的实用工具。请选择
-        <strong>主菜单选项 2 &gt; 解出独立 SyzygyCheck 包</strong>。Source2Metal 会写出
-        <code>SyzygyCheck_v2.2.0_UTILITY.zip</code>。解压后其中包含
-        <code>!SyzygyCheck_v2.2.0.exe</code>、<code>1_READ_FIRST_AL.txt</code>、
-        <code>Docs_AL</code> 和 <code>Program_AL</code>。
-        其验证核心基于 Ronald de Man 最初的 Syzygy tablebase 验证代码。
-      </p>
-      <p>
-        SyzygyCheck 可只检查所选控制文件夹，也可检查该文件夹及其所有真实子文件夹。
-        它支持安全的检查点续检、FAIL 和 ERROR 完整路径、线程选择、实时有效读取速度以及
-        结果报告保存位置选择，并且绝不会修改 tablebase 文件。
-      </p>
-      <p>
-        源代码不会在 EXE 或用户包内重复保存。除
-        <code>Source2Metal_v3.2.0_RELEASE.zip</code> 外，GitHub 还会自动提供
-        <strong>Source code (zip)</strong> 和 <strong>Source code (tar.gz)</strong>。
-        不会另外发布自定义源代码 ZIP，因为那只会造成重复。EXE 尚未签名，因此 Windows
-        可能显示警告；请使用已发布的 SHA-256 文件验证用户发布包和 EXE。Source2Metal 与
-        SyzygyCheck 均在本地运行，不会上传 tablebase 文件、文件名或检查结果。
-      </p>
+      <p>v3.2.1 修复了 PGN 批处理的容错问题：单个无法使用的对局不再中断长时间运行；RAW 结构校验不再依赖来源中的 Event 标签；当某一来源中无法使用的对局达到 10% 时，交互模式可只停止该来源，其余文件继续处理。</p>
+      <p>本版继续通过 BIN2PGN v0.1.3 支持 Polyglot BIN，生成合法完整的 BOOK RAW 变例，并提供独立及合并的 CTG/BIN BOOK RAW。BIN 不生成 METAL。</p>
+      <p>这是 Source2Metal v3.2.1 的便携式 Windows 版本，无需安装。解压 ZIP 后运行 <code>!Source2Metal_v3.2.1.exe</code>。</p>
+      <p>Source2Metal 内含经过实际验证的 SyzygyCheck v2.2.0 正式发布包，作为唯一可解出的实用工具。</p>
+      <p>源代码不会在 EXE 或用户包内重复保存。除 <code>Source2Metal_v3.2.1_RELEASE.zip</code> 外，GitHub 还会自动提供 <strong>Source code (zip)</strong> 和 <strong>Source code (tar.gz)</strong>。EXE 尚未签名，请使用已发布的 SHA-256 文件验证发布包。</p>
       <p class="back"><a href="#languages">返回语言索引</a></p>
     </section>
   </main>
