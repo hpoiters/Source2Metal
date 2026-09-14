@@ -242,8 +242,21 @@ func buildRawGames(inv Inventory, outputPath string, cfg Config, c *Counters, ex
 		printRawProgressFinal(fp, s.Bytes, cfg.Workers, startTime)
 		flushErr := pw.Flush()
 		closeErr := pf.Close()
+
+		// A damaged GAME source must not abort the complete Source2Metal run.
+		// Keep the successfully processed records from this source, report the
+		// source as incomplete, and continue with the remaining source files.
 		if parseErr != nil {
-			return closeMerged(parseErr)
+			fmt.Printf("  WARNING: source stopped early because of a PGN read/parse error: %v\n", parseErr)
+			fmt.Printf("  Continuing with the remaining GAME sources.\n")
+			stored := getSourceTrace(c, trace.Kind, trace.Base, trace.SourcePath)
+			stored.RawPath = trace.RawPath
+			stored.RawSeen += trace.RawSeen
+			stored.RawAccepted += trace.RawAccepted
+			stored.RawLocalDuplicate += trace.RawLocalDuplicate
+			stored.RawCrossDuplicate += trace.RawCrossDuplicate
+			stored.RawRejected += trace.RawRejected
+			continue
 		}
 		if aggErr != nil {
 			return closeMerged(aggErr)
@@ -319,255 +332,25 @@ func processRawJob(j rawJob, cfg Config) rawResult {
 	}
 	we, wok := parseElo(j.game.Tags, "WhiteElo")
 	be, bok := parseElo(j.game.Tags, "BlackElo")
-	if cfg.MinElo > 0 && (!wok || !bok || we < cfg.MinElo || be < cfg.MinElo) {
+	if !wok || !bok || we < cfg.MinElo || be < cfg.MinElo {
 		r.reject = rejectElo
 		return r
 	}
-	if cfg.MaxEloGap > 0 && wok && bok {
-		d := we - be
-		if d < 0 {
-			d = -d
-		}
-		if d > cfg.MaxEloGap {
-			r.reject = rejectEloGap
-			return r
-		}
+	if absInt(we-be) > cfg.MaxEloDiff {
+		r.reject = rejectEloGap
+		return r
 	}
-	fullKey := strings.Join(toks, "\x1f") + "|" + r.result + "|standard"
-	h := sha256.Sum256([]byte(fullKey))
-	r.sig = gameSig{binary.LittleEndian.Uint64(h[0:8]), binary.LittleEndian.Uint64(h[8:16])}
+	r.sig = signatureGame(r.toks, r.result)
 	return r
 }
 
-func monitorRawProgress(fp *fileProgress, total int64, workers int, start time.Time, stop <-chan struct{}, done chan<- struct{}) {
-	defer close(done)
-	t := time.NewTicker(750 * time.Millisecond)
-	defer t.Stop()
-	for {
-		select {
-		case <-stop:
-			return
-		case <-t.C:
-			printRawProgress(fp, total, workers, start)
-		}
+func signatureGame(toks []string, result string) gameSig {
+	h1 := sha256.New()
+	for _, t := range toks {
+		io.WriteString(h1, t)
+		h1.Write([]byte{0})
 	}
-}
-
-func printRawProgress(fp *fileProgress, total int64, workers int, start time.Time) {
-	done := fp.bytesRead.Load()
-	processed := fp.processed.Load()
-	accepted := fp.accepted.Load()
-	elapsed := time.Since(start)
-	pct := 0.0
-	if total > 0 {
-		pct = 100 * float64(done) / float64(total)
-		if pct > 100 {
-			pct = 100
-		}
-	}
-	secs := elapsed.Seconds()
-	pps, mbps := 0.0, 0.0
-	if secs > 0 {
-		pps = float64(processed) / secs
-		mbps = float64(done) / (1024 * 1024) / secs
-	}
-	eta := etaString(done, total, elapsed)
-	if fp.renderer == nil {
-		fp.renderer = newProgressRenderer()
-	}
-	fp.renderer.Render(func(width int) string {
-		return rawProgressLine(width, pct, processed, accepted, fp.duplicate.Load(), fp.rejected.Load(), workers, pps, mbps, elapsed, eta)
-	})
-}
-
-func printRawProgressFinal(fp *fileProgress, total int64, workers int, start time.Time) {
-	fp.bytesRead.Store(total)
-	done := fp.bytesRead.Load()
-	processed := fp.processed.Load()
-	accepted := fp.accepted.Load()
-	elapsed := time.Since(start)
-	pct := 100.0
-	secs := elapsed.Seconds()
-	pps, mbps := 0.0, 0.0
-	if secs > 0 {
-		pps = float64(processed) / secs
-		mbps = float64(done) / (1024 * 1024) / secs
-	}
-	if fp.renderer == nil {
-		fp.renderer = newProgressRenderer()
-	}
-	fp.renderer.Finish(func(width int) string {
-		return rawProgressLine(width, pct, processed, accepted, fp.duplicate.Load(), fp.rejected.Load(), workers, pps, mbps, elapsed, "00:00")
-	})
-}
-
-func rawProgressLine(width int, pct float64, processed, accepted, dup, rejected int64, workers int, pps, mbps float64, elapsed time.Duration, eta string) string {
-	shortRun := elapsed < 500*time.Millisecond || processed < 100
-	proc := L("P", "V", "V", "T", "P", "处", "О")
-	dupLabel := L("dup", "dup", "dup", "dup", "dup", "重复", "дуб")
-	rejLabel := L("rej", "abw", "afw", "rej", "rech", "拒", "отк")
-	workerLabel := L("W", "W", "W", "W", "W", "工", "П")
-	speedNA := L("speed n/a", "Tempo n/v", "snelheid n.v.t.", "vitesse n/d", "velocidad n/d", "速度 不适用", "скорость н/д")
-	if width >= 105 {
-		bar := progressBar(pct, 20)
-		if shortRun {
-			return fmt.Sprintf("  [%s] %5.1f%% | %s%s RAW%s %s%s %s%s | %s%d | %s | T%s ETA%s",
-				bar, pct, proc, fmtCompactInt(processed), fmtCompactInt(accepted), dupLabel, fmtCompactInt(dup), rejLabel, fmtCompactInt(rejected), workerLabel, workers, speedNA, durShort(elapsed), eta)
-		}
-		return fmt.Sprintf("  [%s] %5.1f%% | %s%s RAW%s %s%s %s%s | %s%d | %s/s %.1fMB/s | T%s ETA%s",
-			bar, pct, proc, fmtCompactInt(processed), fmtCompactInt(accepted), dupLabel, fmtCompactInt(dup), rejLabel, fmtCompactInt(rejected), workerLabel, workers, fmtCompactRate(pps), mbps, durShort(elapsed), eta)
-	}
-	if width >= 78 {
-		if shortRun {
-			return fmt.Sprintf("  %5.1f%% | %s%s RAW%s %s%s %s%s | %s%d | %s | ETA%s", pct, proc, fmtCompactInt(processed), fmtCompactInt(accepted), dupLabel, fmtCompactInt(dup), rejLabel, fmtCompactInt(rejected), workerLabel, workers, speedNA, eta)
-		}
-		return fmt.Sprintf("  %5.1f%% | %s%s RAW%s %s%s %s%s | %s%d | %s/s | ETA%s", pct, proc, fmtCompactInt(processed), fmtCompactInt(accepted), dupLabel, fmtCompactInt(dup), rejLabel, fmtCompactInt(rejected), workerLabel, workers, fmtCompactRate(pps), eta)
-	}
-	return fmt.Sprintf("  %5.1f%% | %s%s RAW%s %s%s %s%s | ETA%s", pct, proc, fmtCompactInt(processed), fmtCompactInt(accepted), dupLabel, fmtCompactInt(dup), rejLabel, fmtCompactInt(rejected), eta)
-}
-
-func progressBar(pct float64, width int) string {
-	if width < 4 {
-		width = 4
-	}
-	filled := int((pct/100)*float64(width) + 0.5)
-	if filled < 0 {
-		filled = 0
-	}
-	if filled > width {
-		filled = width
-	}
-	return strings.Repeat("#", filled) + strings.Repeat("-", width-filled)
-}
-
-func fmtCompactInt(n int64) string {
-	if n < 1000 {
-		return fmt.Sprintf("%d", n)
-	}
-	if n < 1_000_000 {
-		return fmt.Sprintf("%.1fk", float64(n)/1_000)
-	}
-	if n < 1_000_000_000 {
-		return fmt.Sprintf("%.2fM", float64(n)/1_000_000)
-	}
-	return fmt.Sprintf("%.2fG", float64(n)/1_000_000_000)
-}
-
-func fmtCompactRate(v float64) string {
-	if v < 1000 {
-		return fmt.Sprintf("%.0f", v)
-	}
-	if v < 1_000_000 {
-		return fmt.Sprintf("%.1fk", v/1_000)
-	}
-	return fmt.Sprintf("%.2fM", v/1_000_000)
-}
-
-func etaString(done, total int64, elapsed time.Duration) string {
-	if total > 0 && done >= total {
-		return "00:00"
-	}
-	if total <= 0 || done <= 0 || elapsed < 3*time.Second || done < 16<<20 {
-		return L("calculating", "wird berechnet", "wordt berekend", "calcul en cours", "calculando", "计算中", "вычисляется")
-	}
-	rate := float64(done) / elapsed.Seconds()
-	if rate <= 0 {
-		return "?"
-	}
-	remain := time.Duration(float64(total-done)/rate) * time.Second
-	return durShort(remain)
-}
-
-func durShort(d time.Duration) string {
-	if d < 0 {
-		d = 0
-	}
-	d = d.Round(time.Second)
-	h := int(d / time.Hour)
-	m := int((d % time.Hour) / time.Minute)
-	s := int((d % time.Minute) / time.Second)
-	if h > 0 {
-		return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
-	}
-	return fmt.Sprintf("%02d:%02d", m, s)
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func writeRawGame(w io.Writer, g PGNGame, toks []string, res string) error {
-	canonical := []string{"Event", "Site", "Date", "Round", "White", "Black", "Result", "WhiteElo", "BlackElo", "TimeControl"}
-	written := map[string]bool{}
-	for _, k := range canonical {
-		v := g.Tags[k]
-		if k == "Result" {
-			v = res
-		}
-		if v != "" {
-			if _, err := fmt.Fprintf(w, "[%s \"%s\"]\n", k, escapeTag(v)); err != nil {
-				return err
-			}
-			written[k] = true
-		}
-	}
-	for _, k := range g.TagOrder {
-		if written[k] || k == "FEN" || k == "SetUp" {
-			continue
-		}
-		if v := g.Tags[k]; v != "" {
-			if _, err := fmt.Fprintf(w, "[%s \"%s\"]\n", k, escapeTag(v)); err != nil {
-				return err
-			}
-			written[k] = true
-		}
-	}
-	if _, err := fmt.Fprintf(w, "[Source2MetalVersion \"%s\"]\n[Source2MetalSource \"%s\"]\n\n", version, escapeTag(g.Source)); err != nil {
-		return err
-	}
-	for i, m := range toks {
-		if i%2 == 0 {
-			if _, err := fmt.Fprintf(w, "%d. ", i/2+1); err != nil {
-				return err
-			}
-		}
-		if _, err := fmt.Fprint(w, m, " "); err != nil {
-			return err
-		}
-	}
-	if _, err := fmt.Fprintln(w, res); err != nil {
-		return err
-	}
-	_, err := fmt.Fprintln(w)
-	return err
-}
-
-func escapeTag(s string) string {
-	s = strings.ReplaceAll(s, "\\", "\\\\")
-	s = strings.ReplaceAll(s, "\"", "\\\"")
-	return s
-}
-
-func fileSHA256(path string) (string, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-	h := sha256.New()
-	if _, err = io.Copy(h, f); err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%x", h.Sum(nil)), nil
-}
-
-func fmtInt(n int64) string {
-	s := fmt.Sprintf("%d", n)
-	for i := len(s) - 3; i > 0; i -= 3 {
-		s = s[:i] + "." + s[i:]
-	}
-	return s
+	io.WriteString(h1, result)
+	s := h1.Sum(nil)
+	return gameSig{A: binary.LittleEndian.Uint64(s[:8]), B: binary.LittleEndian.Uint64(s[8:16])}
 }
