@@ -41,7 +41,7 @@ Mode 3 [default]: mode 2 plus existing GAME-METAL and CTG-METAL.
 
 Maximum RAW depth: 1–120 ply, default 100. GAME minimum length: 1–120 ply, default 24. Elo: 0 keeps source selection; 1 requires both players >=2500; 2 requires both >=2400. Maximum Elo gap: 0 means no limit.
 
-PGN fault tolerance: an unusable individual game is skipped and processing of that source continues. Normal filters (Elo, length, FEN/SetUp and duplicates) do not count as errors. Once at least 100 games have been read and 10% or more of one source file is unusable, interactive mode asks once whether to continue that source or stop only that source. All remaining source files and later processing stages continue in either case. Non-interactive runs continue automatically and log the warning. Structural RAW verification counts a Source2Metal tag that is present in every written record and therefore does not depend on an Event tag from the source.
+PGN fault tolerance: an unusable individual game is skipped and processing of that source continues. Normal filters (Elo, length, FEN/SetUp and duplicates) do not count as errors. Once at least 100 games have been read and 10% or more of one source file is unusable, interactive mode asks once whether to continue that source or stop only that source. All remaining source files and later processing stages continue in either case. Non-interactive runs continue automatically and log the warning. Structural RAW verification counts the Result tag that is present exactly once in every written GAME and BOOK record and therefore does not depend on an Event tag from the source.
 
 BIN2PGN 0.1.3: BIN produces BOOK RAW only; no BIN-METAL. GAME length and Elo filters do not apply to BIN.
 
