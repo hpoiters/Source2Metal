@@ -6,7 +6,7 @@ import hashlib
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "3.2.0"
+VERSION = "3.2.1"
 SOURCE = ROOT / "source" / f"Source2Metal_v{VERSION}"
 OUTPUT = ROOT / f"release_v{VERSION}"
 INTRO = "Readme-README-Прочтите-自述文件.html"
@@ -71,7 +71,7 @@ def main():
     archive = OUTPUT / f"Source2Metal_v{VERSION}_RELEASE.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for name, p in sorted(files.items()):
-            info = zipfile.ZipInfo(name, (2026, 9, 13, 0, 0, 0))
+            info = zipfile.ZipInfo(name, (2026, 9, 14, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
             z.writestr(info, p.read_bytes())
