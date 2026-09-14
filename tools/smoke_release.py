@@ -44,6 +44,37 @@ def main():
             status = (run / "REPORTS" / "STATUS.txt").read_text(encoding="utf-8-sig")
             assert "BIN2PGN 0.1.3" in status and "%!" not in status, (lang, status)
             print(f"{lang}: packaged EXE, Unicode/spaces, duplicate BIN, default GAME filters: OK")
+
+        # Regression test for v3.2.1: one source may contain unusable games and
+        # a valid game without Event. Neither condition may terminate the batch,
+        # and a following PGN source must still be processed and verified.
+        resilient = root / "PGN resilience"
+        resilient.mkdir()
+        first = resilient / "01_with_errors.pgn"
+        blocks = []
+        for i in range(100):
+            if i < 10:
+                blocks.append(f'[White "Bad{i}"]\n[Black "Bad"]\n[Result "*"]\n\n1. e4 e5 *\n')
+            else:
+                blocks.append(f'[White "Good{i}"]\n[Black "Good"]\n[Result "1-0"]\n\n1. e4 e5 1-0\n')
+        first.write_text("\n".join(blocks), encoding="utf-8")
+        second = resilient / "02_followup.pgn"
+        second.write_text('[Event "Follow-up"]\n[White "Next"]\n[Black "File"]\n[Result "0-1"]\n\n1. d4 d5 0-1\n', encoding="utf-8")
+        result = subprocess.run(
+            [str(exe), "-input", str(resilient), "-mode", "raw", "-min-ply", "1",
+             "-workers", "1", "-no-pause"], cwd=root, capture_output=True, timeout=120)
+        if result.returncode:
+            raise RuntimeError(f"PGN resilience test failed: {result.stdout!r} {result.stderr!r}")
+        run, = (resilient / "!Source2Metal_Output").iterdir()
+        report = (run / "REPORTS" / "Source2Metal_Report.txt").read_text(encoding="utf-8-sig")
+        assert "Geen geldige uitslag" in report or "invalid" in report.lower() or "ungült" in report.lower(), report
+        merged = run / "RAW" / "2 - Merged Sources - RAW PGNs" / "Source2Metal - Merged GAME Sources - RAW.pgn"
+        text = merged.read_text(encoding="utf-8-sig")
+        assert '[Source2MetalSource "' in text
+        assert "02_followup.pgn" in text, "following PGN source was not processed"
+        assert text.count("[Source2MetalVersion \"3.2.1\"]") >= 2, "generated records were not verified by invariant tag"
+        print("PGN resilience: bad games skipped, Event-less game accepted, later source processed: OK")
+
         bad = root / "Broken input"
         bad.mkdir()
         (bad / "broken.bin").write_bytes(b"broken")
