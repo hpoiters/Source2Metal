@@ -226,11 +226,25 @@ func buildRawGames(inv Inventory, outputPath string, cfg Config, c *Counters, ex
 			}
 			aggDone <- firstErr
 		}()
+
 		seq := int64(0)
+		var sourceSeen, sourceErrors int64
+		highErrorAsked := false
 		parseErr := parsePGNFile(s.Path, func(g PGNGame) error {
 			g.Source = sourceOriginalPath(s)
+			sourceSeen++
+			badSourceGame := gameHasSourceError(g)
+			if badSourceGame {
+				sourceErrors++
+			}
 			jobs <- rawJob{seq: seq, game: g}
 			seq++
+			if badSourceGame && !highErrorAsked && highPGNErrorRate(sourceSeen, sourceErrors) {
+				highErrorAsked = true
+				if !askContinueBadPGNSource(displayPath, sourceSeen, sourceErrors, cfg.Interactive) {
+					return errStopCurrentSource
+				}
+			}
 			return nil
 		}, func(done, total int64) { fp.bytesRead.Store(done) })
 		close(jobs)
@@ -239,12 +253,13 @@ func buildRawGames(inv Inventory, outputPath string, cfg Config, c *Counters, ex
 		aggErr := <-aggDone
 		close(stopMon)
 		<-monDone
-		printRawProgressFinal(fp, s.Bytes, cfg.Workers, startTime)
+		if parseErr == nil {
+			printRawProgressFinal(fp, s.Bytes, cfg.Workers, startTime)
+		} else {
+			printRawProgressStopped(fp, s.Bytes, cfg.Workers, startTime)
+		}
 		flushErr := pw.Flush()
 		closeErr := pf.Close()
-		if parseErr != nil {
-			return closeMerged(parseErr)
-		}
 		if aggErr != nil {
 			return closeMerged(aggErr)
 		}
@@ -254,6 +269,7 @@ func buildRawGames(inv Inventory, outputPath string, cfg Config, c *Counters, ex
 		if closeErr != nil {
 			return closeMerged(closeErr)
 		}
+
 		found, verr := countGeneratedPGNRecords(perPath)
 		if verr != nil {
 			return closeMerged(fmt.Errorf("per-bron RAW controle %s: %w", s.Base, verr))
@@ -273,6 +289,29 @@ func buildRawGames(inv Inventory, outputPath string, cfg Config, c *Counters, ex
 		fmt.Printf(L("  File done: seen %s | per-source RAW %s | local dup %s | cross-source dup %s | rejected %s | merged contribution %s\n", "  Datei fertig: gesehen %s | RAW pro Quelle %s | lokale Duplikate %s | quellenübergreifende Duplikate %s | abgelehnt %s | zusammengeführter Beitrag %s\n", "  Bestand klaar: gezien %s | per-bron RAW %s | lokale dup %s | cross-source dup %s | afgewezen %s | bijdrage samengevoegd %s\n", "  Fichier terminé : vus %s | RAW par source %s | doublons locaux %s | doublons inter-source %s | rejetés %s | contribution fusionnée %s\n", "  Archivo listo: vistos %s | RAW por fuente %s | duplicados locales %s | duplicados entre fuentes %s | rechazados %s | contribución combinada %s\n", "  文件完成：已查看 %s | 每源 RAW %s | 本地重复 %s | 跨源重复 %s | 已拒绝 %s | 合并贡献 %s\n", "  Файл готов: просмотрено %s | RAW по источнику %s | локальные дубликаты %s | межисточниковые дубликаты %s | отклонено %s | вклад в объединение %s\n"),
 			fmtInt(trace.RawSeen), fmtInt(trace.RawAccepted), fmtInt(trace.RawLocalDuplicate), fmtInt(trace.RawCrossDuplicate), fmtInt(trace.RawRejected), fmtInt(fp.accepted.Load()))
 		fmt.Printf(L("  Per-source result: %s\n", "  Ergebnis pro Quelle: %s\n", "  Per-bron resultaat: %s\n", "  Résultat par source : %s\n", "  Resultado por fuente: %s\n", "  每源结果：%s\n", "  Результат по источнику: %s\n"), perPath)
+
+		if parseErr != nil {
+			if parseErr == errStopCurrentSource {
+				fmt.Println(L(
+					"  Current source stopped by choice; the remaining source files will continue.",
+					"  Aktuelle Quelle auf Wunsch gestoppt; die übrigen Quelldateien werden weiterverarbeitet.",
+					"  Huidige bron op keuze gestopt; de overige bronbestanden worden verder verwerkt.",
+					"  Source actuelle arrêtée par choix ; les autres fichiers source seront poursuivis.",
+					"  Fuente actual detenida por elección; los demás archivos fuente continuarán.",
+					"  已按选择停止当前来源；其余来源文件将继续处理。",
+					"  Текущий источник остановлен по выбору; остальные файлы-источники будут обработаны дальше."))
+			} else {
+				fmt.Printf("  %s: %v\n", L("WARNING - source read stopped early", "WARNUNG - Lesen der Quelle vorzeitig beendet", "WAARSCHUWING - bron voortijdig gestopt bij lezen", "AVERTISSEMENT - lecture de la source arrêtée prématurément", "ADVERTENCIA - lectura de la fuente detenida antes de tiempo", "警告 - 来源读取提前停止", "ПРЕДУПРЕЖДЕНИЕ - чтение источника преждевременно остановлено"), parseErr)
+				fmt.Println(L(
+					"  Successfully processed games from this source are kept; the remaining source files will continue.",
+					"  Erfolgreich verarbeitete Partien aus dieser Quelle bleiben erhalten; die übrigen Quelldateien werden weiterverarbeitet.",
+					"  Succesvol verwerkte partijen uit deze bron blijven behouden; de overige bronbestanden worden verder verwerkt.",
+					"  Les parties traitées avec succès de cette source sont conservées ; les autres fichiers source seront poursuivis.",
+					"  Las partidas procesadas correctamente de esta fuente se conservan; los demás archivos fuente continuarán.",
+					"  此来源中已成功处理的对局会被保留；其余来源文件将继续处理。",
+					"  Успешно обработанные партии из этого источника сохраняются; остальные файлы-источники будут обработаны дальше."))
+			}
+		}
 	}
 	if err := w.Flush(); err != nil {
 		return closeMerged(err)
