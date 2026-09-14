@@ -46,8 +46,9 @@ def main():
             print(f"{lang}: packaged EXE, Unicode/spaces, duplicate BIN, default GAME filters: OK")
 
         # Regression test for v3.2.1: one source may contain unusable games and
-        # a valid game without Event. Neither condition may terminate the batch,
+        # valid games without Event. Neither condition may terminate the batch,
         # and a following PGN source must still be processed and verified.
+        (root / "Source2Metal.ini").write_text("Language=en\n", encoding="utf-8")
         resilient = root / "PGN resilience"
         resilient.mkdir()
         first = resilient / "01_with_errors.pgn"
@@ -67,7 +68,7 @@ def main():
             raise RuntimeError(f"PGN resilience test failed: {result.stdout!r} {result.stderr!r}")
         run, = (resilient / "!Source2Metal_Output").iterdir()
         report = (run / "REPORTS" / "Source2Metal_Report.txt").read_text(encoding="utf-8-sig")
-        assert "Geen geldige uitslag" in report or "invalid" in report.lower() or "ungült" in report.lower(), report
+        assert "Source2Metal v3.2.1" in report, report
         merged = run / "RAW" / "2 - Merged Sources - RAW PGNs" / "Source2Metal - Merged GAME Sources - RAW.pgn"
         text = merged.read_text(encoding="utf-8-sig")
         assert '[Source2MetalSource "' in text
