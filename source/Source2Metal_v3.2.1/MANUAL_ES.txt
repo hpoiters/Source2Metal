@@ -1,4 +1,4 @@
-Source2Metal v3.2.0 — MANUAL DE USUARIO (ESPAÑOL)
+Source2Metal v3.2.1 — MANUAL DE USUARIO (ESPAÑOL)
 =================================================
 
 1. OBJETIVO
@@ -7,9 +7,9 @@ Source2Metal es una herramienta portátil Windows x64 para PGN, CBH, 2CBH, CTG y
 BIN2PGN 0.1.3: BIN produce solo BOOK RAW; sin BIN-METAL. Los filtros GAME de longitud y Elo no se aplican a BIN.
 
 2. INICIO
-Extraiga completamente Source2Metal_v3.2.0_RELEASE.zip. Mantenga juntos el
+Extraiga completamente Source2Metal_v3.2.1_RELEASE.zip. Mantenga juntos el
 EXE, la breve introducción HTML y la carpeta Docs. Coloque
-!Source2Metal_v3.2.0.exe en la carpeta con las fuentes; las subcarpetas se
+!Source2Metal_v3.2.1.exe en la carpeta con las fuentes; las subcarpetas se
 buscan automáticamente. No requiere instalación.
 
 El programa omite .git, TEMP, Tijdelijk, carpetas terminadas en _output y su
@@ -40,6 +40,8 @@ Modo 2: GAME RAW + BOOK RAW, separados y combinados.
 Modo 3 [predeterminado]: modo 2 más GAME-METAL y CTG-METAL existentes.
 
 Profundidad RAW: 1–120 ply, predeterminado 100. Longitud mínima GAME: 1–120 ply, predeterminado 24. Elo: 0 mantiene la selección; 1 exige ambos >=2500; 2 ambos >=2400. Diferencia Elo máxima: 0 sin límite.
+
+Tolerancia a errores PGN: una partida individual inutilizable se omite y el procesamiento de esa fuente continúa. Los filtros normales (Elo, longitud, FEN/SetUp y duplicados) no cuentan como errores. Cuando se han leído al menos 100 partidas y el 10% o más de un archivo fuente es inutilizable, el modo interactivo pregunta una sola vez si debe continuar esa fuente o detener únicamente esa fuente. Los demás archivos fuente y las etapas posteriores continúan en ambos casos. Las ejecuciones no interactivas continúan automáticamente y registran la advertencia. La verificación estructural RAW cuenta una etiqueta Source2Metal presente en cada registro escrito y por tanto no depende de una etiqueta Event procedente de la fuente.
 
 BIN2PGN 0.1.3: BIN produce solo BOOK RAW; sin BIN-METAL. Los filtros GAME de longitud y Elo no se aplican a BIN.
 
@@ -73,11 +75,11 @@ SyzygyCheck_v2.2.0_UTILITY.zip junto al EXE. Extraiga el paquete completo y lea
 1_READ_FIRST_AL.txt. Source2Metal no ejecuta SyzygyCheck.
 
 8. FUENTE, PRIVACIDAD E INTEGRIDAD
-El código fuente no está dentro del EXE ni de Source2Metal_v3.2.0_RELEASE.zip.
+El código fuente no está dentro del EXE ni de Source2Metal_v3.2.1_RELEASE.zip.
 GitHub lo ofrece automáticamente como Source code (zip) y Source code (tar.gz).
 No se publica otro ZIP de código fuente personalizado porque duplicaría esas
 descargas.
 Los programas trabajan localmente y no suben fuentes, nombres de tablebases ni
-resultados. Verifique las descargas con SHA256_Source2Metal_v3.2.0.txt. El EXE
+resultados. Verifique las descargas con SHA256_Source2Metal_v3.2.1.txt. El EXE
 no está firmado actualmente; Windows puede mostrar Editor desconocido o
 SmartScreen.
