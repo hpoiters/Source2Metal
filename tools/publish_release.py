@@ -15,6 +15,9 @@ PRESERVED = {
     "v3.0.10": ("c27f18a5425658b31f06549b81f0633ae6464bf0", {
         "SHA256_Source2Metal_v3.0.10.txt": "f00f58b7128227996a0b10f53506d443adafa258f99fb7c385ee95515f6911e4",
         "Source2Metal_v3.0.10_RELEASE.zip": "dfd9443fcaf4e647ef56ee82c0c6f434a68f2359cb1f9c2060058c735b6db71b"}),
+    "v3.2.0": ("79115eced04ee8217d5e86a62fc0fefd48b51f13", {
+        "SHA256_Source2Metal_v3.2.0.txt": "ae41987343d39c34d1ae60860c3c9a9e0ca9daf45c40cbc173be608571cb5f1b",
+        "Source2Metal_v3.2.0_RELEASE.zip": "a84d637e606f08311b5b9ab5678ed0a9f9004e2fd539a115b4f91302e8614300"}),
 }
 
 
