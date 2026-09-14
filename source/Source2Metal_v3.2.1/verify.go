@@ -8,9 +8,10 @@ import (
 )
 
 // countGeneratedPGNRecords is a lightweight structural end check for PGN files
-// written by Source2Metal itself. Every generated record starts with an Event
-// tag at the beginning of a line. Counting that marker avoids reparsing millions
-// of moves while still detecting truncated/missing record blocks.
+// written by Source2Metal itself. Every generated record contains exactly one
+// Source2MetalVersion tag, even when the source game has no Event tag. Counting
+// that invariant marker avoids reparsing millions of moves and prevents a valid
+// but incomplete source header from causing a false whole-run failure.
 func countGeneratedPGNRecords(path string) (int64, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -19,7 +20,8 @@ func countGeneratedPGNRecords(path string) (int64, error) {
 	defer f.Close()
 
 	const chunkSize = 8 << 20
-	marker := []byte("\n[Event \"")
+	prefix := []byte("[Source2MetalVersion \"")
+	marker := []byte("\n[Source2MetalVersion \"")
 	buf := make([]byte, chunkSize)
 	tail := make([]byte, 0, len(marker)-1)
 	var count int64
@@ -32,7 +34,7 @@ func countGeneratedPGNRecords(path string) (int64, error) {
 			data = append(data, tail...)
 			data = append(data, buf[:n]...)
 			if first {
-				if bytes.HasPrefix(data, []byte("[Event \"")) {
+				if bytes.HasPrefix(data, prefix) {
 					count++
 				}
 				first = false
