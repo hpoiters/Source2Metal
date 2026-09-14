@@ -1,4 +1,4 @@
-"""Create v3.2.0 only; never replace any published tag or asset."""
+"""Create v3.2.1 only; never replace any published tag or asset."""
 import hashlib
 import json
 import os
@@ -7,7 +7,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "hpoiters/Source2Metal"
-VERSION = "3.2.0"
+VERSION = "3.2.1"
 PRESERVED = {
     "v3.0.9": ("24f23cf83a77654f256ea12e7cce13ef491096a4", {
         "SHA256_Source2Metal_v3.0.9.txt": "8f95209555803bd97541c5b2479bf6051cee6c2508d035c330b0eb728d1b6ca1",
