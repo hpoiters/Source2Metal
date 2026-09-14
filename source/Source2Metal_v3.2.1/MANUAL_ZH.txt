@@ -1,0 +1,75 @@
+Source2Metal v3.2.0 — 用户手册（中文）
+=====================================
+
+1. 用途
+Source2Metal 是一款便携式 Windows x64 程序，支持 PGN、CBH、2CBH、CTG 和 Polyglot BIN。PGN/CBH/2CBH 生成 GAME RAW 和 GAME-METAL。CTG 和 BIN 生成 BOOK RAW；CTG 另有独立的 METAL 路径。
+
+BIN2PGN 0.1.3：BIN 仅生成 BOOK RAW，不生成 BIN-METAL。GAME 的长度和 Elo 筛选不适用于 BIN。
+
+2. 启动
+完整解压 Source2Metal_v3.2.0_RELEASE.zip。请将 EXE、简短 HTML 介绍和 Docs 文件夹保存在
+一起。把 !Source2Metal_v3.2.0.exe 放入源文件所在文件夹；程序会自动搜索其
+子文件夹。无需安装。
+
+程序会跳过 .git、TEMP、Tijdelijk、名称以 _output 结尾的文件夹，以及它自己的
+!Source2Metal_Output 文件夹。源文件只被读取；结果写入新的时间戳输出文件夹。
+
+3. 完整源文件组
+- PGN：一个 .pgn 文件。
+- CTG：相互匹配的 .ctg、.cto 和 .ctb 文件。
+- CBH：相互匹配的 .cbh、.cbg、.cbp 和 .cbt 文件。
+- 2CBH：相互匹配的 .2cbh、.2cbg 和 .2lid 文件。
+不完整的文件组会明确报告，不会被静默当作完整文件组处理。
+
+- BIN: Polyglot .bin (16 bytes/record).
+
+4. 主菜单
+1 = 处理源文件 [默认]
+2 = SyzygyCheck / 页面文件
+3 = 更改语言
+4 = 信息
+0 = 退出
+
+5. 处理选项
+选择 worker 数，默认为可用逻辑 CPU 线程的一半。BIN 转换和 BOOK 合并按顺序执行。
+
+模式 1：仅盘点和报告。
+模式 2：生成各源及合并的 GAME RAW 和 BOOK RAW。
+模式 3 [默认]：模式 2 加现有 GAME-METAL 和 CTG-METAL。
+
+RAW 深度：1–120 ply，默认 100。GAME 最短长度：1–120 ply，默认 24。Elo：0 保留源选择；1 要求双方 >=2500；2 要求双方 >=2400。最大 Elo 差：0 表示不限。
+
+BIN2PGN 0.1.3：BIN 仅生成 BOOK RAW，不生成 BIN-METAL。GAME 的长度和 Elo 筛选不适用于 BIN。
+
+6. 输出
+结果写入：
+  !Source2Metal_Output\YYYY-MM-DD_HH-MM-SS\
+运行文件夹包含 RAW 和/或 METAL 结果以及 REPORTS。每个源的结果与合并结果保持
+可区分。临时适配器文件在结束时删除。报告包含设置、源、状态、构建信息和
+SHA-256 校验值。
+
+GAME-METAL 保存带原始赛果的完整合法源对局，并使用局面/转置统计。CTG-METAL
+使用面向开局库的证据。由于证据含义不同，两者会刻意保持分开。
+
+在 Fritz 中使用 Metal PGN“从数据库学习”：胜局 开，负局 开，白方 关，黑方 关，
+棋手 关，棋手名留空，对局 全部。
+
+BOOK RAW 合并 CTG 和 BIN。在合并的 BOOK 文件中，仅对完全相同的合法完整走子序列去重；前缀和不同次序的转置变例保持独立。若结果或标签不同，保留首条记录（CTG 优先于 BIN）。各源文件仍保留。CTG 结果来自开局库统计；BIN 使用 *，均非实际对局结果。若 GAME RAW 和合并的 BOOK RAW 均存在，则生成 ALL SOURCES RAW，不进行跨类别去重。BIN 不生成 METAL。
+
+RAW/1 - Separate Sources - RAW PGNs/GAME Sources/ (PGN, CBH, 2CBH)
+RAW/1 - Separate Sources - RAW PGNs/BOOK Sources/ (CTG, BIN)
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged GAME Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged BOOK Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged ALL Sources - RAW.pgn
+
+7. SyzygyCheck v2.2.0
+选择主菜单 2，再选择选项 1。Source2Metal 会在 EXE 旁写出
+SyzygyCheck_v2.2.0_UTILITY.zip。请完整解压并阅读 1_READ_FIRST_AL.txt。
+Source2Metal 本身不会运行 SyzygyCheck。
+
+8. 源代码、隐私与完整性
+源代码不嵌入 EXE，也不放入 Source2Metal_v3.2.0_RELEASE.zip。GitHub 会自动提供
+Source code (zip) 和 Source code (tar.gz)。不会另外发布自定义源代码 ZIP，因为那只会
+重复这两个下载。两个程序都在本地工作，不上传源文件、tablebase 文件名或结果。
+请用 SHA256_Source2Metal_v3.2.0.txt 验证用户发布包和 EXE。
+EXE 目前未签名，因此 Windows 可能显示“未知发布者”或 SmartScreen 警告。
