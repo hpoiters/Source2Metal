@@ -17,7 +17,7 @@ permissions:
 
 concurrency:
   group: source2metal-3.2.1-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   windows-release:
