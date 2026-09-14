@@ -8,9 +8,9 @@ from running.
 
 Changes
 -------
-- Generated GAME RAW verification no longer assumes that every source game has
-  an Event tag. It counts the Source2MetalVersion tag that Source2Metal writes
-  to every generated record.
+- Generated RAW verification no longer assumes that every source game has an
+  Event tag. It counts the Result tag that is present exactly once in every
+  generated GAME and BOOK record.
 - An unusable individual PGN game is rejected without terminating the source or
   the complete batch.
 - Normal GAME filtering (minimum length, Elo, Elo gap, FEN/SetUp and duplicate
@@ -27,7 +27,9 @@ Changes
 
 Regression coverage
 -------------------
-- A generated record without an Event tag is still counted correctly.
+- A generated GAME record without an Event tag is still counted correctly.
+- Existing BOOK RAW verification remains covered so GAME and BOOK use the same
+  Result-tag record invariant.
 - The 10% threshold is tested at the 100-game minimum sample.
 - Windows packaged-EXE testing includes a PGN with unusable records and Event-less
   valid records followed by another PGN source; the later source must still be
