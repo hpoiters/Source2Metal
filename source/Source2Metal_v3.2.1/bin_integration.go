@@ -29,6 +29,50 @@ func binSummary(c Counters) string {
 		"BIN RAW: %d успешно | %d ошибок | %d линий | %d проверено\n"), c.BINRawBuilt, c.BINRawFailed, c.BINRawGames, c.BINRawVerified)
 }
 
+func binProgressText(stage bin2pgn.ProgressStage) string {
+	switch stage {
+	case bin2pgn.ProgressScan:
+		return L("BIN index scan", "BIN-Indexscan", "BIN-indexscan", "Analyse de l’index BIN", "Escaneo del índice BIN", "BIN 索引扫描", "Сканирование индекса BIN")
+	case bin2pgn.ProgressGraph:
+		return L("Reachable positions", "Erreichbare Positionen", "Bereikbare posities", "Positions accessibles", "Posiciones accesibles", "可达局面", "Достижимые позиции")
+	case bin2pgn.ProgressLines:
+		return L("Build complete lines", "Vollständige Linien erstellen", "Complete lijnen bouwen", "Construire les lignes complètes", "Construir líneas completas", "构建完整变例", "Построение полных линий")
+	case bin2pgn.ProgressWrite:
+		return L("Write BOOK RAW", "BOOK RAW schreiben", "BOOK RAW schrijven", "Écrire BOOK RAW", "Escribir BOOK RAW", "写入 BOOK RAW", "Запись BOOK RAW")
+	case bin2pgn.ProgressValidate:
+		return L("Validate BOOK RAW", "BOOK RAW prüfen", "BOOK RAW controleren", "Valider BOOK RAW", "Validar BOOK RAW", "验证 BOOK RAW", "Проверка BOOK RAW")
+	default:
+		return "BIN"
+	}
+}
+
+func binProgressPrinter() bin2pgn.ProgressFunc {
+	var lastStage bin2pgn.ProgressStage
+	lastBucket := -1
+	var lastUnknown int64 = -1
+	return func(p bin2pgn.Progress) {
+		label := binProgressText(p.Stage)
+		if p.Total > 0 {
+			bucket := int((p.Done * 10) / p.Total)
+			if bucket > 10 {
+				bucket = 10
+			}
+			if p.Done == p.Total {
+				bucket = 10
+			}
+			if p.Stage != lastStage || bucket != lastBucket {
+				fmt.Printf("  %s: %d%% (%d/%d)\n", label, bucket*10, p.Done, p.Total)
+				lastStage, lastBucket, lastUnknown = p.Stage, bucket, -1
+			}
+			return
+		}
+		if p.Stage != lastStage || p.Done == 0 || lastUnknown < 0 || p.Done-lastUnknown >= 500_000 {
+			fmt.Printf("  %s: %d\n", label, p.Done)
+			lastStage, lastBucket, lastUnknown = p.Stage, -1, p.Done
+		}
+	}
+}
+
 func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([]string, error) {
 	var outputs []string
 	for _, s := range inv.Sources {
@@ -40,7 +84,7 @@ func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([
 		}
 		out := uniqueSourceFile(layout.RawBooksDir, s.Base, KindBIN, "RAW", s.Path)
 		fmt.Printf("\nBIN RAW: %s\n", s.Path)
-		stats, err := bin2pgn.Convert(s.Path, out, cfg.MaxPly)
+		stats, err := bin2pgn.ConvertWithProgress(s.Path, out, cfg.MaxPly, binProgressPrinter())
 		tr := getSourceTrace(c, KindBIN, s.Base, s.Path)
 		report := binReport(s.Path, out, stats, cfg.MaxPly)
 		reportPath := filepath.Join(layout.ReportDir, filepath.Base(out)+".txt")
