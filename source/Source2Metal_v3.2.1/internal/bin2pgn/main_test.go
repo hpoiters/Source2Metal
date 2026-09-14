@@ -85,3 +85,63 @@ func TestFullConversionAndMerge(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestIndexedConversionMatchesClassic(t *testing.T) {
+	d := t.TempDir()
+	bin := filepath.Join(d, "test.bin")
+	makeSyntheticBIN(t, bin)
+
+	book, err := openIndexedBook(bin, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if book.stats.Records != 6 || !book.stats.SortedByKey {
+		book.Close()
+		t.Fatalf("indexed stats=%+v", book.stats)
+	}
+	ents, err := book.lookup(polyglotKey(startBoard()))
+	if err != nil {
+		book.Close()
+		t.Fatal(err)
+	}
+	if len(ents) != 2 || ents[0].Weight != 100 || ents[1].Weight != 80 {
+		book.Close()
+		t.Fatalf("start entries=%+v", ents)
+	}
+	if err := book.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	pgn := filepath.Join(d, "indexed.pgn")
+	st, err := convertBookIndexed(bin, pgn, 10, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if st.Physical != 6 || st.ReachableRecords != 6 || st.CompleteLines != 3 || st.CoverageMisses != 0 || st.PostValidatedLines != 3 {
+		t.Fatalf("indexed stats=%+v", st)
+	}
+}
+
+func TestIndexedBookRejectsUnsortedInput(t *testing.T) {
+	d := t.TempDir()
+	bin := filepath.Join(d, "unsorted.bin")
+	makeSyntheticBIN(t, bin)
+	data, err := os.ReadFile(bin)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(data) < 32 {
+		t.Fatal("synthetic BIN unexpectedly short")
+	}
+	first := append([]byte(nil), data[:16]...)
+	last := append([]byte(nil), data[len(data)-16:]...)
+	copy(data[:16], last)
+	copy(data[len(data)-16:], first)
+	if err := os.WriteFile(bin, data, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if book, err := openIndexedBook(bin, nil); err == nil {
+		book.Close()
+		t.Fatal("unsorted BIN unexpectedly accepted by indexed reader")
+	}
+}
