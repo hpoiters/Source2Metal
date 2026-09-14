@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - fix/pgn-resilience-final
+      - fix/knowledge-bin-scale
       - main
     paths:
       - 'source/Source2Metal_v3.2.1/**'
