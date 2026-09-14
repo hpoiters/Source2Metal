@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -62,5 +64,23 @@ func TestGameSourceErrorOnlyForUnusableResult(t *testing.T) {
 	bad := PGNGame{Tags: map[string]string{}, MoveText: "1. e4 e5 *"}
 	if !gameHasSourceError(bad) {
 		t.Fatal("unusable result must be an error")
+	}
+}
+
+func TestHighErrorPromptCanStopOnlyCurrentSource(t *testing.T) {
+	old := stdin
+	stdin = bufio.NewReader(strings.NewReader("2\n"))
+	defer func() { stdin = old }()
+	if askContinueBadPGNSource("bad.pgn", 100, 10, true) {
+		t.Fatal("choice 2 must stop the current source")
+	}
+}
+
+func TestHighErrorPromptEnterContinues(t *testing.T) {
+	old := stdin
+	stdin = bufio.NewReader(strings.NewReader("\n"))
+	defer func() { stdin = old }()
+	if !askContinueBadPGNSource("bad.pgn", 100, 10, true) {
+		t.Fatal("Enter must continue the current source")
 	}
 }
