@@ -1,0 +1,46 @@
+Source2Metal v3.2.1 — PGN resilience bug-fix release
+====================================================
+
+This release fixes a failure mode in long GAME RAW runs where one problematic
+PGN record or one source-level read/verification problem could stop the complete
+Source2Metal process and prevent all later source files and processing stages
+from running.
+
+Changes
+-------
+- Generated GAME RAW verification no longer assumes that every source game has
+  an Event tag. It counts the Source2MetalVersion tag that Source2Metal writes
+  to every generated record.
+- An unusable individual PGN game is rejected without terminating the source or
+  the complete batch.
+- Normal GAME filtering (minimum length, Elo, Elo gap, FEN/SetUp and duplicate
+  handling) does not count as a source error.
+- After at least 100 games have been read from one source, an unusable-game rate
+  of 10% or more triggers one interactive choice:
+    1 = continue that source;
+    2 = stop only that source and continue with all remaining source files.
+- Non-interactive runs continue automatically and log the high-error warning.
+- If a source-level PGN read error stops one source early, successfully processed
+  records from that source are retained and later source files continue.
+- Genuine output/write/flush errors remain fatal because continuing could make
+  the produced output unreliable.
+
+Regression coverage
+-------------------
+- A generated record without an Event tag is still counted correctly.
+- The 10% threshold is tested at the 100-game minimum sample.
+- Windows packaged-EXE testing includes a PGN with unusable records and Event-less
+  valid records followed by another PGN source; the later source must still be
+  processed successfully.
+
+Unchanged scope
+---------------
+- BIN2PGN remains v0.1.3 and continues to produce BOOK RAW only.
+- SyzygyCheck remains the unchanged published v2.2.0 utility.
+- GAME-METAL and CTG-METAL remain separate.
+- Original source files remain read-only.
+- Earlier Source2Metal releases and their published assets are not modified.
+
+Release packaging remains: root EXE, short multilingual HTML introduction,
+Docs folder with seven manuals, and SHA-256 verification file. Source code is
+provided separately by GitHub through the automatic source downloads.
