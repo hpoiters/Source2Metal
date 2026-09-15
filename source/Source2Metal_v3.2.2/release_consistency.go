@@ -12,7 +12,7 @@ import (
 // releaseConsistencyCheck guards the current distributable utility. Historical
 // sources and source archives deliberately do not belong inside the EXE.
 func releaseConsistencyCheck() error {
-	if version != "3.2.1" {
+	if version != "3.2.2" {
 		return fmt.Errorf("release consistency: unexpected Source2Metal version %q", version)
 	}
 	if syzygyCheckVersion != "2.2.0" || syzygyCheckDisplay != "2.2.0" {
