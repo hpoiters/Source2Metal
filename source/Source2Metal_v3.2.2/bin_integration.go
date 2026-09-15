@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -39,11 +40,49 @@ func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([
 			return outputs, err
 		}
 		out := uniqueSourceFile(layout.RawBooksDir, s.Base, KindBIN, "RAW", s.Path)
-		fmt.Printf("\nBIN RAW: %s\n", s.Path)
-		stats, err := convertBINWithProgress(s.Path, out, cfg.MaxPly)
-		tr := getSourceTrace(c, KindBIN, s.Base, s.Path)
-		report := binReport(s.Path, out, stats, cfg.MaxPly)
 		reportPath := filepath.Join(layout.ReportDir, filepath.Base(out)+".txt")
+		tr := getSourceTrace(c, KindBIN, s.Base, s.Path)
+
+		skipped := false
+		var stats bin2pgn.Stats
+		var err error
+	convertSource:
+		for {
+			fmt.Printf("\nBIN RAW: %s\n", s.Path)
+			stats, err = convertBINWithProgress(s.Path, out, cfg.MaxPly)
+			if !errors.Is(err, bin2pgn.ErrCancelled) {
+				break
+			}
+
+			if !cfg.Interactive {
+				return outputs, errBINBatchStopped
+			}
+			switch askBINCancelChoice(s.Path) {
+			case binCancelSkip:
+				skipped = true
+				_ = atomicWriteFile(reportPath, []byte(L(
+					"BIN RAW source skipped by user after a safe stop.\n",
+					"BIN-RAW-Quelle nach sicherem Stopp vom Benutzer übersprungen.\n",
+					"BIN RAW-bron na veilige stop door gebruiker overgeslagen.\n",
+					"Source BIN RAW ignorée par l’utilisateur après un arrêt sûr.\n",
+					"Fuente BIN RAW omitida por el usuario tras una parada segura.\n",
+					"BIN RAW 源在安全停止后被用户跳过。\n",
+					"Источник BIN RAW пропущен пользователем после безопасной остановки.\n")), 0644)
+				break convertSource
+			case binCancelNightRest:
+				if !waitBINNightRest(binNightRestDuration, s.Path) {
+					return outputs, errBINBatchStopped
+				}
+				continue
+			case binCancelStopBatch:
+				return outputs, errBINBatchStopped
+			}
+		}
+		if skipped {
+			continue
+		}
+
+		report := binReport(s.Path, out, stats, cfg.MaxPly)
 		if err != nil {
 			c.BINRawFailed++
 			tr.RawRejected++
