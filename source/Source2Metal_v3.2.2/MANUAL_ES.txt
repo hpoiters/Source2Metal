@@ -1,4 +1,4 @@
-Source2Metal v3.2.1 — MANUAL DE USUARIO (ESPAÑOL)
+Source2Metal v3.2.2 — MANUAL DE USUARIO (ESPAÑOL)
 =================================================
 
 1. OBJETIVO
@@ -7,9 +7,9 @@ Source2Metal es una herramienta portátil Windows x64 para PGN, CBH, 2CBH, CTG y
 BIN2PGN 0.1.3: BIN produce solo BOOK RAW; sin BIN-METAL. Los filtros GAME de longitud y Elo no se aplican a BIN.
 
 2. INICIO
-Extraiga completamente Source2Metal_v3.2.1_RELEASE.zip. Mantenga juntos el
+Extraiga completamente Source2Metal_v3.2.2_RELEASE.zip. Mantenga juntos el
 EXE, la breve introducción HTML y la carpeta Docs. Coloque
-!Source2Metal_v3.2.1.exe en la carpeta con las fuentes; las subcarpetas se
+!Source2Metal_v3.2.2.exe en la carpeta con las fuentes; las subcarpetas se
 buscan automáticamente. No requiere instalación.
 
 El programa omite .git, TEMP, Tijdelijk, carpetas terminadas en _output y su
@@ -75,11 +75,16 @@ SyzygyCheck_v2.2.0_UTILITY.zip junto al EXE. Extraiga el paquete completo y lea
 1_READ_FIRST_AL.txt. Source2Metal no ejecuta SyzygyCheck.
 
 8. FUENTE, PRIVACIDAD E INTEGRIDAD
-El código fuente no está dentro del EXE ni de Source2Metal_v3.2.1_RELEASE.zip.
+El código fuente no está dentro del EXE ni de Source2Metal_v3.2.2_RELEASE.zip.
 GitHub lo ofrece automáticamente como Source code (zip) y Source code (tar.gz).
 No se publica otro ZIP de código fuente personalizado porque duplicaría esas
 descargas.
 Los programas trabajan localmente y no suben fuentes, nombres de tablebases ni
-resultados. Verifique las descargas con SHA256_Source2Metal_v3.2.1.txt. El EXE
+resultados. Verifique las descargas con SHA256_Source2Metal_v3.2.2.txt. El EXE
 no está firmado actualmente; Windows puede mostrar Editor desconocido o
 SmartScreen.
+
+9. PROCESOS BIN LARGOS: PROGRESO, PARADA SEGURA Y DESCANSO NOCTURNO
+Durante el procesamiento BIN, Source2Metal muestra un indicador de actividad, la fase actual, el tiempo transcurrido y una estimación explícitamente aproximada del tiempo restante. Al principio la estimación se está calculando y después se reajusta a medida que se conoce mejor el grafo de aperturas alcanzable.
+
+Ctrl+C solicita una parada segura de la fuente BIN actual. Source2Metal se detiene en el siguiente punto seguro y no publica un RAW incompleto. En modo batch interactivo: 1 = omitir esta fuente y continuar con las demás; 2 = pausa nocturna de 10 horas y después reintentar automáticamente la misma fuente desde el principio; 3 = detener todo el batch. Tras las 10 horas no hace falta pulsar ninguna tecla. Ctrl+C durante la pausa detiene el batch.
