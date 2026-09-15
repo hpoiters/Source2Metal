@@ -3,30 +3,39 @@
 Source2Metal is an open-source Windows toolset for building, analysing and
 improving computer-chess opening-book material.
 
-## Source2Metal v3.2.1
+## Source2Metal v3.2.2
 
-v3.2.1 is a robustness bug-fix release. A single unusable PGN game no longer
-ends a long batch, generated GAME RAW verification no longer assumes that every
-source game has an Event tag, and a high error rate can stop only the affected
-source while the remaining files continue.
+v3.2.2 improves long Polyglot BIN runs. BIN processing now shows a live activity
+indicator, the current phase, elapsed time and an explicitly approximate overall
+remaining-time estimate. The estimate begins as "calculating" and is adjusted as
+more of the reachable opening graph becomes known, so the user can make a better
+decision about continuing a long run or stopping it.
 
-After at least 100 games have been read from one source, an unusable-game rate
-of 10% or more causes one interactive choice: continue that source, or stop only
-that source and continue the remaining files. Non-interactive runs continue and
-log the warning. Normal GAME filters such as Elo, length, FEN/SetUp and
+Ctrl+C during one BIN source now requests a clean stop at the next safe point.
+The original BIN remains read-only and an incomplete temporary RAW PGN is never
+promoted to final output. In interactive batch mode the user can then choose to
+skip only that source and continue with the remaining sources, take a 10-hour
+night-rest pause and automatically retry the same source from the beginning, or
+stop the complete batch. The night-rest pause resumes without requiring a key
+press; Ctrl+C during the pause stops the batch.
+
+v3.2.2 retains the v3.2.1 PGN resilience fixes: one unusable PGN game does not
+end a long batch, GAME RAW verification does not depend on an Event tag, and a
+high unusable-game rate can stop only the affected PGN source while later
+sources continue. Normal GAME filters such as Elo, length, FEN/SetUp and
 duplicates are not counted as source errors.
 
 The release retains BIN2PGN v0.1.3 for Polyglot BIN conversion to BOOK RAW.
 Earlier releases remain unchanged. The user package contains:
 
-- `!Source2Metal_v3.2.1.exe`
+- `!Source2Metal_v3.2.2.exe`
 - a short HTML introduction with jump links (English, Russian and Chinese)
 - a clearly named documentation folder with full manuals in all seven languages
 
 The leading exclamation mark keeps the executable near the top of a folder in
 Windows Explorer.
 
-Source2Metal v3.2.1 includes the published and practically validated
+Source2Metal v3.2.2 includes the published and practically validated
 **SyzygyCheck v2.2.0** as its one unpackable utility. This is the same complete
 user package as the standalone SyzygyCheck v2.2.0 release. It contains
 `!SyzygyCheck_v2.2.0.exe`, `1_READ_FIRST_AL.txt`, `Docs_AL` and `Program_AL`.
@@ -35,7 +44,7 @@ subfolders, preserves relative paths in checkpoints and offers a selectable
 result-report destination.
 
 Source code is deliberately not duplicated inside the EXE or
-`Source2Metal_v3.2.1_RELEASE.zip`. GitHub supplies the source separately and
+`Source2Metal_v3.2.2_RELEASE.zip`. GitHub supplies the source separately and
 automatically through **Source code (zip)** and **Source code (tar.gz)**. A
 third, manually made source archive would duplicate those downloads and is
 therefore not published. Older versions remain available through Git history
@@ -71,11 +80,12 @@ tablebase files, filenames and results are not uploaded.
 
 ## Verification and code signing
 
-The release workflow tests the source, builds and runs the Windows executable,
-checks the PGN resilience regression and the unpacked user package in all seven
-languages, and publishes only after these checks pass on the main branch. The
-executable is unsigned, so Windows may display a Microsoft Defender SmartScreen
-or "Unknown publisher" warning. See [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md).
+The release workflow tests the source, verifies safe BIN cancellation, builds
+and runs the Windows executable, checks the PGN resilience regression and the
+unpacked user package in all seven languages, and publishes only after these
+checks pass on the main branch. The executable is unsigned, so Windows may
+display a Microsoft Defender SmartScreen or "Unknown publisher" warning. See
+[CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md).
 
 ## License
 
