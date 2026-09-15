@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -9,6 +10,8 @@ import (
 )
 
 const binNightRestDuration = 10 * time.Hour
+
+var errBINBatchStopped = errors.New("BIN batch stopped by user")
 
 type binCancelChoice int
 
@@ -107,7 +110,7 @@ func waitBINNightRest(d time.Duration, source string) bool {
 			if remaining < 0 {
 				remaining = 0
 			}
-			fmt.Printf("\r%s", L("Nachtrust: automatisch verder over ", "Nachtruhe: automatisch weiter in ", "Nachtrust: automatisch verder over ", "Repos nocturne : reprise automatique dans ", "Descanso nocturno: continuación automática en ", "休息：自动继续还需 ", "Ночной отдых: автоматическое продолжение через ")+formatBINETA(remaining)+"   ")
+			fmt.Printf("\r%s", L("Night rest: automatically continuing in ", "Nachtruhe: automatisch weiter in ", "Nachtrust: automatisch verder over ", "Repos nocturne : reprise automatique dans ", "Descanso nocturno: continuación automática en ", "休息：自动继续还需 ", "Ночной отдых: автоматическое продолжение через ")+formatBINETA(remaining)+"   ")
 		}
 	}
 }
