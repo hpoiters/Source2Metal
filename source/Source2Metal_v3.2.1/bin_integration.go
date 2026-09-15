@@ -30,11 +30,31 @@ func binSummary(c Counters) string {
 		"BIN RAW: %d успешно | %d ошибок | %d линий | %d проверено\n"), c.BINRawBuilt, c.BINRawFailed, c.BINRawGames, c.BINRawVerified)
 }
 
+func formatBINElapsed(seconds int64) string {
+	if seconds < 0 {
+		seconds = 0
+	}
+	h := seconds / 3600
+	m := (seconds % 3600) / 60
+	s := seconds % 60
+	if h > 0 {
+		return fmt.Sprintf("%dh %02dm %02ds", h, m, s)
+	}
+	if m > 0 {
+		return fmt.Sprintf("%dm %02ds", m, s)
+	}
+	return fmt.Sprintf("%ds", s)
+}
+
 // startBINActivity keeps the console visibly alive during BIN2PGN phases that
 // do not have a trustworthy total. In particular, reachability discovery can
 // take a long time after the BIN index has been read. We deliberately show no
 // invented percentage: only a rotating activity marker, the reliable physical
 // BIN-record count (when available), and elapsed active time.
+//
+// Small BIN files must remain quiet and easy to follow. Therefore the ETA
+// explanation is printed only once, and only after 10 seconds of continuous
+// processing. It is never repeated by the spinner.
 func startBINActivity(source string) func() {
 	pr := newProgressRenderer()
 	started := time.Now()
@@ -52,19 +72,37 @@ func startBINActivity(source string) func() {
 		ticker := time.NewTicker(250 * time.Millisecond)
 		defer ticker.Stop()
 		frame := 0
+		noteShown := false
 		for {
 			elapsed := int64(time.Since(started).Seconds())
 			if elapsed < 0 {
 				elapsed = 0
 			}
+
+			if !noteShown && elapsed >= 10 {
+				pr.Clear()
+				fmt.Println()
+				fmt.Println("  " + L(
+					"Estimated remaining time will appear as soon as it can be calculated reliably.",
+					"Die geschätzte Restzeit erscheint, sobald sie zuverlässig berechnet werden kann.",
+					"Geschatte resttijd verschijnt zodra die betrouwbaar kan worden berekend.",
+					"Le temps restant estimé apparaîtra dès qu’il pourra être calculé de façon fiable.",
+					"El tiempo restante estimado aparecerá cuando pueda calcularse de forma fiable.",
+					"一旦能够可靠计算，预计剩余时间就会显示。",
+					"Расчётное оставшееся время появится, как только его можно будет надёжно вычислить."))
+				fmt.Println()
+				noteShown = true
+			}
+
 			pr.Render(func(width int) string {
 				working := L("Work in progress...", "Verarbeitung läuft...", "Bezig met verwerken...", "Traitement en cours...", "Procesando...", "正在处理...", "Идёт обработка...")
 				active := L("active", "aktiv", "actief", "actif", "activo", "运行", "активно")
+				elapsedText := formatBINElapsed(elapsed)
 				if physical >= 0 {
 					records := L("BIN records", "BIN-Datensätze", "BIN-records", "enregistrements BIN", "registros BIN", "BIN 记录", "BIN-записей")
-					return fmt.Sprintf("  %s BIN2PGN: %s | %s: %s | %s: %ds", frames[frame], working, records, fmtInt(physical), active, elapsed)
+					return fmt.Sprintf("  %s BIN2PGN: %s | %s: %s | %s: %s", frames[frame], working, records, fmtInt(physical), active, elapsedText)
 				}
-				return fmt.Sprintf("  %s BIN2PGN: %s | %s: %ds", frames[frame], working, active, elapsed)
+				return fmt.Sprintf("  %s BIN2PGN: %s | %s: %s", frames[frame], working, active, elapsedText)
 			})
 
 			select {
