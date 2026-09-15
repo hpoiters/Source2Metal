@@ -1,0 +1,85 @@
+Source2Metal v3.2.1 — GEBRUIKERSHANDLEIDING (NEDERLANDS)
+=========================================================
+
+1. DOEL
+Source2Metal is een draagbaar Windows x64-programma voor PGN, CBH, 2CBH, CTG en Polyglot BIN. PGN/CBH/2CBH leveren GAME RAW en GAME-METAL. CTG en BIN leveren BOOK RAW; CTG heeft daarnaast een eigen METAL-route.
+
+BIN2PGN 0.1.3: BIN levert alleen BOOK RAW; geen BIN-METAL. GAME-lengte- en Elo-filters gelden niet voor BIN.
+
+2. STARTEN
+Pak Source2Metal_v3.2.1_RELEASE.zip volledig uit. Houd de EXE, de korte HTML-intro
+en de Docs-map bij elkaar. Zet !Source2Metal_v3.2.1.exe in de map met uw
+bronbestanden; submappen worden automatisch doorzocht. Start de EXE. Installatie
+is niet nodig.
+
+Het programma slaat .git, TEMP, Tijdelijk, mappen die eindigen op _output en de
+eigen map !Source2Metal_Output over. Bronbestanden worden gelezen; resultaten
+komen in een nieuwe uitvoermap met tijdstempel.
+
+3. COMPLETE BRONSETS
+- PGN: één .pgn-bestand.
+- CTG: bij elkaar horende .ctg-, .cto- en .ctb-bestanden.
+- CBH: bij elkaar horende .cbh-, .cbg-, .cbp- en .cbt-bestanden.
+- 2CBH: bij elkaar horende .2cbh-, .2cbg- en .2lid-bestanden.
+Onvolledige sets worden gemeld en niet stilzwijgend als compleet behandeld.
+
+- BIN: Polyglot .bin (16 bytes/record).
+
+4. HOOFDMENU
+1 = Bronnen verwerken [standaard]
+2 = SyzygyCheck / pagefile
+3 = Taal wijzigen
+4 = Informatie
+0 = Afsluiten
+
+5. VERWERKINGSKEUZEN
+Kies workers; standaard de helft van de beschikbare logische CPU-threads. BIN-conversie en BOOK-samenvoeging werken na elkaar.
+
+Modus 1: alleen inventaris en rapporten.
+Modus 2: GAME RAW + BOOK RAW, afzonderlijk en samengevoegd.
+Modus 3 [standaard]: modus 2 plus bestaande GAME-METAL en CTG-METAL.
+
+RAW-diepte: 1–120 ply, standaard 100. Minimum GAME-partijlengte: 1–120 ply, standaard 24. Elo: 0 behoudt bronselectie; 1 vereist beiden >=2500; 2 beiden >=2400. Maximaal Elo-verschil: 0 is geen grens.
+
+PGN-fouttolerantie: een onbruikbare afzonderlijke partij wordt overgeslagen en de verwerking van de bron gaat verder. Normale filters (Elo, lengte, FEN/SetUp en duplicaten) tellen niet als fout. Zodra na minimaal 100 gelezen partijen 10% of meer van één bronbestand onbruikbaar is, vraagt de interactieve modus één keer of dat bronbestand moet doorgaan of alleen dat bronbestand moet stoppen. De overige bronbestanden en latere verwerkingsstappen gaan in beide gevallen verder. Niet-interactieve runs gaan automatisch door en loggen de waarschuwing. De structurele RAW-controle telt de Result-tag, die precies één keer in ieder geschreven GAME- en BOOK-record aanwezig is, en is daarom niet afhankelijk van een Event-tag uit de bron.
+
+BIN2PGN 0.1.3: BIN levert alleen BOOK RAW; geen BIN-METAL. GAME-lengte- en Elo-filters gelden niet voor BIN.
+
+6. UITVOER
+Resultaten komen onder:
+  !Source2Metal_Output\JJJJ-MM-DD_UU-MM-SS\
+De runmap bevat RAW- en/of METAL-resultaten plus REPORTS. Resultaten per bron en
+samengevoegde resultaten blijven herkenbaar gescheiden. Tijdelijke adapterfiles
+worden na afloop verwijderd. Rapporten bevatten instellingen, bronnen, status,
+buildinformatie en SHA-256-checksums.
+
+GAME-METAL bevat complete legale bronpartijen met hun oorspronkelijke uitslag
+en gebruikt positie-/transpositiestatistiek. CTG-METAL gebruikt boekgerichte
+evidentie. Ze blijven bewust gescheiden omdat hun bewijsbetekenis verschilt.
+
+Voor Fritz “Bijleren uit database” met Metal-PGN: Overwinningen AAN,
+Verliespartijen AAN, Wit UIT, Zwart UIT, Speler UIT, spelernaam leeg,
+Partijen ALLE.
+
+BOOK RAW verenigt CTG en BIN. In het samengevoegde BOOK-bestand worden exact gelijke volledige legale zettenreeksen ontdubbeld; prefixen en transposities blijven apart. Bij verschillende uitslagen of headers blijft het eerste record behouden (CTG vóór BIN). De afzonderlijke bronbestanden blijven beschikbaar. CTG-uitslagen komen uit boekstatistiek; BIN gebruikt *. Beide zijn geen uitslag van een gespeelde partij. ALL SOURCES RAW voegt GAME RAW en samengevoegde BOOK RAW samen wanneer beide bestaan, zonder ontdubbeling tussen die klassen. BIN levert geen METAL.
+
+RAW/1 - Separate Sources - RAW PGNs/GAME Sources/ (PGN, CBH, 2CBH)
+RAW/1 - Separate Sources - RAW PGNs/BOOK Sources/ (CTG, BIN)
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged GAME Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged BOOK Sources - RAW.pgn
+RAW/2 - Merged Sources - RAW PGNs/Source2Metal - Merged ALL Sources - RAW.pgn
+
+7. SyzygyCheck v2.2.0
+Kies hoofdmenu-optie 2 en daarna optie 1. Source2Metal schrijft
+SyzygyCheck_v2.2.0_UTILITY.zip naast de EXE. Pak dat volledige pakket uit en
+lees 1_READ_FIRST_AL.txt. Source2Metal start SyzygyCheck niet zelf.
+
+8. SOURCE, PRIVACY EN INTEGRITEIT
+De broncode zit niet in de EXE of Source2Metal_v3.2.1_RELEASE.zip. GitHub biedt
+die automatisch afzonderlijk aan als Source code (zip) en Source code (tar.gz).
+Er wordt geen extra eigen source-ZIP gepubliceerd, want die zou deze downloads
+alleen dupliceren.
+Source2Metal en SyzygyCheck werken lokaal en uploaden geen bronbestanden,
+tablebasebestandsnamen of resultaten. Controleer de gebruikersrelease en EXE met
+SHA256_Source2Metal_v3.2.1.txt. De EXE is nog niet ondertekend; Windows kan
+daarom Onbekende uitgever of een SmartScreen-waarschuwing tonen.
