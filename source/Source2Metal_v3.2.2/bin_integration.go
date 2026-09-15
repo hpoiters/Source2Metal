@@ -40,7 +40,7 @@ func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([
 		}
 		out := uniqueSourceFile(layout.RawBooksDir, s.Base, KindBIN, "RAW", s.Path)
 		fmt.Printf("\nBIN RAW: %s\n", s.Path)
-		stats, err := bin2pgn.Convert(s.Path, out, cfg.MaxPly)
+		stats, err := convertBINWithProgress(s.Path, out, cfg.MaxPly)
 		tr := getSourceTrace(c, KindBIN, s.Base, s.Path)
 		report := binReport(s.Path, out, stats, cfg.MaxPly)
 		reportPath := filepath.Join(layout.ReportDir, filepath.Base(out)+".txt")
