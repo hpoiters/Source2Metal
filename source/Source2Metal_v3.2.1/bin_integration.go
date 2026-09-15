@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"source2metal/internal/bin2pgn"
 )
@@ -70,6 +71,60 @@ func binProgressPrinter() bin2pgn.ProgressFunc {
 			fmt.Printf("  %s: %d\n", label, p.Done)
 			lastStage, lastBucket, lastUnknown = p.Stage, -1, p.Done
 		}
+	}
+}
+
+func bookMergeBytes(paths []string) int64 {
+	var total int64
+	for _, p := range paths {
+		if st, err := os.Stat(p); err == nil && !st.IsDir() {
+			total += st.Size()
+		}
+	}
+	return total
+}
+
+func bookProgressText(verify bool) string {
+	if verify {
+		return L("Verify BOOK RAW", "BOOK RAW prüfen", "BOOK RAW controleren", "Vérifier BOOK RAW", "Verificar BOOK RAW", "验证 BOOK RAW", "Проверка BOOK RAW")
+	}
+	return L("Merge BOOK RAW", "BOOK RAW zusammenführen", "BOOK RAW samenvoegen", "Fusionner BOOK RAW", "Combinar BOOK RAW", "合并 BOOK RAW", "Объединение BOOK RAW")
+}
+
+func renderBookProgress(r *progressRenderer, verify bool, done, total, records, dup int64, started time.Time, finish bool) {
+	elapsed := time.Since(started)
+	frame := []string{"|", "/", "-", "\\"}[int(elapsed/(750*time.Millisecond))%4]
+	build := func(width int) string {
+		phase := bookProgressText(verify)
+		if total <= 0 {
+			if verify {
+				return fmt.Sprintf("  %s %s... | %s %s | T%s", frame, phase, fmtCompactInt(records), L("lines", "Linien", "lijnen", "lignes", "líneas", "变例", "линий"), durShort(elapsed))
+			}
+			return fmt.Sprintf("  %s %s... | %s %s | %s %s | T%s", frame, phase, fmtCompactInt(records), L("lines", "Linien", "lijnen", "lignes", "líneas", "变例", "линий"), L("dup", "dup", "dup", "dup", "dup", "重复", "дуб"), fmtCompactInt(dup), durShort(elapsed))
+		}
+		pct := 100 * float64(done) / float64(total)
+		if pct < 0 {
+			pct = 0
+		}
+		if pct > 100 {
+			pct = 100
+		}
+		eta := etaString(done, total, elapsed)
+		if width >= 105 {
+			if verify {
+				return fmt.Sprintf("  %s %s [%s] %5.1f%% | %s %s | T%s ETA%s", frame, phase, progressBar(pct, 18), pct, fmtCompactInt(records), L("lines", "Linien", "lijnen", "lignes", "líneas", "变例", "линий"), durShort(elapsed), eta)
+			}
+			return fmt.Sprintf("  %s %s [%s] %5.1f%% | %s %s | %s %s | T%s ETA%s", frame, phase, progressBar(pct, 18), pct, fmtCompactInt(records), L("lines", "Linien", "lijnen", "lignes", "líneas", "变例", "линий"), L("dup", "dup", "dup", "dup", "dup", "重复", "дуб"), fmtCompactInt(dup), durShort(elapsed), eta)
+		}
+		if verify {
+			return fmt.Sprintf("  %s %s %5.1f%% | %s %s | T%s", frame, phase, pct, fmtCompactInt(records), L("lines", "Linien", "lijnen", "lignes", "líneas", "变例", "линий"), durShort(elapsed))
+		}
+		return fmt.Sprintf("  %s %s %5.1f%% | %s %s | %s %s | T%s", frame, phase, pct, fmtCompactInt(records), L("lines", "Linien", "lijnen", "lignes", "líneas", "变例", "линий"), L("dup", "dup", "dup", "dup", "dup", "重复", "дуб"), fmtCompactInt(dup), durShort(elapsed))
+	}
+	if finish {
+		r.Finish(build)
+	} else {
+		r.Render(build)
 	}
 }
 
@@ -150,7 +205,27 @@ func mergeBookRAW(paths []string, layout OutputLayout, c *Counters) (string, err
 	defer f.Close()
 	seen := map[string]struct{}{}
 	var count, dup int64
+
+	totalBytes := bookMergeBytes(paths)
+	baseBytes := int64(0)
+	mergeStarted := time.Now()
+	mergeRenderer := newProgressRenderer()
+	lastMergeRender := time.Time{}
+	renderMerge := func(done int64, force bool) {
+		now := time.Now()
+		if !force && !lastMergeRender.IsZero() && now.Sub(lastMergeRender) < 750*time.Millisecond {
+			return
+		}
+		lastMergeRender = now
+		renderBookProgress(mergeRenderer, false, done, totalBytes, count, dup, mergeStarted, false)
+	}
+	renderMerge(0, true)
+
 	for _, p := range paths {
+		var sourceBytes int64
+		if st, statErr := os.Stat(p); statErr == nil && !st.IsDir() {
+			sourceBytes = st.Size()
+		}
 		err = parsePGNFile(p, func(g PGNGame) error {
 			result := g.Tags["Result"]
 			if (result != "*" && result != "1/2-1/2" && result != "1-0" && result != "0-1") || g.Tags["FEN"] != "" || g.Tags["SetUp"] == "1" {
@@ -174,26 +249,57 @@ func mergeBookRAW(paths []string, layout OutputLayout, c *Counters) (string, err
 			_, e = fmt.Fprintf(f, "\n%s\n\n", moves)
 			count++
 			return e
-		}, nil)
+		}, func(done, _ int64) {
+			renderMerge(baseBytes+done, false)
+		})
 		if err != nil {
+			mergeRenderer.Clear()
 			return "", err
 		}
+		baseBytes += sourceBytes
+		renderMerge(baseBytes, false)
 	}
+	renderBookProgress(mergeRenderer, false, totalBytes, totalBytes, count, dup, mergeStarted, true)
+	fmt.Printf(L("BOOK RAW merge: OK | %s lines | %s duplicates | T%s\n", "BOOK RAW-Zusammenführung: OK | %s Linien | %s Duplikate | T%s\n", "BOOK RAW samenvoegen: OK | %s lijnen | %s doublures | T%s\n", "Fusion BOOK RAW : OK | %s lignes | %s doublons | T%s\n", "Combinación BOOK RAW: OK | %s líneas | %s duplicados | T%s\n", "BOOK RAW 合并：OK | %s 条变例 | %s 条重复 | T%s\n", "Объединение BOOK RAW: OK | %s линий | %s дубликатов | T%s\n"), fmtInt(count), fmtInt(dup), durShort(time.Since(mergeStarted)))
+
 	if err = f.Close(); err != nil {
 		return "", err
 	}
 	if count == 0 {
 		return "", fmt.Errorf("BOOK RAW merge is empty")
 	}
+
 	var verified int64
+	verifyTotal := int64(0)
+	if st, statErr := os.Stat(tmp); statErr == nil && !st.IsDir() {
+		verifyTotal = st.Size()
+	}
+	verifyStarted := time.Now()
+	verifyRenderer := newProgressRenderer()
+	lastVerifyRender := time.Time{}
+	renderVerify := func(done int64, force bool) {
+		now := time.Now()
+		if !force && !lastVerifyRender.IsZero() && now.Sub(lastVerifyRender) < 750*time.Millisecond {
+			return
+		}
+		lastVerifyRender = now
+		renderBookProgress(verifyRenderer, true, done, verifyTotal, verified, 0, verifyStarted, false)
+	}
+	renderVerify(0, true)
 	err = parsePGNFile(tmp, func(g PGNGame) error {
 		_, e := bin2pgn.SequenceKey(strings.Join(strings.Fields(g.MoveText), " "))
 		verified++
 		return e
-	}, nil)
+	}, func(done, _ int64) {
+		renderVerify(done, false)
+	})
 	if err != nil {
+		verifyRenderer.Clear()
 		return "", err
 	}
+	renderBookProgress(verifyRenderer, true, verifyTotal, verifyTotal, verified, 0, verifyStarted, true)
+	fmt.Printf(L("BOOK RAW check: OK | %s/%s lines | T%s\n", "BOOK RAW-Prüfung: OK | %s/%s Linien | T%s\n", "BOOK RAW controle: OK | %s/%s lijnen | T%s\n", "Contrôle BOOK RAW : OK | %s/%s lignes | T%s\n", "Comprobación BOOK RAW: OK | %s/%s líneas | T%s\n", "BOOK RAW 检查：OK | %s/%s 条变例 | T%s\n", "Проверка BOOK RAW: OK | %s/%s линий | T%s\n"), fmtInt(verified), fmtInt(count), durShort(time.Since(verifyStarted)))
+
 	if verified != count {
 		return "", fmt.Errorf("BOOK RAW count mismatch: %d / %d", count, verified)
 	}
