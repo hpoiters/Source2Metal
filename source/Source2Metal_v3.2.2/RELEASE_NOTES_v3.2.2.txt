@@ -1,0 +1,47 @@
+Source2Metal v3.2.2 — visible BIN progress and safe batch control
+=================================================================
+
+This release improves long Polyglot BIN runs so the user can see that work is
+still progressing, judge whether there is enough time to continue, and safely
+control one long source without unnecessarily losing the rest of a batch.
+
+Changes
+-------
+- BIN processing now has a continuously refreshed activity indicator instead of
+  relying on a blinking console cursor during long silent phases.
+- The live line shows the current BIN phase, elapsed time and an explicitly
+  approximate remaining-time estimate for the overall BIN conversion.
+- The estimate initially says that it is being calculated and is only shown
+  after enough progress information exists; it is smoothed and may change as
+  the reachable opening graph expands.
+- Ctrl+C during a BIN conversion requests a clean stop at the next safe point.
+  The original BIN remains read-only and an incomplete temporary RAW PGN is not
+  promoted to a final output file.
+- After a safe stop in interactive batch mode the user can choose:
+    1 = skip only this BIN source and continue with the remaining sources;
+    2 = take a 10-hour night-rest pause and then automatically retry the same
+        source from the beginning;
+    3 = stop the complete batch.
+- During the 10-hour pause Source2Metal shows the approximate automatic restart
+  time and periodically refreshes the remaining pause time. No key press is
+  required when the pause ends. Ctrl+C during the pause stops the batch.
+- A skipped BIN source is recorded as a user decision rather than a converter
+  failure.
+
+Safety and regression coverage
+------------------------------
+- Automated tests verify that a cancelled BIN conversion leaves neither a final
+  RAW output nor a temporary output behind.
+- The 10-hour night-rest duration is locked by a regression test.
+- Windows CI runs go test, go vet, builds the Windows executable and runs the
+  Source2Metal selftest.
+
+Unchanged scope
+---------------
+- BIN2PGN remains v0.1.3 and still produces BOOK RAW only; it does not feed
+  BIN-METAL.
+- GAME length and Elo filters still do not apply to BIN.
+- SyzygyCheck remains the unchanged published v2.2.0 utility.
+- GAME-METAL and CTG-METAL remain separate.
+- Original source files remain read-only.
+- Earlier Source2Metal releases and their published assets are not modified.
