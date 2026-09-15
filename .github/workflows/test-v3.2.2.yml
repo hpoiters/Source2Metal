@@ -1,0 +1,51 @@
+name: Test Source2Metal v3.2.2 development
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/bin-progress-eta-v3.2.2
+    paths:
+      - 'source/Source2Metal_v3.2.2/**'
+      - '.github/workflows/test-v3.2.2.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source2metal-3.2.2-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.6'
+          cache: false
+      - name: Fetch unchanged SyzygyCheck package
+        working-directory: source/Source2Metal_v3.2.2
+        shell: pwsh
+        run: ./prepare_syzygy_package.ps1
+      - name: Format, test and vet
+        working-directory: source/Source2Metal_v3.2.2
+        shell: pwsh
+        run: |
+          $dirty = gofmt -l .
+          if ($dirty) { Write-Host $dirty; throw 'gofmt required' }
+          go test ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Vet failed' }
+      - name: Build and selftest Windows executable
+        working-directory: source/Source2Metal_v3.2.2
+        shell: pwsh
+        env:
+          CGO_ENABLED: '0'
+        run: |
+          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '!Source2Metal_v3.2.2.exe' .
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+          & './!Source2Metal_v3.2.2.exe' -selftest -no-pause
+          if ($LASTEXITCODE -ne 0) { throw 'Selftest failed' }
