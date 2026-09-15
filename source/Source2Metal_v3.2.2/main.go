@@ -214,6 +214,20 @@ func run(cfg Config) error {
 			return err
 		}
 		binPaths, binErr := buildBINRaw(inv, layout, cfg, &c)
+		if errors.Is(binErr, errBINBatchStopped) {
+			c.Elapsed = time.Since(started)
+			pruneEmptyOutputDirs(layout)
+			_ = writeReports(layout, inv, cfg, hw, c, "AFGEBROKEN")
+			fmt.Println("\n" + L(
+				"Batch stopped by user.",
+				"Batch vom Benutzer gestoppt.",
+				"Batch door gebruiker gestopt.",
+				"Lot arrêté par l’utilisateur.",
+				"Lote detenido por el usuario.",
+				"批处理已由用户停止。",
+				"Пакет остановлен пользователем."))
+			return nil
+		}
 		if binErr != nil {
 			c.Elapsed = time.Since(started)
 			_ = writeReports(layout, inv, cfg, hw, c, "MISLUKT")
