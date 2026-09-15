@@ -52,20 +52,21 @@ func (t *binProgressTracker) Update(p bin2pgn.Progress) {
 	t.etaReady = true
 }
 
-func (t *binProgressTracker) Snapshot() (bin2pgn.Progress, bool, time.Duration, bool) {
+func (t *binProgressTracker) Snapshot() (bin2pgn.Progress, bool, time.Duration, time.Duration, bool) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
+	elapsed := time.Since(t.started)
 	if !t.have {
-		return bin2pgn.Progress{}, false, 0, false
+		return bin2pgn.Progress{}, false, elapsed, 0, false
 	}
 	if !t.etaReady {
-		return t.latest, true, 0, false
+		return t.latest, true, elapsed, 0, false
 	}
-	remaining := t.predictedTotal - time.Since(t.started)
+	remaining := t.predictedTotal - elapsed
 	if remaining < 0 {
 		remaining = 0
 	}
-	return t.latest, true, remaining, true
+	return t.latest, true, elapsed, remaining, true
 }
 
 func convertBINWithProgress(input, output string, maxPly int) (bin2pgn.Stats, error) {
@@ -86,11 +87,11 @@ func convertBINWithProgress(input, output string, maxPly int) (bin2pgn.Stats, er
 				renderer.Clear()
 				return
 			case <-ticker.C:
-				p, have, remaining, etaReady := tracker.Snapshot()
+				p, have, elapsed, remaining, etaReady := tracker.Snapshot()
 				spin := spinner[frame%len(spinner)]
 				frame++
 				renderer.Render(func(width int) string {
-					return binProgressLine(spin, p, have, remaining, etaReady)
+					return binProgressLine(spin, p, have, elapsed, remaining, etaReady)
 				})
 			}
 		}
@@ -102,15 +103,17 @@ func convertBINWithProgress(input, output string, maxPly int) (bin2pgn.Stats, er
 	return stats, err
 }
 
-func binProgressLine(spin string, p bin2pgn.Progress, have bool, remaining time.Duration, etaReady bool) string {
+func binProgressLine(spin string, p bin2pgn.Progress, have bool, elapsed, remaining time.Duration, etaReady bool) string {
 	working := L("Working...", "Verarbeitung...", "Bezig met verwerken...", "Traitement...", "Procesando...", "处理中...", "Обработка...")
-	etaLabel := L("total ETA", "Restzeit gesamt", "resterende tijd totaal", "temps restant total", "tiempo restante total", "总剩余时间", "общее оставшееся время")
+	elapsedLabel := L("elapsed", "verstrichen", "verstreken", "écoulé", "transcurrido", "已用时", "прошло")
+	etaLabel := L("~ time left", "~ Restzeit", "~ resterende tijd", "~ temps restant", "~ tiempo restante", "~ 剩余时间", "~ осталось")
 	eta := L("calculating...", "wird berechnet...", "wordt berekend...", "calcul...", "calculando...", "计算中...", "рассчитывается...")
 	if etaReady {
-		eta = "~" + formatBINETA(remaining)
+		eta = formatBINETA(remaining)
 	}
+	timing := fmt.Sprintf("%s %s | %s %s", elapsedLabel, formatBINElapsed(elapsed), etaLabel, eta)
 	if !have {
-		return fmt.Sprintf("  %s %s | %s: %s", spin, working, etaLabel, eta)
+		return fmt.Sprintf("  %s %s | %s", spin, working, timing)
 	}
 
 	detail := ""
@@ -138,7 +141,21 @@ func binProgressLine(spin string, p bin2pgn.Progress, have bool, remaining time.
 	default:
 		detail = working
 	}
-	return fmt.Sprintf("  %s %s %s | %s: %s", spin, working, detail, etaLabel, eta)
+	return fmt.Sprintf("  %s %s %s | %s", spin, working, detail, timing)
+}
+
+func formatBINElapsed(d time.Duration) string {
+	if d < 0 {
+		d = 0
+	}
+	seconds := int64(d / time.Second)
+	hours := seconds / 3600
+	minutes := (seconds % 3600) / 60
+	seconds %= 60
+	if hours > 0 {
+		return fmt.Sprintf("%dh%02dm", hours, minutes)
+	}
+	return fmt.Sprintf("%dm%02ds", minutes, seconds)
 }
 
 func formatBINETA(d time.Duration) string {
