@@ -1,0 +1,57 @@
+name: Prepare Source2Metal v3.2.2 documentation
+
+on:
+  push:
+    branches:
+      - feature/bin-progress-eta-v3.2.2
+    paths:
+      - '.github/workflows/prepare-v3.2.2-docs.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/bin-progress-eta-v3.2.2
+      - name: Update seven manuals and HTML intro
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('source/Source2Metal_v3.2.2')
+          sections = {
+          'EN': '''\n\n9. LONG BIN RUNS: PROGRESS, SAFE STOP AND NIGHT REST\nDuring BIN processing Source2Metal shows an activity spinner, the current phase, elapsed time and an explicitly approximate remaining-time estimate. At first the estimate says that it is being calculated; it is adjusted as more of the reachable opening graph becomes known.\n\nPress Ctrl+C to request a safe stop of the current BIN source. Source2Metal stops at the next safe point and does not publish an incomplete RAW file. In interactive batch mode choose: 1 = skip this source and continue with the rest; 2 = pause for 10 hours of night rest and then automatically retry the same source from the beginning; 3 = stop the complete batch. No key press is needed after the 10-hour pause. Ctrl+C during that pause stops the batch.\n''',
+          'DE': '''\n\n9. LANGE BIN-LÄUFE: FORTSCHRITT, SICHERER STOPP UND NACHTRUHE\nWährend der BIN-Verarbeitung zeigt Source2Metal einen Aktivitätsindikator, die aktuelle Phase, die verstrichene Zeit und eine ausdrücklich ungefähre Restzeit. Anfangs wird die Restzeit noch berechnet; sie wird angepasst, sobald mehr vom erreichbaren Eröffnungsgraphen bekannt ist.\n\nMit Ctrl+C wird ein sicherer Stopp der aktuellen BIN-Quelle angefordert. Source2Metal stoppt am nächsten sicheren Punkt und veröffentlicht keine unvollständige RAW-Datei. Im interaktiven Batchmodus gilt danach: 1 = diese Quelle überspringen und mit dem Rest fortfahren; 2 = 10 Stunden Nachtruhe und danach dieselbe Quelle automatisch von vorn erneut starten; 3 = den kompletten Batch stoppen. Nach den 10 Stunden ist keine Taste nötig. Ctrl+C während der Pause stoppt den Batch.\n''',
+          'NL': '''\n\n9. LANGE BIN-RUNS: VOORTGANG, VEILIG STOPPEN EN NACHTRUST\nTijdens BIN-verwerking toont Source2Metal een draaiende activiteitsindicator, de actuele fase, de verstreken tijd en een nadrukkelijk geschatte resterende tijd. In het begin staat er dat de schatting nog wordt berekend; daarna wordt zij bijgesteld naarmate meer van de bereikbare openingsgraaf bekend is.\n\nDruk Ctrl+C om een veilige stop van alleen de huidige BIN-bron te vragen. Source2Metal stopt op het eerstvolgende veilige punt en publiceert geen onvolledige RAW-file. In interactieve batchmodus volgt daarna: 1 = deze bron overslaan en doorgaan met de rest; 2 = 10 uur nachtrustpauze en daarna dezelfde bron automatisch vanaf het begin opnieuw starten; 3 = de hele batch stoppen. Na de 10 uur is geen toets nodig. Ctrl+C tijdens de nachtrustpauze stopt de batch.\n''',
+          'FR': '''\n\n9. LONGS TRAITEMENTS BIN : PROGRESSION, ARRÊT SÛR ET PAUSE NOCTURNE\nPendant le traitement BIN, Source2Metal affiche un indicateur d’activité, la phase actuelle, le temps écoulé et une estimation explicitement approximative du temps restant. Au début l’estimation est en cours de calcul, puis elle est ajustée à mesure que le graphe d’ouvertures accessible devient mieux connu.\n\nCtrl+C demande un arrêt sûr de la source BIN actuelle. Source2Metal s’arrête au prochain point sûr et ne publie pas de RAW incomplet. En mode batch interactif : 1 = ignorer cette source et continuer ; 2 = pause nocturne de 10 heures puis relancer automatiquement la même source depuis le début ; 3 = arrêter tout le batch. Aucune touche n’est nécessaire après les 10 heures. Ctrl+C pendant la pause arrête le batch.\n''',
+          'ES': '''\n\n9. PROCESOS BIN LARGOS: PROGRESO, PARADA SEGURA Y DESCANSO NOCTURNO\nDurante el procesamiento BIN, Source2Metal muestra un indicador de actividad, la fase actual, el tiempo transcurrido y una estimación explícitamente aproximada del tiempo restante. Al principio la estimación se está calculando y después se reajusta a medida que se conoce mejor el grafo de aperturas alcanzable.\n\nCtrl+C solicita una parada segura de la fuente BIN actual. Source2Metal se detiene en el siguiente punto seguro y no publica un RAW incompleto. En modo batch interactivo: 1 = omitir esta fuente y continuar con las demás; 2 = pausa nocturna de 10 horas y después reintentar automáticamente la misma fuente desde el principio; 3 = detener todo el batch. Tras las 10 horas no hace falta pulsar ninguna tecla. Ctrl+C durante la pausa detiene el batch.\n''',
+          'RU': '''\n\n9. ДОЛГИЕ BIN-ПРОХОДЫ: ПРОГРЕСС, БЕЗОПАСНАЯ ОСТАНОВКА И НОЧНОЙ ОТДЫХ\nВо время обработки BIN Source2Metal показывает индикатор активности, текущую фазу, прошедшее время и явно приблизительную оценку оставшегося времени. Сначала оценка только рассчитывается, затем корректируется по мере того, как становится известна большая часть достижимого графа дебютов.\n\nCtrl+C запрашивает безопасную остановку только текущего BIN-источника. Source2Metal останавливается в ближайшей безопасной точке и не публикует неполный RAW-файл. В интерактивном пакетном режиме затем можно выбрать: 1 = пропустить этот источник и продолжить остальные; 2 = сделать паузу на ночной отдых 10 часов, после чего автоматически повторить тот же источник с начала; 3 = остановить весь пакет. После 10 часов клавиша не требуется. Ctrl+C во время паузы останавливает пакет.\n''',
+          'ZH': '''\n\n9. 长时间 BIN 处理：进度、安全停止和夜间休息\n处理 BIN 时，Source2Metal 会显示活动指示器、当前阶段、已用时间以及明确标注为近似值的剩余时间估计。开始时会显示“正在计算”，随后随着可达开局图逐渐明确而不断调整。\n\n按 Ctrl+C 可请求仅安全停止当前 BIN 源。Source2Metal 会在下一个安全点停止，并且不会发布不完整的 RAW 文件。在交互式批处理中随后可选：1 = 跳过当前源并继续其余源；2 = 夜间休息 10 小时，然后自动从头重试同一源；3 = 停止整个批处理。10 小时结束后无需按键。休息期间按 Ctrl+C 会停止整个批处理。\n''',
+          }
+
+          for lang, section in sections.items():
+              p = root / f'MANUAL_{lang}.txt'
+              text = p.read_text(encoding='utf-8-sig').replace('3.2.1', '3.2.2')
+              marker = section.strip().splitlines()[0]
+              if marker not in text:
+                  text = text.rstrip() + section
+              p.write_text(text.rstrip() + '\n', encoding='utf-8')
+
+          intro = root / 'Readme-README-Прочтите-自述文件.html'
+          text = intro.read_text(encoding='utf-8-sig').replace('3.2.1', '3.2.2')
+          intro.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit documentation update
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add source/Source2Metal_v3.2.2/MANUAL_*.txt source/Source2Metal_v3.2.2/Readme-README-Прочтите-自述文件.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Update v3.2.2 manuals for BIN progress and night-rest control'
+          git push origin HEAD:feature/bin-progress-eta-v3.2.2
