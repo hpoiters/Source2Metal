@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - fix/pgn-resilience-final
+      - work/bin-progress-3.2.1
       - main
     paths:
       - 'source/Source2Metal_v3.2.1/**'
