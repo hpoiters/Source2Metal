@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"source2metal/internal/bin2pgn"
@@ -72,6 +75,22 @@ func (t *binProgressTracker) Snapshot() (bin2pgn.Progress, bool, time.Duration, 
 func convertBINWithProgress(input, output string, maxPly int) (bin2pgn.Stats, error) {
 	tracker := newBINProgressTracker()
 	renderer := newProgressRenderer()
+	var cancelRequested atomic.Bool
+
+	interrupts := make(chan os.Signal, 1)
+	signal.Notify(interrupts, os.Interrupt)
+	interruptDone := make(chan struct{})
+	var interruptWG sync.WaitGroup
+	interruptWG.Add(1)
+	go func() {
+		defer interruptWG.Done()
+		select {
+		case <-interrupts:
+			cancelRequested.Store(true)
+		case <-interruptDone:
+		}
+	}()
+
 	done := make(chan struct{})
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -91,19 +110,32 @@ func convertBINWithProgress(input, output string, maxPly int) (bin2pgn.Stats, er
 				spin := spinner[frame%len(spinner)]
 				frame++
 				renderer.Render(func(width int) string {
-					return binProgressLine(spin, p, have, elapsed, remaining, etaReady)
+					return binProgressLine(spin, p, have, elapsed, remaining, etaReady, cancelRequested.Load())
 				})
 			}
 		}
 	}()
 
-	stats, err := bin2pgn.ConvertWithProgress(input, output, maxPly, tracker.Update)
+	stats, err := bin2pgn.ConvertWithProgressCancelable(input, output, maxPly, tracker.Update, cancelRequested.Load)
 	close(done)
 	wg.Wait()
+	signal.Stop(interrupts)
+	close(interruptDone)
+	interruptWG.Wait()
 	return stats, err
 }
 
-func binProgressLine(spin string, p bin2pgn.Progress, have bool, elapsed, remaining time.Duration, etaReady bool) string {
+func binProgressLine(spin string, p bin2pgn.Progress, have bool, elapsed, remaining time.Duration, etaReady, cancelling bool) string {
+	if cancelling {
+		return L(
+			"  Stop requested... finishing the current safe point.",
+			"  Stopp angefordert... aktueller sicherer Punkt wird beendet.",
+			"  Stop gevraagd... bezig met het eerstvolgende veilige punt.",
+			"  Arrêt demandé... passage au prochain point sûr.",
+			"  Parada solicitada... terminando en el siguiente punto seguro.",
+			"  已请求停止……正在到达下一个安全点。",
+			"  Запрошена остановка... переход к ближайшей безопасной точке.")
+	}
 	working := L("Working...", "Verarbeitung...", "Bezig met verwerken...", "Traitement...", "Procesando...", "处理中...", "Обработка...")
 	elapsedLabel := L("elapsed", "verstrichen", "verstreken", "écoulé", "transcurrido", "已用时", "прошло")
 	etaLabel := L("~ time left", "~ Restzeit", "~ resterende tijd", "~ temps restant", "~ tiempo restante", "~ 剩余时间", "~ осталось")
