@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"source2metal/internal/bin2pgn"
 )
@@ -29,6 +30,59 @@ func binSummary(c Counters) string {
 		"BIN RAW: %d успешно | %d ошибок | %d линий | %d проверено\n"), c.BINRawBuilt, c.BINRawFailed, c.BINRawGames, c.BINRawVerified)
 }
 
+// startBINActivity keeps the console visibly alive during BIN2PGN phases that
+// do not have a trustworthy total. In particular, reachability discovery can
+// take a long time after the BIN index has been read. We deliberately show no
+// invented percentage: only a rotating activity marker, the reliable physical
+// BIN-record count (when available), and elapsed active time.
+func startBINActivity(source string) func() {
+	pr := newProgressRenderer()
+	started := time.Now()
+	physical := int64(-1)
+	if info, err := os.Stat(source); err == nil && info.Size() >= 0 && info.Size()%16 == 0 {
+		physical = info.Size() / 16
+	}
+
+	done := make(chan struct{})
+	stopped := make(chan struct{})
+	frames := []string{"|", "/", "-", "\\"}
+
+	go func() {
+		defer close(stopped)
+		ticker := time.NewTicker(250 * time.Millisecond)
+		defer ticker.Stop()
+		frame := 0
+		for {
+			elapsed := int64(time.Since(started).Seconds())
+			if elapsed < 0 {
+				elapsed = 0
+			}
+			pr.Render(func(width int) string {
+				working := L("Work in progress...", "Verarbeitung läuft...", "Bezig met verwerken...", "Traitement en cours...", "Procesando...", "正在处理...", "Идёт обработка...")
+				active := L("active", "aktiv", "actief", "actif", "activo", "运行", "активно")
+				if physical >= 0 {
+					records := L("BIN records", "BIN-Datensätze", "BIN-records", "enregistrements BIN", "registros BIN", "BIN 记录", "BIN-записей")
+					return fmt.Sprintf("  %s BIN2PGN: %s | %s: %s | %s: %ds", frames[frame], working, records, fmtInt(physical), active, elapsed)
+				}
+				return fmt.Sprintf("  %s BIN2PGN: %s | %s: %ds", frames[frame], working, active, elapsed)
+			})
+
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				frame = (frame + 1) % len(frames)
+			}
+		}
+	}()
+
+	return func() {
+		close(done)
+		<-stopped
+		pr.Clear()
+	}
+}
+
 func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([]string, error) {
 	var outputs []string
 	for _, s := range inv.Sources {
@@ -40,7 +94,9 @@ func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([
 		}
 		out := uniqueSourceFile(layout.RawBooksDir, s.Base, KindBIN, "RAW", s.Path)
 		fmt.Printf("\nBIN RAW: %s\n", s.Path)
+		stopActivity := startBINActivity(s.Path)
 		stats, err := bin2pgn.Convert(s.Path, out, cfg.MaxPly)
+		stopActivity()
 		tr := getSourceTrace(c, KindBIN, s.Base, s.Path)
 		report := binReport(s.Path, out, stats, cfg.MaxPly)
 		reportPath := filepath.Join(layout.ReportDir, filepath.Base(out)+".txt")
