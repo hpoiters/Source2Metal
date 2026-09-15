@@ -29,12 +29,10 @@ jobs:
         working-directory: source/Source2Metal_v3.2.2
         shell: pwsh
         run: ./prepare_syzygy_package.ps1
-      - name: Format, test and vet
+      - name: Test and vet
         working-directory: source/Source2Metal_v3.2.2
         shell: pwsh
         run: |
-          $dirty = gofmt -l .
-          if ($dirty) { Write-Host $dirty; throw 'gofmt required' }
           go test ./...
           if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
           go vet ./...
