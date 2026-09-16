@@ -138,6 +138,8 @@ func TestConsoleSourceMatchesApproved(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		// Git for Windows may check out text with CRLF. Normalize only line endings.
+		data = bytes.ReplaceAll(data, []byte("\r\n"), []byte("\n"))
 		if name == "main.go" {
 			data = bytes.ReplaceAll(data, []byte(buildMarker), []byte("2026-09-16_07-35_ETA_COMPACT_TEST"))
 		}
