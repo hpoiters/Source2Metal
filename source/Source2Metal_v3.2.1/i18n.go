@@ -82,11 +82,11 @@ func languageDisplayName(code string) string {
 }
 
 func languageConfigPath() (string, error) {
-	exe, err := os.Executable()
+	dir, err := applicationDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(filepath.Dir(exe), "Source2Metal.ini"), nil
+	return filepath.Join(dir, "Source2Metal.ini"), nil
 }
 
 func readSavedLanguage() (string, bool) {

@@ -1,4 +1,4 @@
-"""Create v3.2.1 only; never replace any published tag or asset."""
+"""Create v3.2.1-r2 only; never replace any published tag or asset."""
 import hashlib
 import json
 import os
@@ -8,7 +8,11 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "hpoiters/Source2Metal"
 VERSION = "3.2.1"
+TAG = "v3.2.1-r2"
 PRESERVED = {
+    "v3.2.1": ("90b355757d849db71196e8df0ef4c61836d6d5a3", {
+        "SHA256_Source2Metal_v3.2.1.txt": "932e75b1ee28dc556e2cbd5026a1ea07a9b8fec870163c2b8d7929868882e039",
+        "Source2Metal_v3.2.1_RELEASE.zip": "6cec6df6e20a55e1680db38eb36533c7c1de3090a96dd2b874ae2fc88fd38b03"}),
     "v3.0.9": ("24f23cf83a77654f256ea12e7cce13ef491096a4", {
         "SHA256_Source2Metal_v3.0.9.txt": "8f95209555803bd97541c5b2479bf6051cee6c2508d035c330b0eb728d1b6ca1",
         "Source2Metal_v3.0.9_RELEASE.zip": "7d6db6ac9d7d0d4410b83e8e1a5498827c04ffbd8819665adda3ac1853acf254"}),
@@ -46,17 +50,17 @@ def main():
     expected = {f"SHA256_Source2Metal_v{VERSION}.txt", f"Source2Metal_v{VERSION}_RELEASE.zip"}
     assert {p.name for p in files} == expected, "Unexpected release assets"
     tags = api("tags?per_page=100")
-    assert all(t["name"] != "v" + VERSION for t in tags), "Version already tagged; refusing replacement"
-    subprocess.run(["gh", "release", "create", "v" + VERSION, *map(str, files),
-                    "--repo", REPO, "--target", sha, "--title", "Source2Metal v" + VERSION,
+    assert all(t["name"] != TAG for t in tags), "Version already tagged; refusing replacement"
+    subprocess.run(["gh", "release", "create", TAG, *map(str, files),
+                    "--repo", REPO, "--target", sha, "--title", "Source2Metal v" + VERSION + " (BIN2PGN update)",
                     "--notes-file", str(ROOT / "source" / f"Source2Metal_v{VERSION}" / f"RELEASE_NOTES_v{VERSION}.txt"),
                     "--latest"], check=True)
-    release = api("releases/tags/v" + VERSION)
+    release = api("releases/tags/" + TAG)
     actual = {a["name"]: a["digest"].removeprefix("sha256:") for a in release["assets"]}
     expected_hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     assert actual == expected_hashes, "Published assets differ from tested package"
-    assert api("git/ref/tags/v" + VERSION)["object"]["sha"] == sha
-    assert api("releases/latest")["tag_name"] == "v" + VERSION
+    assert api("git/ref/tags/" + TAG)["object"]["sha"] == sha
+    assert api("releases/latest")["tag_name"] == TAG
     assert preserved() == before, "An earlier release changed"
     print("Published and verified:", release["html_url"])
 

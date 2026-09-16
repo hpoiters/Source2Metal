@@ -71,7 +71,7 @@ def main():
     archive = OUTPUT / f"Source2Metal_v{VERSION}_RELEASE.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for name, p in sorted(files.items()):
-            info = zipfile.ZipInfo(name, (2026, 9, 14, 0, 0, 0))
+            info = zipfile.ZipInfo(name, (2026, 9, 16, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
             z.writestr(info, p.read_bytes())

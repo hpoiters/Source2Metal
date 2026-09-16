@@ -83,3 +83,5 @@ ferait que dupliquer ces téléchargements. Les programmes travaillent localemen
 ni noms de tablebases, ni résultats. Vérifiez les téléchargements avec
 SHA256_Source2Metal_v3.2.1.txt. L’EXE n’est pas encore signé ; Windows peut
 donc afficher Éditeur inconnu ou SmartScreen.
+
+Affichage BIN2PGN mis à jour (2026-09-16) : le compteur de fichiers et le temps actif restent visibles. Une estimation globale apparaît quand les informations suffisent, évolue pendant le traitement et disparaît après BIN2PGN. Les exécutions réussies sont mémorisées localement.

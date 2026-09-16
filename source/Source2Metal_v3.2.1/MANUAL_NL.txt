@@ -83,3 +83,5 @@ Source2Metal en SyzygyCheck werken lokaal en uploaden geen bronbestanden,
 tablebasebestandsnamen of resultaten. Controleer de gebruikersrelease en EXE met
 SHA256_Source2Metal_v3.2.1.txt. De EXE is nog niet ondertekend; Windows kan
 daarom Onbekende uitgever of een SmartScreen-waarschuwing tonen.
+
+BIN2PGN-console bijgewerkt (2026-09-16): bestandsteller en actieve tijd blijven zichtbaar. Een grove totale resttijd verschijnt zodra voldoende informatie beschikbaar is, wordt gaandeweg bijgesteld en verdwijnt na BIN2PGN. Eerdere geslaagde runs worden lokaal onthouden.

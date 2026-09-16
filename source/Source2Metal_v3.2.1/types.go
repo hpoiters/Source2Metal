@@ -13,7 +13,7 @@ const (
 	defaultMaxPly              = 100
 	defaultMinPly              = 24
 	maxAllowedPly              = 120
-	buildDateUTC               = "2026-09-14T00:00:00Z"
+	buildDateUTC               = "2026-09-16T00:00:00Z"
 )
 
 type Config struct {

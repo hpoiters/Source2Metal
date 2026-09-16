@@ -81,3 +81,5 @@ Source2Metal and SyzygyCheck work locally and do not upload source files,
 tablebase filenames or results. Use SHA256_Source2Metal_v3.2.1.txt to verify
 the user release and executable. The EXE is currently unsigned, so Windows
 may show an Unknown publisher or SmartScreen warning.
+
+BIN2PGN console update (2026-09-16): the file counter and elapsed activity remain visible. A rough total time estimate appears when sufficient information is available, adapts during processing, and disappears when BIN2PGN ends. Earlier successful runs are remembered locally.

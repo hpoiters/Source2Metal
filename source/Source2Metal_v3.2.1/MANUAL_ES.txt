@@ -83,3 +83,5 @@ Los programas trabajan localmente y no suben fuentes, nombres de tablebases ni
 resultados. Verifique las descargas con SHA256_Source2Metal_v3.2.1.txt. El EXE
 no está firmado actualmente; Windows puede mostrar Editor desconocido o
 SmartScreen.
+
+Pantalla BIN2PGN actualizada (2026-09-16): se mantienen el contador de archivos y el tiempo activo. La estimación total aparece cuando hay información suficiente, se ajusta durante el proceso y desaparece al terminar BIN2PGN. Las ejecuciones correctas anteriores se recuerdan localmente.

@@ -110,11 +110,11 @@ func parseConfig() (Config, error) {
 	flag.Parse()
 	c.Interactive = len(os.Args) == 1
 	if c.Input == "" {
-		exe, err := os.Executable()
+		dir, err := applicationDir()
 		if err != nil {
 			return c, err
 		}
-		c.Input = filepath.Dir(exe)
+		c.Input = dir
 	}
 	if c.MaxPly < 1 || c.MaxPly > maxAllowedPly {
 		return c, fmt.Errorf(L("max-ply must be 1..%d", "max-ply muss 1..%d sein", "max-ply moet 1..%d zijn", "max-ply doit être compris entre 1 et %d", "max-ply debe ser 1..%d", "max-ply 必须为 1..%d", "max-ply должен быть 1..%d"), maxAllowedPly)

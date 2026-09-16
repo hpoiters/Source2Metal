@@ -20,11 +20,10 @@ func embeddedSyzygyPackageSHA256() string {
 }
 
 func extractSyzygyPackage() (string, error) {
-	exe, err := os.Executable()
+	dir, err := applicationDir()
 	if err != nil {
 		return "", err
 	}
-	dir := filepath.Dir(exe)
 	out := filepath.Join(dir, syzygyCheckPackageFilename)
 
 	if data, err := os.ReadFile(out); err == nil {

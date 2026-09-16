@@ -6,3 +6,8 @@ source/Source2Metal_v*/SyzygyCheck_v2.2.0_UTILITY.zip
 source/Source2Metal_v*/source2metal
 source/Source2Metal_v3.0.10/
 .github/workflows/build-release-v3.0.10.yml
+
+source/Source2Metal_console/core.exe
+validation/approved_core.exe
+validation/core_comparison.json
+baseline/

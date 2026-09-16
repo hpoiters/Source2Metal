@@ -82,3 +82,5 @@ Beide Programme arbeiten lokal und laden keine Quellen, Tablebase-Dateinamen
 oder Ergebnisse hoch. Prüfen Sie Downloads mit
 SHA256_Source2Metal_v3.2.1.txt. Die EXE ist derzeit nicht signiert; Windows
 kann deshalb „Unbekannter Herausgeber“ oder SmartScreen anzeigen.
+
+BIN2PGN-Anzeige aktualisiert (2026-09-16): Dateizähler und aktive Zeit bleiben sichtbar. Eine grobe gesamte Restzeit erscheint bei ausreichenden Informationen, wird während der Verarbeitung angepasst und endet mit BIN2PGN. Frühere erfolgreiche Läufe werden lokal gespeichert.

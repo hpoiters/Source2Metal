@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
+	"time"
 
 	"source2metal/internal/bin2pgn"
 )
@@ -29,6 +31,110 @@ func binSummary(c Counters) string {
 		"BIN RAW: %d успешно | %d ошибок | %d линий | %d проверено\n"), c.BINRawBuilt, c.BINRawFailed, c.BINRawGames, c.BINRawVerified)
 }
 
+func formatBINElapsed(seconds int64) string {
+	if seconds < 0 {
+		seconds = 0
+	}
+	h := seconds / 3600
+	m := (seconds % 3600) / 60
+	s := seconds % 60
+	if h > 0 {
+		return fmt.Sprintf("%dh %02dm %02ds", h, m, s)
+	}
+	if m > 0 {
+		return fmt.Sprintf("%dm %02ds", m, s)
+	}
+	return fmt.Sprintf("%ds", s)
+}
+
+// startBINActivity keeps the console visibly alive during BIN2PGN phases that
+// do not have a trustworthy total. In particular, reachability discovery can
+// take a long time after the BIN index has been read. We deliberately show no
+// invented percentage: only a rotating activity marker, the reliable physical
+// BIN-record count (when available), and elapsed active time.
+func startBINActivity(source string) func() {
+	pr := newProgressRenderer()
+	started := time.Now()
+	physical := int64(-1)
+	if info, err := os.Stat(source); err == nil && info.Size() >= 0 && info.Size()%16 == 0 {
+		physical = info.Size() / 16
+	}
+
+	done := make(chan struct{})
+	stopped := make(chan struct{})
+	frames := []string{"|", "/", "-", "\\"}
+
+	go func() {
+		defer close(stopped)
+		ticker := time.NewTicker(250 * time.Millisecond)
+		defer ticker.Stop()
+		frame := 0
+		for {
+			elapsed := int64(time.Since(started).Seconds())
+			if elapsed < 0 {
+				elapsed = 0
+			}
+
+			pr.Render(func(width int) string {
+				working := L("Work in progress...", "Verarbeitung läuft...", "Bezig met verwerken...", "Traitement en cours...", "Procesando...", "正在处理...", "Идёт обработка...")
+				active := L("active", "aktiv", "actief", "actif", "activo", "运行", "активно")
+				elapsedText := formatBINElapsed(elapsed)
+				if physical >= 0 {
+					records := L("BIN records", "BIN-Datensätze", "BIN-records", "enregistrements BIN", "registros BIN", "BIN 记录", "BIN-записей")
+					return fmt.Sprintf("  %s BIN2PGN: %s | %s: %s | %s: %s", frames[frame], working, records, fmtInt(physical), active, elapsedText)
+				}
+				return fmt.Sprintf("  %s BIN2PGN: %s | %s: %s", frames[frame], working, active, elapsedText)
+			})
+
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				frame = (frame + 1) % len(frames)
+			}
+		}
+	}()
+
+	return func() {
+		close(done)
+		<-stopped
+		pr.Clear()
+	}
+}
+
+// startBookMergeActivity reports only the real processed-line counter.
+// Atomic state keeps the long merge and validation phases race-free.
+func startBookMergeActivity(count *atomic.Int64, verifying *atomic.Bool) func() {
+	pr := newProgressRenderer()
+	started := time.Now()
+	done, stopped := make(chan struct{}), make(chan struct{})
+	frames := []string{"|", "/", "-", "\\"}
+	go func() {
+		defer close(stopped)
+		ticker := time.NewTicker(250 * time.Millisecond)
+		defer ticker.Stop()
+		frame := 0
+		for {
+			pr.Render(func(width int) string {
+				phase := L("Merging BOOK RAW...", "BOOK RAW wird zusammengeführt...", "BOOK RAW samenvoegen...", "Fusion de BOOK RAW...", "Combinando BOOK RAW...", "正在合并 BOOK RAW...", "Объединение BOOK RAW...")
+				if verifying.Load() {
+					phase = L("Verifying merged BOOK RAW...", "Zusammengeführtes BOOK RAW wird geprüft...", "Samengevoegde BOOK RAW controleren...", "Vérification du BOOK RAW fusionné...", "Verificando BOOK RAW combinado...", "正在验证合并后的 BOOK RAW...", "Проверка объединённого BOOK RAW...")
+				}
+				lines := L("lines", "Zeilen", "lijnen", "lignes", "líneas", "行", "строк")
+				active := L("active", "aktiv", "actief", "actif", "activo", "运行", "активно")
+				return fmt.Sprintf("  %s %s | %s: %s | %s: %s", frames[frame], phase, lines, fmtInt(count.Load()), active, formatBINElapsed(int64(time.Since(started).Seconds())))
+			})
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				frame = (frame + 1) % len(frames)
+			}
+		}
+	}()
+	return func() { close(done); <-stopped; pr.Clear() }
+}
+
 func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([]string, error) {
 	var outputs []string
 	for _, s := range inv.Sources {
@@ -40,7 +146,9 @@ func buildBINRaw(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([
 		}
 		out := uniqueSourceFile(layout.RawBooksDir, s.Base, KindBIN, "RAW", s.Path)
 		fmt.Printf("\nBIN RAW: %s\n", s.Path)
+		stopActivity := startBINActivity(s.Path)
 		stats, err := bin2pgn.Convert(s.Path, out, cfg.MaxPly)
+		stopActivity()
 		tr := getSourceTrace(c, KindBIN, s.Base, s.Path)
 		report := binReport(s.Path, out, stats, cfg.MaxPly)
 		reportPath := filepath.Join(layout.ReportDir, filepath.Base(out)+".txt")
@@ -106,8 +214,13 @@ func mergeBookRAW(paths []string, layout OutputLayout, c *Counters) (string, err
 	defer f.Close()
 	seen := map[string]struct{}{}
 	var count, dup int64
+	var processed atomic.Int64
+	var verifying atomic.Bool
+	stopActivity := startBookMergeActivity(&processed, &verifying)
+	defer stopActivity()
 	for _, p := range paths {
 		err = parsePGNFile(p, func(g PGNGame) error {
+			processed.Add(1)
 			result := g.Tags["Result"]
 			if (result != "*" && result != "1/2-1/2" && result != "1-0" && result != "0-1") || g.Tags["FEN"] != "" || g.Tags["SetUp"] == "1" {
 				return fmt.Errorf("BOOK RAW requires standard-position lines with a PGN result: %s", p)
@@ -142,9 +255,12 @@ func mergeBookRAW(paths []string, layout OutputLayout, c *Counters) (string, err
 		return "", fmt.Errorf("BOOK RAW merge is empty")
 	}
 	var verified int64
+	processed.Store(0)
+	verifying.Store(true)
 	err = parsePGNFile(tmp, func(g PGNGame) error {
 		_, e := bin2pgn.SequenceKey(strings.Join(strings.Fields(g.MoveText), " "))
 		verified++
+		processed.Add(1)
 		return e
 	}, nil)
 	if err != nil {

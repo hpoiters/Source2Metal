@@ -75,3 +75,5 @@ Source code (zip) 和 Source code (tar.gz)。不会另外发布自定义源代�
 重复这两个下载。两个程序都在本地工作，不上传源文件、tablebase 文件名或结果。
 请用 SHA256_Source2Metal_v3.2.1.txt 验证用户发布包和 EXE。
 EXE 目前未签名，因此 Windows 可能显示“未知发布者”或 SmartScreen 警告。
+
+BIN2PGN 界面更新（2026-09-16）：保留文件计数和运行时间。有足够信息时显示粗略的总剩余时间，处理过程中持续调整，BIN2PGN 结束后移除。此前成功运行的数据保存在本机。

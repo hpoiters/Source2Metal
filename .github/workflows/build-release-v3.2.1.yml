@@ -1,24 +1,21 @@
-name: Build and verify Source2Metal v3.2.1
+name: Verify and publish Source2Metal v3.2.1 revision 2
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - fix/pgn-resilience-final
-      - main
+    branches: [main]
     paths:
       - 'source/Source2Metal_v3.2.1/**'
+      - 'source/Source2Metal_console/**'
+      - 'validation/**'
       - 'tools/**'
       - '*.md'
       - '.github/workflows/build-release-v3.2.1.yml'
-
 permissions:
   contents: write
-
 concurrency:
-  group: source2metal-3.2.1-${{ github.ref }}
+  group: source2metal-3.2.1-r2
   cancel-in-progress: true
-
 jobs:
   windows-release:
     runs-on: windows-latest
@@ -26,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.24.6'
+          go-version: '1.23.2'
           cache: false
       - uses: actions/setup-python@v5
         with:
@@ -35,40 +32,48 @@ jobs:
         working-directory: source/Source2Metal_v3.2.1
         shell: pwsh
         run: ./prepare_syzygy_package.ps1
-      - name: Tests and vet
-        working-directory: source/Source2Metal_v3.2.1
-        shell: pwsh
-        run: |
-          go test ./...
-          if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
-          go vet ./...
-          if ($LASTEXITCODE -ne 0) { throw 'Vet failed' }
-      - name: Build and exercise Windows executable
+      - name: Build recovered core from complete source
         working-directory: source/Source2Metal_v3.2.1
         shell: pwsh
         env:
           CGO_ENABLED: '0'
         run: |
-          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '!Source2Metal_v3.2.1.exe' .
-          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
-          & './!Source2Metal_v3.2.1.exe' -selftest -no-pause
-          if ($LASTEXITCODE -ne 0) { throw 'Selftest failed' }
-          & './!Source2Metal_v3.2.1.exe' -extract-syzygy-package -no-pause
-          if ($LASTEXITCODE -ne 0) { throw 'Extraction failed' }
-          $actual = (Get-FileHash 'SyzygyCheck_v2.2.0_UTILITY.zip' -Algorithm SHA256).Hash.ToLower()
-          if ($actual -ne 'd80f8fd70f81b4f06cbd89547a7e346aa08688853b2ce2df25b30e93ccd6cb2c') { throw 'SyzygyCheck package changed' }
+          go test ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Core tests failed' }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Core vet failed' }
+          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '../Source2Metal_console/core.exe' .
+          if ($LASTEXITCODE -ne 0) { throw 'Core build failed' }
+      - name: Verify and build approved console
+        working-directory: source/Source2Metal_console
+        shell: pwsh
+        env:
+          CGO_ENABLED: '0'
+        run: |
+          go test ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Console tests failed' }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { throw 'Console vet failed' }
+          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '../Source2Metal_v3.2.1/!Source2Metal_v3.2.1.exe' .
+          if ($LASTEXITCODE -ne 0) { throw 'Console build failed' }
+          & '../Source2Metal_v3.2.1/!Source2Metal_v3.2.1.exe' -selftest -no-pause
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged selftest failed' }
+      - name: Compare approved kernel and run Windows regressions
+        run: python tools/verify_recovered_core.py
       - name: Package and validate documentation
         run: python tools/package_release.py
-      - name: Test unpacked user release in seven languages
+      - name: Test unpacked release in seven languages
         run: python tools/smoke_release.py release_v3.2.1/Source2Metal_v3.2.1_RELEASE.zip
-      - name: Publish new version after all checks
+      - name: Publish revision 2 after every check passes
         if: github.ref == 'refs/heads/main'
-        shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: python tools/publish_release.py
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: Source2Metal-v3.2.1-verified-release
-          path: release_v3.2.1/*
-          if-no-files-found: error
+          name: Source2Metal-v3.2.1-r2-validation
+          path: |
+            release_v3.2.1/*
+            validation/core_comparison.json
+          if-no-files-found: warn
