@@ -35,6 +35,16 @@ def execute(exe, root, cwd, args=(), input=None):
         raise AssertionError((result.returncode,result.stdout.decode('utf8','replace'),result.stderr.decode('utf8','replace')))
     return result.stdout.decode('utf8','replace')
 
+def fixture_pgn():
+    # GAME-METAL requires >=32 distinct games supporting the common moves.
+    # Every game shares 24 plies; two legal tail plies make all 32 unique.
+    opening = '1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7 11. c4 c6 12. Nc3 Qc7'
+    games=[]
+    for white in ('a3','a4','Be3','Bg5'):
+        for black in ('h6','h5','g6','a5','Kh8','Rb8','Rd8','Nb6'):
+            games.append(f'[Event "Parity"]\n[White "A{len(games)}"]\n[Black "B"]\n[WhiteElo "2600"]\n[BlackElo "2600"]\n[Result "1-0"]\n\n{opening} 13. {white} {black} 1-0\n')
+    return '\n'.join(games)
+
 def windows():
     assert os.name == 'nt', 'Native Windows verification is required'
     with tempfile.TemporaryDirectory(prefix='Source2Metal parity ') as temp:
@@ -46,7 +56,7 @@ def windows():
         record=struct.pack('>QHHI',0x463B96181691FC9C,0x031C,100,0)
         for name in ('first.bin','second.bin'):(root/name).write_bytes(record)
         (root/'third.bin').write_bytes(struct.pack('>QHHI',0x463B96181691FC9C,0x02DB,80,0))
-        (root/'game.pgn').write_text('[Event "Parity"]\n[White "A"]\n[Black "B"]\n[WhiteElo "2600"]\n[BlackElo "2600"]\n[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7 11. c4 c6 12. Nc3 Qc7 1-0\n',encoding='utf8')
+        (root/'game.pgn').write_text(fixture_pgn(),encoding='utf8')
         source_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in root.iterdir()}
         for lang in LANGS:
             snapshots=[]
