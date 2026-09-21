@@ -58,15 +58,18 @@ func prepareChessBaseSources(inv Inventory, layout OutputLayout, c *Counters) []
 		tmp := filepath.Join(tmpDir, fmt.Sprintf("%03d_%s_%s_Raw.pgn", i+1, safeComponent(s.Base), format))
 		start := time.Now()
 		pr := newProgressRenderer()
+		spinner := newCBActivitySpinner(pr, format, start)
 		progressFinished := false
 		st, actualFormat, err := cb2pgn.ConvertFileWithProgress(s.Path, tmp, func(label string, done, total int64, pstart time.Time) {
 			if total > 0 && done >= total {
+				spinner.Stop()
 				pr.Finish(func(width int) string { return cbAdapterProgressLine(label, done, total, pstart, width) })
 				progressFinished = true
 				return
 			}
-			pr.Render(func(width int) string { return cbAdapterProgressLine(label, done, total, pstart, width) })
+			spinner.Update(label, done, total, pstart)
 		})
+		spinner.Stop() // Also stop on decoder errors and missing final callbacks.
 		if err == nil {
 			if !progressFinished {
 				pr.Finish(func(width int) string { return cbAdapterProgressLine(format, st.Records, st.Records, start, width) })
