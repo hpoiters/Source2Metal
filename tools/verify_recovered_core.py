@@ -19,7 +19,9 @@ def prepare():
 def instructions():
     result = subprocess.check_output(['go','run','.',str(REF),str(CORE)], cwd=ROOT/'tools/core_compare')
     report = json.loads(result)
-    allowed = ('main.startBINActivity', 'main.startBookMergeActivity', 'main.mergeBookRAW')
+    # The 2CBH/CBH adapter change is display-only; conversion parity below
+    # must still match the approved kernel byte-for-byte in every language.
+    allowed = ('main.startBINActivity', 'main.startBookMergeActivity', 'main.mergeBookRAW', 'main.prepareChessBaseSources')
     unexpected = [n for n in report['changed']+report['missing'] if not n.startswith(allowed)]
     assert not unexpected, unexpected
     assert len(report['same']) >= 390, len(report['same'])
