@@ -17,7 +17,7 @@ func TestCBSpinnerProgressLinePreservesProgress(t *testing.T) {
 			if got != want {
 				t.Fatalf("%s %c: spinner changed the progress payload: %q != %q", format, frame, got, want)
 			}
-			if !strings.Contains(got, "ETA ") || !strings.Contains(got, "76.813/3.216.031") {
+			if !strings.Contains(got, "ETA ") || !strings.Contains(got, fmtInt(76813)+"/"+fmtInt(3216031)) {
 				t.Fatalf("%s %c: missing original counts/ETA: %q", format, frame, got)
 			}
 			if utf8.RuneCountInString(got) > width {
