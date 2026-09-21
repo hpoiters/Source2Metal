@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -32,6 +33,7 @@ func newCBActivitySpinner(renderer *progressRenderer, label string, start time.T
 		stop:     make(chan struct{}),
 		stopped:  make(chan struct{}),
 	}
+	fmt.Print("\x1b[?25l") // Replace the blinking text cursor while conversion is active.
 	s.render() // Activity is visible before the first record has completed.
 	go func() {
 		defer close(s.stopped)
@@ -66,8 +68,11 @@ func (s *cbActivitySpinner) render() {
 }
 
 func (s *cbActivitySpinner) Stop() {
-	s.once.Do(func() { close(s.stop) })
-	<-s.stopped
+	s.once.Do(func() {
+		close(s.stop)
+		<-s.stopped
+		fmt.Print("\x1b[?25h") // Always restore the ordinary cursor on completion or error.
+	})
 }
 
 // Reserve two extra columns for the rotating character without changing the
