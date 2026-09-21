@@ -1,4 +1,4 @@
-name: Verify and publish Source2Metal v3.2.1 revision 2
+name: Verify and publish Source2Metal v3.2.1 revision 3
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: source2metal-3.2.1-r2
+  group: source2metal-3.2.1-r3
   cancel-in-progress: true
 jobs:
   windows-release:
@@ -64,7 +64,7 @@ jobs:
         run: python tools/package_release.py
       - name: Test unpacked release in seven languages
         run: python tools/smoke_release.py release_v3.2.1/Source2Metal_v3.2.1_RELEASE.zip
-      - name: Publish revision 2 after every check passes
+      - name: Publish revision 3 after every check passes
         if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Source2Metal-v3.2.1-r2-validation
+          name: Source2Metal-v3.2.1-r3-validation
           path: |
             release_v3.2.1/*
             validation/core_comparison.json

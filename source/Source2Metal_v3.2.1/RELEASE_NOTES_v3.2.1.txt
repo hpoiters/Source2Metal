@@ -1,23 +1,28 @@
-Source2Metal v3.2.1 — BIN2PGN console update (revision 2, 2026-09-16)
+Source2Metal v3.2.1 — ChessBase activity spinner (revision 3, 2026-09-21)
 
 Normal filenames remain !Source2Metal_v3.2.1.exe and
-Source2Metal_v3.2.1_RELEASE.zip. GitHub tag v3.2.1-r2 distinguishes this update
-from the preserved v3.2.1 release of 14 September.
+Source2Metal_v3.2.1_RELEASE.zip. GitHub tag v3.2.1-r3 distinguishes this update
+from the preserved v3.2.1 and v3.2.1-r2 releases.
 
-The approved compact BIN2PGN display is consolidated: spinner, file x/y,
-elapsed activity, delayed rough total ETA for all BIN files, saved adaptive
-history, compact wording, blank separator, and removal of ETA after BIN2PGN.
-Conversion, filters, PGN content and output layout are preserved. The stable
-application-directory handoff and existing BOOK RAW activity display are
-restored in the complete core source. SyzygyCheck remains unchanged v2.2.0.
+The 2CBH/CBH progress line again has a rotating activity symbol before the
+format name. It animates continuously even while a large individual game is
+being decoded. The ordinary blinking terminal cursor is hidden only during
+ChessBase conversion and restored on completion or error. Existing progress
+bar, counts, percentage, ETA, completion display, output and decoder stay as
+before. No change to the underlying 2CBH or CBH conversion algorithms.
 
-The release is built from complete Go source. All converter functions match
-the approved kernel after relocation normalization. Changed native functions
-are restricted to progress instrumentation. Windows validation compares PGN
-output of the approved kernel, rebuilt kernel and final launcher in all seven
-languages, checks 49 language transitions, SyzygyCheck menu extraction,
-working-directory isolation, source integrity and the packaged release.
-The 39 console regressions guard the approved runtime source and ETA behavior.
+All revision-2 functionality is preserved: the BIN2PGN display and adaptive
+ETA, stable application-directory handling, BOOK RAW activity, all source
+formats and output layouts. The SyzygyCheck utility stays unchanged v2.2.0.
 
-All gates must pass before this revision is published as Latest. Earlier
-release tags, assets and metadata remain unchanged. The program is unsigned.
+The release is rebuilt from the complete Go source. Windows verification
+compares PGN output of the approved kernel, rebuilt kernel and final launcher
+in all seven languages, tests 49 language transitions, SyzygyCheck menu
+extraction, working-directory isolation, source integrity and the packaged
+release. Kernel differences are restricted to existing progress instrumentation
+and the ChessBase progress-display adapter. Dedicated spinner layout tests
+cover its four animation frames, console widths and unchanged progress text.
+
+Publication as Latest follows passing all build and validation checks. All
+earlier release tags, assets and metadata remain unchanged. The program is
+unsigned.
