@@ -1,4 +1,4 @@
-"""Create v3.2.1-r2 only; never replace any published tag or asset."""
+"""Create v3.2.1-r3 only; never replace any previously published tag or asset."""
 import hashlib
 import json
 import os
@@ -8,8 +8,11 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "hpoiters/Source2Metal"
 VERSION = "3.2.1"
-TAG = "v3.2.1-r2"
+TAG = "v3.2.1-r3"
 PRESERVED = {
+    "v3.2.1-r2": ("3954028a7d5396821c7d97facf6d3754d2c07dc0", {
+        "SHA256_Source2Metal_v3.2.1.txt": "e56934c72f851e9b8976cb616fa374d691a470d9ea0397d975862842a8416411",
+        "Source2Metal_v3.2.1_RELEASE.zip": "c6c3d06f4ac3237e2e7f5240fbac82adbba7142b987151b7048e15eb3461aefd"}),
     "v3.2.1": ("90b355757d849db71196e8df0ef4c61836d6d5a3", {
         "SHA256_Source2Metal_v3.2.1.txt": "932e75b1ee28dc556e2cbd5026a1ea07a9b8fec870163c2b8d7929868882e039",
         "Source2Metal_v3.2.1_RELEASE.zip": "6cec6df6e20a55e1680db38eb36533c7c1de3090a96dd2b874ae2fc88fd38b03"}),
@@ -52,7 +55,7 @@ def main():
     tags = api("tags?per_page=100")
     assert all(t["name"] != TAG for t in tags), "Version already tagged; refusing replacement"
     subprocess.run(["gh", "release", "create", TAG, *map(str, files),
-                    "--repo", REPO, "--target", sha, "--title", "Source2Metal v" + VERSION + " (BIN2PGN update)",
+                    "--repo", REPO, "--target", sha, "--title", "Source2Metal v" + VERSION + " (2CBH activity spinner)",
                     "--notes-file", str(ROOT / "source" / f"Source2Metal_v{VERSION}" / f"RELEASE_NOTES_v{VERSION}.txt"),
                     "--latest"], check=True)
     release = api("releases/tags/" + TAG)
