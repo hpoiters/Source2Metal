@@ -7,7 +7,8 @@ on:
     paths:
       - 'source/Source2Metal_v3.3.0/**'
       - 'source/Source2Metal_console/**'
-      - 'validation/ctg_v3.3.0/**'\n      - 'validation/approved_console_hashes.json'
+      - 'validation/ctg_v3.3.0/**'
+      - 'validation/approved_console_hashes.json'
       - 'tools/**'
       - '*.md'
       - '.github/workflows/build-release-v3.3.0.yml'
