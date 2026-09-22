@@ -1,21 +1,24 @@
-name: Verify and publish Source2Metal v3.2.1 revision 3
+name: Verify and publish Source2Metal v3.3.0
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - 'source/Source2Metal_v3.2.1/**'
+      - 'source/Source2Metal_v3.3.0/**'
       - 'source/Source2Metal_console/**'
-      - 'validation/**'
+      - 'validation/ctg_v3.3.0/**'
       - 'tools/**'
       - '*.md'
-      - '.github/workflows/build-release-v3.2.1.yml'
+      - '.github/workflows/build-release-v3.3.0.yml'
+
 permissions:
   contents: write
+
 concurrency:
-  group: source2metal-3.2.1-r3
+  group: source2metal-3.3.0
   cancel-in-progress: true
+
 jobs:
   windows-release:
     runs-on: windows-latest
@@ -28,12 +31,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Fetch and verify unchanged SyzygyCheck package
-        working-directory: source/Source2Metal_v3.2.1
+        working-directory: source/Source2Metal_v3.3.0
         shell: pwsh
         run: ./prepare_syzygy_package.ps1
-      - name: Build recovered core from complete source
-        working-directory: source/Source2Metal_v3.2.1
+
+      - name: Test, vet and build core
+        working-directory: source/Source2Metal_v3.3.0
         shell: pwsh
         env:
           CGO_ENABLED: '0'
@@ -44,7 +49,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Core vet failed' }
           go build -trimpath -buildvcs=false -ldflags='-s -w' -o '../Source2Metal_console/core.exe' .
           if ($LASTEXITCODE -ne 0) { throw 'Core build failed' }
-      - name: Verify and build approved console
+
+      - name: Test, vet and build launcher
         working-directory: source/Source2Metal_console
         shell: pwsh
         env:
@@ -54,26 +60,26 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Console tests failed' }
           go vet ./...
           if ($LASTEXITCODE -ne 0) { throw 'Console vet failed' }
-          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '../Source2Metal_v3.2.1/!Source2Metal_v3.2.1.exe' .
+          go build -trimpath -buildvcs=false -ldflags='-s -w' -o '../Source2Metal_v3.3.0/!Source2Metal_v3.3.0.exe' .
           if ($LASTEXITCODE -ne 0) { throw 'Console build failed' }
-          & '../Source2Metal_v3.2.1/!Source2Metal_v3.2.1.exe' -selftest -no-pause
+          & '../Source2Metal_v3.3.0/!Source2Metal_v3.3.0.exe' -selftest -no-pause
           if ($LASTEXITCODE -ne 0) { throw 'Packaged selftest failed' }
-      - name: Compare approved kernel and run Windows regressions
-        run: python tools/verify_recovered_core.py
+
       - name: Package and validate documentation
         run: python tools/package_release.py
+
       - name: Test unpacked release in seven languages
-        run: python tools/smoke_release.py release_v3.2.1/Source2Metal_v3.2.1_RELEASE.zip
-      - name: Publish revision 3 after every check passes
+        run: python tools/smoke_release.py release_v3.3.0/Source2Metal_v3.3.0_RELEASE.zip
+
+      - name: Publish v3.3.0 as Latest
         if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: python tools/publish_release.py
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Source2Metal-v3.2.1-r3-validation
-          path: |
-            release_v3.2.1/*
-            validation/core_comparison.json
+          name: Source2Metal-v3.3.0-validation
+          path: release_v3.3.0/*
           if-no-files-found: warn

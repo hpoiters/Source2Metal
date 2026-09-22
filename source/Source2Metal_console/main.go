@@ -17,7 +17,7 @@ import (
 //go:embed core.exe
 var coreEXE []byte
 
-const buildMarker = "2026-09-16_Source2Metal_v3.2.1"
+const buildMarker = "2026-09-22_Source2Metal_v3.3.0"
 
 type locale int
 
@@ -258,7 +258,7 @@ func (p *progressWriter) repaintMenuPrefixIfNeeded() {
 	if !p.vt || !p.languageScreenSeen || p.menuPrefixRepainted {
 		return
 	}
-	const prefix = "Source2Metal v3.2.1"
+	const prefix = "Source2Metal v3.3.0"
 	if !strings.HasSuffix(p.normalLine.String(), prefix) {
 		return
 	}

@@ -121,9 +121,9 @@ func TestLanguageSwitchClearsAndRepaintsAllLocales(t *testing.T) {
 		var out bytes.Buffer
 		p := newProgressWriter(&out, true)
 		_, _ = p.Write([]byte(heading + "\n1 = test\nKeuze: "))
-		_, _ = p.Write([]byte("Source2Metal v3.2.1\nHOOFDMENU\n"))
+		_, _ = p.Write([]byte("Source2Metal v3.3.0\nHOOFDMENU\n"))
 		s := out.String()
-		marker := "\x1b[2J\x1b[HSource2Metal v3.2.1"
+		marker := "\x1b[2J\x1b[HSource2Metal v3.3.0"
 		if strings.Count(s, marker) != 1 {
 			t.Fatalf("%q: expected one full-screen repaint, got %q", heading, s)
 		}
@@ -133,7 +133,7 @@ func TestLanguageSwitchClearsAndRepaintsAllLocales(t *testing.T) {
 func TestOrdinaryMainMenuDoesNotInjectClear(t *testing.T) {
 	var out bytes.Buffer
 	p := newProgressWriter(&out, true)
-	_, _ = p.Write([]byte("Source2Metal v3.2.1\nHOOFDMENU\n"))
+	_, _ = p.Write([]byte("Source2Metal v3.3.0\nHOOFDMENU\n"))
 	if strings.Contains(out.String(), "\x1b[2J\x1b[H") {
 		t.Fatalf("unexpected clear on ordinary menu: %q", out.String())
 	}
@@ -148,9 +148,9 @@ func TestRepeatedLanguageSwitchesAlwaysRepaint(t *testing.T) {
 	p := newProgressWriter(&out, true)
 	for _, heading := range headings {
 		_, _ = p.Write([]byte(heading + "\nKeuze: "))
-		_, _ = p.Write([]byte("Source2Metal v3.2.1\nMAIN MENU\n"))
+		_, _ = p.Write([]byte("Source2Metal v3.3.0\nMAIN MENU\n"))
 	}
-	if got := strings.Count(out.String(), "\x1b[2J\x1b[HSource2Metal v3.2.1"); got != len(headings) {
+	if got := strings.Count(out.String(), "\x1b[2J\x1b[HSource2Metal v3.3.0"); got != len(headings) {
 		t.Fatalf("repeated switches: got %d repaints, want %d", got, len(headings))
 	}
 }
@@ -200,11 +200,11 @@ func TestAll49LanguageTransitionsChunked(t *testing.T) {
 		for _, to := range headings {
 			var out bytes.Buffer
 			p := newProgressWriter(&out, true)
-			stream := from + "\nKeuze: Source2Metal v3.2.1\n" + to + "\nChoice: Source2Metal v3.2.1\n"
+			stream := from + "\nKeuze: Source2Metal v3.3.0\n" + to + "\nChoice: Source2Metal v3.3.0\n"
 			for _, b := range []byte(stream) {
 				p.Write([]byte{b})
 			}
-			if strings.Count(out.String(), "\x1b[2J\x1b[HSource2Metal v3.2.1") != 2 {
+			if strings.Count(out.String(), "\x1b[2J\x1b[HSource2Metal v3.3.0") != 2 {
 				t.Fatalf("%s -> %s: %q", from, to, out.String())
 			}
 		}

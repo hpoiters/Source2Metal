@@ -1,0 +1,22 @@
+Source2Metal v3.3.0 — complete reachable CTG graph extraction (2026-09-22)
+
+- Replaces CTG route sampling with complete traversal of decoded reachable
+  position/move pairs.
+- Preserves every decoded CTG move through neutral PGN lines with result *.
+- Adds worker use within one CTG book and a separate CTG depth setting;
+  depth 0 means no preset depth limit.
+- Writes CTG coverage, depth, decoder and raw-statistics reports separately.
+- Reuses CTG RAW output for CTG METAL and keeps GAME/BOOK separation intact.
+- Retains PGN, CBH, 2CBH, BIN and SyzygyCheck functionality.
+
+Validation
+- Perfect2023: 56,857 reachable positions, 60,747 position/move pairs and
+  15,325 exported lines.
+- All 15,325 exported PGN records passed legal-move and parser validation.
+- No loss of 1...e5, 1...c6 or the Berlin route was found in the PGN.
+- Windows practical processing completed successfully.
+- Automated Go tests and vet checks pass for core and console modules.
+
+Known decoder limits
+Underpromotions and special pawnless symmetry remain unverified. Recognized
+promotions currently assume a queen. CompleteCTG therefore remains false.
