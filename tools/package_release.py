@@ -31,7 +31,7 @@ def main():
     for lang in ("EN","DE","NL","FR","ES","RU","ZH"):
         name=f"MANUAL_{lang}.txt"; p=SOURCE/name
         text=p.read_text(encoding="utf-8-sig")
-        for marker in (VERSION,"CTG METAL","BOOK","METAL","2.2.0"):
+        for marker in (VERSION,"CTG METAL","BOOK","METAL","SyzygyCheck"):
             if marker not in text: raise ValueError(f"{name}: missing {marker}")
         for obsolete in ("3.3.0-TEST","TEST package","TEST-pakket","TEST-Paket","Version TEST","Версия TEST","TEST 版本"):
             if obsolete in text: raise ValueError(f"{name}: obsolete marker {obsolete}")
