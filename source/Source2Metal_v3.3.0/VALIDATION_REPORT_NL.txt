@@ -1,0 +1,28 @@
+Source2Metal v3.3.0 — validatieoverzicht
+Datum: 22 september 2026
+
+Perfect2023
+- 56.857 unieke bereikbare stellingen
+- 60.747 unieke stelling-zetparen
+- 3.891 transposities
+- 15.325 geëxporteerde PGN-records
+- 0 ontbrekende posities
+- 0 decodefouten
+- 0 illegale zetten of PGN-leesfouten
+- maximale geëxporteerde diepte in deze bron: 31 halve zetten
+
+Routecontrole
+- Na 1.e4 bevat de PGN onder meer 1...c5, 1...Nc6, 1...e5 en 1...c6.
+- 1.e4 e5 2.Nf3 Nc6 komt letterlijk 1 keer voor.
+- 1.e4 Nc6 2.Nf3 e5 komt 1.369 keer voor en bereikt dezelfde bordstelling.
+- De Berlijnse route is aanwezig.
+
+Praktijkcontrole
+De Windows-doorloop met Perfect2023 is geslaagd. De afwijkende Fritz-weergave
+leverde geen bewijs op van zetverlies in de PGN of de extractor. De twee
+beschikbare neutrale PGN-exemplaren waren byte voor byte identiek.
+
+Gedocumenteerde grenzen
+Onderpromoties en bijzondere pionloze symmetrie zijn niet onafhankelijk
+geverifieerd. Herkenbare promoties worden als dame behandeld. Daarom blijft
+CompleteCTG=false.
