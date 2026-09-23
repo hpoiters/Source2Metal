@@ -1,4 +1,4 @@
-"""Build and verify the Source2Metal v3.3.0 user package."""
+"""Build and verify the Source2Metal v3.3.1 user package."""
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import unquote, urlsplit
@@ -6,7 +6,7 @@ import hashlib
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "3.3.0"
+VERSION = "3.3.1"
 SOURCE = ROOT / "source" / f"Source2Metal_v{VERSION}"
 OUTPUT = ROOT / f"release_v{VERSION}"
 INTRO = "Readme-README-Прочтите-自述文件.html"
@@ -33,7 +33,7 @@ def main():
         text=p.read_text(encoding="utf-8-sig")
         for marker in (VERSION,"CTG METAL","BOOK","METAL","SyzygyCheck"):
             if marker not in text: raise ValueError(f"{name}: missing {marker}")
-        for obsolete in ("3.3.0-TEST","TEST package","TEST-pakket","TEST-Paket","Version TEST","Версия TEST","TEST 版本"):
+        for obsolete in ("3.3.1-TEST","TEST package","TEST-pakket","TEST-Paket","Version TEST","Версия TEST","TEST 版本"):
             if obsolete in text: raise ValueError(f"{name}: obsolete marker {obsolete}")
         files[f"{DOCS}/{name}"]=p
     for name in (f"RELEASE_NOTES_v{VERSION}.txt","VALIDATION_REPORT_NL.txt","LICENSE_GPL-3.0.txt","THIRD_PARTY_NOTICES.txt"):
@@ -43,7 +43,7 @@ def main():
     for arcname,p in files.items():
         if not p.is_file() or p.stat().st_size==0: raise ValueError(f"Missing/empty: {arcname}")
     html=(SOURCE/INTRO).read_text(encoding="utf-8-sig")
-    if "3.3.0-TEST" in html: raise ValueError("HTML still identifies a test build")
+    if "3.3.1-TEST" in html: raise ValueError("HTML still identifies a test build")
     parser=Links(); parser.feed(html)
     for href in parser.links:
         u=urlsplit(href)

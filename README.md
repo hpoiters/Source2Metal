@@ -3,9 +3,13 @@
 Source2Metal is an open-source Windows toolset for building, analysing and
 improving computer-chess opening-book material.
 
-## Source2Metal v3.3.0 — complete CTG graph extraction
+## Source2Metal v3.3.1 — PGN warning fix
 
-Version 3.3.0 replaces the former CTG route sampling with a complete traversal
+Version 3.3.1 continues automatically after warning that many PGN records have
+unusable results, including 100 rejected records at the start of a source.
+The later games and subsequent sources proceed without a keyboard prompt.
+
+Version 3.3.0 replaced the former CTG route sampling with a complete traversal
 of every decoded reachable position/move pair. CTG moves are exported as
 neutral PGN lines with result `*`; frequency fields, recommendations and
 unverified learning weights are kept out of the PGN.
@@ -23,7 +27,7 @@ completed successfully. Additional route checks confirmed that `1...e5`,
 
 The user package contains:
 
-- `!Source2Metal_v3.3.0.exe`
+- `!Source2Metal_v3.3.1.exe`
 - a multilingual HTML introduction with jump links
 - a clearly named documentation folder with manuals in seven languages
 - release notes, validation summary, privacy and build information
@@ -31,7 +35,7 @@ The user package contains:
 The leading exclamation mark keeps the executable near the top of a folder in
 Windows Explorer.
 
-Source2Metal v3.3.0 retains PGN, CBH, 2CBH and Polyglot BIN processing and the
+Source2Metal v3.3.1 retains PGN, CBH, 2CBH and Polyglot BIN processing and the
 published SyzygyCheck v2.2.0 utility. BIN remains RAW-only. RAW output keeps
 GAME and BOOK sources separate, and `METAL/Metal.pgn` remains the combined
 neutral training output.

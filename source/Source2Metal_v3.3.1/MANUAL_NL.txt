@@ -1,0 +1,39 @@
+Source2Metal v3.3.1
+
+CTG METAL
+Alle gedecodeerde bereikbare boekzetten blijven behouden via neutrale RAW-lijnen met uitslag *.
+Geen frequentiefilter, aanbevelingen, leergewichten of kunstmatige uitslagen.
+METAL/Metal.pgn voegt CTG-lijnen en geselecteerde GAME-partijen automatisch samen, zonder persoonlijke headers.
+Gebruik CTG-lijnen voor boekimport; het zijn geen winst/verlies-leersignalen.
+Het CTG-JSON-rapport vermeldt dekking, diepteafbrekingen en decoderbeperkingen.
+
+Gebruik
+1. Pak het RELEASE-pakket uit en zet de EXE bij de invoerbestanden.
+2. Start !Source2Metal_v3.3.1.exe. Kies Nederlands en RAW of RAW + METAL.
+3. Het programma stelt de helft van de logische CPU-threads voor, naar boven afgerond. Bij 36 threads: 18 workers. Dit is instelbaar.
+4. RAW blijft standaard 100 halfzetten. De aparte CTG-diepte mag groter zijn; 0 betekent zonder vooraf ingestelde dieptelimiet.
+5. De resultaten staan onder !Source2Metal_Output, in een map met tijdstempel. De bronnen worden alleen gelezen.
+6. RAW bewaart GAME- en BOOK-bronnen gescheiden. Bij RAW + METAL staat het samengevoegde eindbestand in METAL/Metal.pgn.
+7. PGN-, CBH-, 2CBH- en BIN-verwerking en het SyzygyCheck-menu blijven beschikbaar. BIN levert volgens de bestaande werkwijze alleen RAW.
+
+De losse meegeleverde Perfect2023-PGN kan rechtstreeks als boekbasis worden geïmporteerd. Daarvoor is geen nieuwe extractie nodig. Deze PGN wordt apart geleverd; het programma bevat geen externe openingsboeken.
+
+Rapporten
+Naast elke CTG-RAW-PGN staan .ctg-report.json en .ctg-statistics.jsonl.
+Positions = unieke bereikbare schaakstellingen; Edges = unieke gevonden zetten.
+ExportedEdges = in de PGN vertegenwoordigde zetten; CoverageOfDecodedEdges = dekking van de gedecodeerde structuur.
+DepthCutMoves = zetten buiten de dieptelimiet; DecodeErrors = overgeslagen ondecodeerbare of illegale zetbytes.
+CompleteCTG blijft false: volledige ondersteuning van het CTG-formaat is niet bewezen.
+RawFooter in de statistiekuitvoer bewaart de 33 bronbytes als base64. Wins/Losses/Draws en Recommendation volgen de oude decoderinterpretatie; dit zijn geen nieuw bewezen Fritz-gewichten. Ze staan niet in de neutrale PGN.
+
+Beperkingen
+Onderpromoties en bijzondere symmetrie van pionloze stellingen zijn niet volledig ondersteund/gevalideerd. De decoder veronderstelt bij herkenbare promoties een dame; PromotionAssumptions telt deze gevallen.
+De doorloop dekt stelling-zetverbindingen, niet iedere mogelijke volgorde van transposities. Iedere stelling wordt op haar kortste bereikbare diepte verwerkt. Herhalingszetten blijven aanwezig, zonder eindeloos verder te lopen.
+Perfect2023 is volledig op PGN-legaliteit gecontroleerd. De Windows-proef met Perfect2023 is geslaagd; alle 15.325 geëxporteerde records zijn zonder illegale zetten of leesfouten verwerkt. De boekweergave in Fritz is aanvullend onderzocht. Daarbij is geen verlies van 1...e5, 1...c6 of de Berlijnse route in de PGN vastgesteld.
+
+Broncode
+De volledige Source2Metal-bron staat in Source2Metal_v3.3.1_SOURCE.zip. Het validatierapport en de bron bevatten de reproduceerbare controles voor deze release.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+
+PGN-waarschuwing: bij veel records met een onbruikbare uitslag (zoals *) gaat de verwerking automatisch door. Er is geen toetsdruk nodig.

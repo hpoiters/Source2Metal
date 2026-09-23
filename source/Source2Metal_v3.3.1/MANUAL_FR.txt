@@ -1,0 +1,19 @@
+Source2Metal v3.3.1
+
+CTG METAL
+Tous les coups de livre accessibles et décodés sont conservés dans des lignes RAW neutres, résultat *.
+Sans filtre de fréquence, recommandations, poids appris ou résultats artificiels.
+METAL/Metal.pgn réunit les lignes CTG et les parties GAME sélectionnées sans en-têtes personnels.
+Les lignes CTG servent à importer un livre, pas à fournir des signaux de victoire/défaite.
+Le rapport JSON indique couverture, limites de profondeur et restrictions du décodeur.
+
+Utilisation
+Décompresser le paquet RELEASE, placer l’EXE près des sources, démarrer et choisir la langue puis RAW ou RAW + METAL. Par défaut : moitié des processeurs logiques, arrondie au supérieur (36 -> 18), réglable. RAW : 100 demi-coups. Profondeur CTG séparée : 0 = sans limite prédéfinie. Sorties : !Source2Metal_Output/<horodatage>. Sources en lecture seule.
+RAW sépare GAME et BOOK. RAW + METAL produit aussi METAL/Metal.pgn. Les fonctions PGN/CBH/2CBH/BIN et le menu SyzygyCheck restent disponibles. BIN produit uniquement RAW. La PGN Perfect2023 séparée est prête pour l’importation du livre.
+Le rapport JSON compte positions, coups exportés et coupures de profondeur. Les statistiques JSONL sont séparées ; RawFooter conserve 33 octets originaux en base64. Les autres champs gardent l’interprétation antérieure, sans prouver les poids d’apprentissage Fritz.
+Limites : sous-promotions et symétrie sans pions non validées ; les promotions reconnues supposent une dame. CompleteCTG reste false. La couverture porte sur les paires position/coup, pas tous les chemins de transposition. Pas d’expansion infinie des cycles.
+Perfect2023 a passé une validation PGN indépendante. Le test Windows avec Perfect2023 a réussi : les 15 325 enregistrements exportés ont été traités sans coup illégal ni erreur de lecture. L’affichage du livre dans Fritz a aussi été examiné ; aucune perte de 1...e5, 1...c6 ou de la variante berlinoise n’a été constatée dans la PGN. Source complète et contrôles reproductibles dans le ZIP SOURCE.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+
+Avertissement PGN : si de nombreuses entrées ont un résultat inutilisable (comme *), le traitement continue automatiquement, sans intervention au clavier.

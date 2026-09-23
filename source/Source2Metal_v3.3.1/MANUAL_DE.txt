@@ -1,0 +1,19 @@
+Source2Metal v3.3.1
+
+CTG METAL
+Alle dekodierten erreichbaren Buchzüge bleiben als neutrale RAW-Linien mit Ergebnis * erhalten.
+Keine Häufigkeitsfilter, Empfehlungen, Lerngewichte oder künstlichen Ergebnisse.
+METAL/Metal.pgn vereint CTG-Linien und ausgewählte GAME-Partien ohne persönliche Kopfzeilen.
+CTG-Linien dienen dem Buchimport, nicht als Sieg/Niederlage-Lernsignale.
+Der CTG-JSON-Bericht nennt Abdeckung, Tiefenabbrüche und Decodergrenzen.
+
+Anwendung
+RELEASE-Paket entpacken, EXE neben die Eingabedateien legen und starten. Sprache sowie RAW oder RAW + METAL wählen. Standard: die Hälfte der logischen CPU-Threads, aufgerundet (36 -> 18); einstellbar. RAW: 100 Halbzüge. Separate CTG-Tiefe 0: ohne vorgegebene Grenze. Ausgabe: !Source2Metal_Output/<Zeitstempel>. Quelldateien werden nur gelesen.
+RAW trennt GAME und BOOK. RAW + METAL erzeugt auch METAL/Metal.pgn. PGN/CBH/2CBH/BIN und das SyzygyCheck-Menü bleiben verfügbar. BIN erzeugt weiterhin nur RAW. Die separat gelieferte Perfect2023-PGN kann direkt als Buchbasis importiert werden.
+Der JSON-Bericht zählt Stellungen, Züge, exportierte Züge und Tiefenabbrüche. JSONL speichert die Statistik getrennt; RawFooter enthält 33 Originalbytes in Base64. Weitere Statistikfelder verwenden die bisherige Interpretation, keine bewiesenen Fritz-Lerngewichte.
+Grenzen: Unterverwandlungen und Symmetrie ohne Bauern sind ungeprüft; erkannte Verwandlungen werden als Dame behandelt. CompleteCTG bleibt false. Abgedeckt werden Stellungs-Zug-Paare, nicht alle möglichen Transpositionspfade. Zyklen werden nicht endlos wiederholt.
+Perfect2023 wurde unabhängig auf legale PGN-Züge geprüft. Der Windows-Test mit Perfect2023 war erfolgreich: Alle 15.325 exportierten Datensätze wurden ohne illegale Züge oder Lesefehler verarbeitet. Die Fritz-Buchanzeige wurde zusätzlich untersucht; in der PGN fehlt weder 1...e5 noch 1...c6 oder die Berliner Route. Vollständiger Quellcode und reproduzierbare Prüfungen befinden sich im SOURCE-ZIP.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+
+PGN-Warnung: Bei vielen Datensätzen mit unbrauchbarem Ergebnis (z. B. *) wird die Verarbeitung automatisch fortgesetzt. Keine Tastatureingabe nötig.

@@ -1,0 +1,151 @@
+<!doctype html><html lang="nl"><meta charset="utf-8"><title>Source2Metal 3.3.1</title><style>body{font:17px/1.5 system-ui;max-width:980px;margin:40px auto;padding:0 20px;background:#f6f8fa;color:#182632}pre{white-space:pre-wrap;font:inherit}section{padding:20px;background:white;margin:24px 0;border-radius:12px}a{color:#165cab}</style><h1 id="top">Source2Metal v3.3.1</h1><p>Windows x64 · CTG graph extraction · Perfect2023 validation</p><nav><a href="#NL">NL</a> | <a href="#EN">EN</a> | <a href="#DE">DE</a> | <a href="#FR">FR</a> | <a href="#ES">ES</a> | <a href="#RU">RU</a> | <a href="#ZH">ZH</a></nav><section id="NL"><h2>NL</h2><pre>Source2Metal v3.3.1
+
+CTG METAL
+Alle gedecodeerde bereikbare boekzetten blijven behouden via neutrale RAW-lijnen met uitslag *.
+Geen frequentiefilter, aanbevelingen, leergewichten of kunstmatige uitslagen.
+METAL/Metal.pgn voegt CTG-lijnen en geselecteerde GAME-partijen automatisch samen, zonder persoonlijke headers.
+Gebruik CTG-lijnen voor boekimport; het zijn geen winst/verlies-leersignalen.
+Het CTG-JSON-rapport vermeldt dekking, diepteafbrekingen en decoderbeperkingen.
+
+Gebruik
+1. Pak het RELEASE-pakket uit en zet de EXE bij de invoerbestanden.
+2. Start !Source2Metal_v3.3.1.exe. Kies Nederlands en RAW of RAW + METAL.
+3. Het programma stelt de helft van de logische CPU-threads voor, naar boven afgerond. Bij 36 threads: 18 workers. Dit is instelbaar.
+4. RAW blijft standaard 100 halfzetten. De aparte CTG-diepte mag groter zijn; 0 betekent zonder vooraf ingestelde dieptelimiet.
+5. De resultaten staan onder !Source2Metal_Output, in een map met tijdstempel. De bronnen worden alleen gelezen.
+6. RAW bewaart GAME- en BOOK-bronnen gescheiden. Bij RAW + METAL staat het samengevoegde eindbestand in METAL/Metal.pgn.
+7. PGN-, CBH-, 2CBH- en BIN-verwerking en het SyzygyCheck-menu blijven beschikbaar. BIN levert volgens de bestaande werkwijze alleen RAW.
+
+De losse meegeleverde Perfect2023-PGN kan rechtstreeks als boekbasis worden geïmporteerd. Daarvoor is geen nieuwe extractie nodig. Deze PGN wordt apart geleverd; het programma bevat geen externe openingsboeken.
+
+Rapporten
+Naast elke CTG-RAW-PGN staan .ctg-report.json en .ctg-statistics.jsonl.
+Positions = unieke bereikbare schaakstellingen; Edges = unieke gevonden zetten.
+ExportedEdges = in de PGN vertegenwoordigde zetten; CoverageOfDecodedEdges = dekking van de gedecodeerde structuur.
+DepthCutMoves = zetten buiten de dieptelimiet; DecodeErrors = overgeslagen ondecodeerbare of illegale zetbytes.
+CompleteCTG blijft false: volledige ondersteuning van het CTG-formaat is niet bewezen.
+RawFooter in de statistiekuitvoer bewaart de 33 bronbytes als base64. Wins/Losses/Draws en Recommendation volgen de oude decoderinterpretatie; dit zijn geen nieuw bewezen Fritz-gewichten. Ze staan niet in de neutrale PGN.
+
+Beperkingen
+Onderpromoties en bijzondere symmetrie van pionloze stellingen zijn niet volledig ondersteund/gevalideerd. De decoder veronderstelt bij herkenbare promoties een dame; PromotionAssumptions telt deze gevallen.
+De doorloop dekt stelling-zetverbindingen, niet iedere mogelijke volgorde van transposities. Iedere stelling wordt op haar kortste bereikbare diepte verwerkt. Herhalingszetten blijven aanwezig, zonder eindeloos verder te lopen.
+Perfect2023 is volledig op PGN-legaliteit gecontroleerd. De Windows-proef met Perfect2023 is geslaagd; alle 15.325 geëxporteerde records zijn zonder illegale zetten of leesfouten verwerkt. De boekweergave in Fritz is aanvullend onderzocht. Daarbij is geen verlies van 1...e5, 1...c6 of de Berlijnse route in de PGN vastgesteld.
+
+Broncode
+De volledige Source2Metal-bron staat in Source2Metal_v3.3.1_SOURCE.zip. Het validatierapport en de bron bevatten de reproduceerbare controles voor deze release.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+PGN-waarschuwing: onbruikbare uitslagen (*) blokkeren de verwerking niet; de volgende bron begint automatisch.
+</pre><a href="#top">↑</a></section><section id="EN"><h2>EN</h2><pre>Source2Metal v3.3.1
+
+CTG METAL
+All decoded reachable book moves are preserved through neutral RAW lines, with result *.
+No frequency filter, recommendations, learned weights or artificial results are imported.
+METAL/Metal.pgn automatically combines CTG lines and selected GAME records without personal headers.
+Use CTG lines for book import; they are not win/loss learning signals.
+See the CTG JSON report for coverage, depth cutoffs and decoder limitations.
+
+Use
+Extract the RELEASE package and place the EXE beside the input files. Start it, choose a language, then RAW or RAW + METAL. Workers default to half the logical CPUs, rounded up (36 -&gt; 18), and can be changed. RAW defaults to 100 plies; separate CTG depth 0 means no preset limit. Results are written under !Source2Metal_Output/&lt;timestamp&gt;. Sources are read-only.
+
+RAW keeps GAME and BOOK sources separate. RAW + METAL also creates METAL/Metal.pgn. PGN/CBH/2CBH/BIN processing and the SyzygyCheck menu remain available. BIN still produces RAW only. The separately supplied Perfect2023 PGN is ready for book import; program packages contain no external books.
+
+Each CTG output includes a JSON report and JSONL statistics. Positions/Edges count unique positions/moves; ExportedEdges counts represented moves; DepthCutMoves counts moves beyond the limit. RawFooter contains 33 original bytes in base64. Other statistics retain the legacy interpretation, not verified Fritz learning weights. They never enter neutral PGN.
+
+Limits
+Underpromotion and pawnless symmetry are unverified; recognized promotions assume a queen. CompleteCTG remains false. Coverage concerns position/move pairs, not every transposition path. Each position is processed at its shortest reachable depth. Cycles are represented without infinite expansion.
+Perfect2023 passed independent PGN legality validation. The Windows test with Perfect2023 completed successfully: all 15,325 exported records were processed without illegal moves or parse errors. The Fritz book display was also investigated; no loss of 1...e5, 1...c6 or the Berlin route was found in the PGN. Full source and reproducible checks are in the separate SOURCE ZIP.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+PGN warning: if many records have an unusable result (such as *), processing continues automatically; no keyboard input is needed.
+</pre><a href="#top">↑</a></section><section id="DE"><h2>DE</h2><pre>Source2Metal v3.3.1
+
+CTG METAL
+Alle dekodierten erreichbaren Buchzüge bleiben als neutrale RAW-Linien mit Ergebnis * erhalten.
+Keine Häufigkeitsfilter, Empfehlungen, Lerngewichte oder künstlichen Ergebnisse.
+METAL/Metal.pgn vereint CTG-Linien und ausgewählte GAME-Partien ohne persönliche Kopfzeilen.
+CTG-Linien dienen dem Buchimport, nicht als Sieg/Niederlage-Lernsignale.
+Der CTG-JSON-Bericht nennt Abdeckung, Tiefenabbrüche und Decodergrenzen.
+
+Anwendung
+RELEASE-Paket entpacken, EXE neben die Eingabedateien legen und starten. Sprache sowie RAW oder RAW + METAL wählen. Standard: die Hälfte der logischen CPU-Threads, aufgerundet (36 -&gt; 18); einstellbar. RAW: 100 Halbzüge. Separate CTG-Tiefe 0: ohne vorgegebene Grenze. Ausgabe: !Source2Metal_Output/&lt;Zeitstempel&gt;. Quelldateien werden nur gelesen.
+RAW trennt GAME und BOOK. RAW + METAL erzeugt auch METAL/Metal.pgn. PGN/CBH/2CBH/BIN und das SyzygyCheck-Menü bleiben verfügbar. BIN erzeugt weiterhin nur RAW. Die separat gelieferte Perfect2023-PGN kann direkt als Buchbasis importiert werden.
+Der JSON-Bericht zählt Stellungen, Züge, exportierte Züge und Tiefenabbrüche. JSONL speichert die Statistik getrennt; RawFooter enthält 33 Originalbytes in Base64. Weitere Statistikfelder verwenden die bisherige Interpretation, keine bewiesenen Fritz-Lerngewichte.
+Grenzen: Unterverwandlungen und Symmetrie ohne Bauern sind ungeprüft; erkannte Verwandlungen werden als Dame behandelt. CompleteCTG bleibt false. Abgedeckt werden Stellungs-Zug-Paare, nicht alle möglichen Transpositionspfade. Zyklen werden nicht endlos wiederholt.
+Perfect2023 wurde unabhängig auf legale PGN-Züge geprüft. Der Windows-Test mit Perfect2023 war erfolgreich: Alle 15.325 exportierten Datensätze wurden ohne illegale Züge oder Lesefehler verarbeitet. Die Fritz-Buchanzeige wurde zusätzlich untersucht; in der PGN fehlt weder 1...e5 noch 1...c6 oder die Berliner Route. Vollständiger Quellcode und reproduzierbare Prüfungen befinden sich im SOURCE-ZIP.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+PGN-Warnung: Bei vielen Datensätzen mit unbrauchbarem Ergebnis (z. B. *) wird die Verarbeitung automatisch fortgesetzt. Keine Tastatureingabe nötig.
+</pre><a href="#top">↑</a></section><section id="FR"><h2>FR</h2><pre>Source2Metal v3.3.1
+
+CTG METAL
+Tous les coups de livre accessibles et décodés sont conservés dans des lignes RAW neutres, résultat *.
+Sans filtre de fréquence, recommandations, poids appris ou résultats artificiels.
+METAL/Metal.pgn réunit les lignes CTG et les parties GAME sélectionnées sans en-têtes personnels.
+Les lignes CTG servent à importer un livre, pas à fournir des signaux de victoire/défaite.
+Le rapport JSON indique couverture, limites de profondeur et restrictions du décodeur.
+
+Utilisation
+Décompresser le paquet RELEASE, placer l’EXE près des sources, démarrer et choisir la langue puis RAW ou RAW + METAL. Par défaut : moitié des processeurs logiques, arrondie au supérieur (36 -&gt; 18), réglable. RAW : 100 demi-coups. Profondeur CTG séparée : 0 = sans limite prédéfinie. Sorties : !Source2Metal_Output/&lt;horodatage&gt;. Sources en lecture seule.
+RAW sépare GAME et BOOK. RAW + METAL produit aussi METAL/Metal.pgn. Les fonctions PGN/CBH/2CBH/BIN et le menu SyzygyCheck restent disponibles. BIN produit uniquement RAW. La PGN Perfect2023 séparée est prête pour l’importation du livre.
+Le rapport JSON compte positions, coups exportés et coupures de profondeur. Les statistiques JSONL sont séparées ; RawFooter conserve 33 octets originaux en base64. Les autres champs gardent l’interprétation antérieure, sans prouver les poids d’apprentissage Fritz.
+Limites : sous-promotions et symétrie sans pions non validées ; les promotions reconnues supposent une dame. CompleteCTG reste false. La couverture porte sur les paires position/coup, pas tous les chemins de transposition. Pas d’expansion infinie des cycles.
+Perfect2023 a passé une validation PGN indépendante. Le test Windows avec Perfect2023 a réussi : les 15 325 enregistrements exportés ont été traités sans coup illégal ni erreur de lecture. L’affichage du livre dans Fritz a aussi été examiné ; aucune perte de 1...e5, 1...c6 ou de la variante berlinoise n’a été constatée dans la PGN. Source complète et contrôles reproductibles dans le ZIP SOURCE.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+Avertissement PGN : si de nombreuses entrées ont un résultat inutilisable (comme *), le traitement continue automatiquement, sans intervention au clavier.
+</pre><a href="#top">↑</a></section><section id="ES"><h2>ES</h2><pre>Source2Metal v3.3.1
+
+CTG METAL
+Se conservan todas las jugadas accesibles y decodificadas en líneas RAW neutras, resultado *.
+Sin filtros de frecuencia, recomendaciones, pesos aprendidos ni resultados artificiales.
+METAL/Metal.pgn combina líneas CTG y partidas GAME seleccionadas sin cabeceras personales.
+Las líneas CTG sirven para importar el libro, no como señales de victoria/derrota.
+El informe JSON indica cobertura, cortes por profundidad y límites del decodificador.
+
+Uso
+Extraer el paquete RELEASE, colocar el EXE junto a las fuentes, iniciar y elegir idioma y RAW o RAW + METAL. Por defecto: mitad de los procesadores lógicos, redondeada hacia arriba (36 -&gt; 18), ajustable. RAW: 100 medias jugadas. Profundidad CTG independiente: 0 = sin límite predefinido. Salida: !Source2Metal_Output/&lt;fecha-hora&gt;. Fuentes de solo lectura.
+RAW separa GAME y BOOK. RAW + METAL también crea METAL/Metal.pgn. Se mantienen PGN/CBH/2CBH/BIN y el menú SyzygyCheck. BIN sigue generando solo RAW. La PGN Perfect2023 separada está lista para importar como libro.
+El informe JSON cuenta posiciones, jugadas exportadas y cortes por profundidad. Las estadísticas JSONL van separadas; RawFooter conserva 33 bytes originales en base64. Los demás campos mantienen la interpretación anterior, sin acreditar pesos de aprendizaje Fritz.
+Límites: subpromociones y simetría sin peones no validadas; las promociones reconocidas se interpretan como dama. CompleteCTG sigue false. Se cubren pares posición/jugada, no todas las rutas de transposición. Los ciclos no se expanden indefinidamente.
+Perfect2023 superó la validación PGN independiente. La prueba en Windows con Perfect2023 terminó correctamente: los 15.325 registros exportados se procesaron sin jugadas ilegales ni errores de lectura. También se examinó la vista del libro en Fritz; no se detectó pérdida de 1...e5, 1...c6 ni de la variante berlinesa en la PGN. Código completo y controles reproducibles en SOURCE ZIP.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+Aviso PGN: si muchos registros tienen un resultado no utilizable (como *), el procesamiento continúa automáticamente, sin pulsar ninguna tecla.
+</pre><a href="#top">↑</a></section><section id="RU"><h2>RU</h2><pre>Source2Metal v3.3.1
+
+CTG METAL
+Все декодированные доступные ходы сохраняются в нейтральных линиях RAW с результатом *.
+Без фильтра частоты, рекомендаций, обученных весов и вымышленных результатов.
+METAL/Metal.pgn объединяет линии CTG и выбранные партии GAME без персональных заголовков.
+Линии CTG предназначены для импорта книги, а не для обучения по победам и поражениям.
+JSON-отчёт содержит покрытие, ограничения глубины и ограничения декодера.
+
+Использование
+Распакуйте пакет RELEASE, поместите EXE рядом с исходными файлами, запустите и выберите язык и RAW либо RAW + METAL. По умолчанию используется половина логических потоков с округлением вверх (36 -&gt; 18); число настраивается. RAW: 100 полуходов. Отдельная глубина CTG 0 означает отсутствие заданного предела. Результаты: !Source2Metal_Output/&lt;дата-время&gt;. Источники доступны только для чтения.
+RAW разделяет GAME и BOOK. RAW + METAL также создаёт METAL/Metal.pgn. Сохраняются PGN/CBH/2CBH/BIN и меню SyzygyCheck. BIN по-прежнему создаёт только RAW. Отдельная PGN Perfect2023 готова для импорта книги.
+JSON-отчёт содержит число позиций, экспортированных ходов и отсечений глубины. Статистика хранится отдельно в JSONL. RawFooter сохраняет 33 исходных байта в base64. Остальные поля используют прежнюю интерпретацию; это не подтверждённые обученные веса Fritz.
+Ограничения: слабые превращения и симметрия позиций без пешек не проверены; распознанное превращение считается превращением в ферзя. CompleteCTG остаётся false. Покрываются пары позиция/ход, а не все пути транспозиций. Циклы не разворачиваются бесконечно.
+PGN Perfect2023 прошла независимую проверку легальности. Тест в Windows с Perfect2023 завершён успешно: все 15 325 экспортированных записей обработаны без незаконных ходов и ошибок чтения. Отображение книги во Fritz также исследовано; в PGN не обнаружена потеря 1...e5, 1...c6 или берлинского варианта. Полный исходный код и воспроизводимые проверки находятся в SOURCE ZIP.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+Предупреждение PGN: если у многих записей недопустимый результат (например, *), обработка продолжается автоматически; ввод с клавиатуры не требуется.
+</pre><a href="#top">↑</a></section><section id="ZH"><h2>ZH</h2><pre>Source2Metal v3.3.1
+
+CTG METAL
+保留所有可达且已解码的开局库着法，输出中性 RAW 变例，结果为 *。
+不使用频率筛选、推荐、学习权重或虚构结果。
+METAL/Metal.pgn 自动合并 CTG 变例及筛选后的 GAME 对局，并移除个人头信息。
+CTG 变例用于导入开局库，不是胜负学习信号。
+JSON 报告列出覆盖率、深度截断和解码器限制。
+
+使用方法
+解压 RELEASE 软件包，将 EXE 放在输入文件旁，启动后选择语言及 RAW 或 RAW + METAL。默认使用逻辑 CPU 数量的一半，向上取整（36 -&gt; 18），可调整。RAW 默认深度为 100 半回合；单独的 CTG 深度为 0 时不预设上限。结果位于 !Source2Metal_Output/&lt;时间戳&gt;。源文件只读。
+RAW 区分 GAME 和 BOOK；RAW + METAL 还会生成 METAL/Metal.pgn。保留 PGN/CBH/2CBH/BIN 处理及 SyzygyCheck 菜单。BIN 仍仅生成 RAW。单独提供的 Perfect2023 PGN 可直接用于开局库导入。
+JSON 报告统计局面、已导出着法及深度截断。JSONL 单独保存统计信息；RawFooter 以 base64 保存 33 个原始字节。其他字段沿用旧版解释，并非已验证的 Fritz 学习权重。
+限制：低升变和无兵局面对称尚未验证；可识别的升变按升后处理。CompleteCTG 保持 false。覆盖的是局面与着法的组合，不是全部转置路径；循环不会无限展开。
+Perfect2023 已通过独立 PGN 合法性检查。Perfect2023 的 Windows 测试已成功完成：全部 15,325 条导出记录均无非法着法或读取错误。还检查了 Fritz 开局库显示；PGN 中未发现 1...e5、1...c6 或柏林防御路线丢失。完整源代码和可重复检查位于 SOURCE ZIP。
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+PGN 提示：如果大量记录的结果不可用（例如 *），程序会自动继续处理，无需按键。
+</pre><a href="#top">↑</a></section>

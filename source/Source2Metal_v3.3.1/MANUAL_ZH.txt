@@ -1,0 +1,19 @@
+Source2Metal v3.3.1
+
+CTG METAL
+保留所有可达且已解码的开局库着法，输出中性 RAW 变例，结果为 *。
+不使用频率筛选、推荐、学习权重或虚构结果。
+METAL/Metal.pgn 自动合并 CTG 变例及筛选后的 GAME 对局，并移除个人头信息。
+CTG 变例用于导入开局库，不是胜负学习信号。
+JSON 报告列出覆盖率、深度截断和解码器限制。
+
+使用方法
+解压 RELEASE 软件包，将 EXE 放在输入文件旁，启动后选择语言及 RAW 或 RAW + METAL。默认使用逻辑 CPU 数量的一半，向上取整（36 -> 18），可调整。RAW 默认深度为 100 半回合；单独的 CTG 深度为 0 时不预设上限。结果位于 !Source2Metal_Output/<时间戳>。源文件只读。
+RAW 区分 GAME 和 BOOK；RAW + METAL 还会生成 METAL/Metal.pgn。保留 PGN/CBH/2CBH/BIN 处理及 SyzygyCheck 菜单。BIN 仍仅生成 RAW。单独提供的 Perfect2023 PGN 可直接用于开局库导入。
+JSON 报告统计局面、已导出着法及深度截断。JSONL 单独保存统计信息；RawFooter 以 base64 保存 33 个原始字节。其他字段沿用旧版解释，并非已验证的 Fritz 学习权重。
+限制：低升变和无兵局面对称尚未验证；可识别的升变按升后处理。CompleteCTG 保持 false。覆盖的是局面与着法的组合，不是全部转置路径；循环不会无限展开。
+Perfect2023 已通过独立 PGN 合法性检查。Perfect2023 的 Windows 测试已成功完成：全部 15,325 条导出记录均无非法着法或读取错误。还检查了 Fritz 开局库显示；PGN 中未发现 1...e5、1...c6 或柏林防御路线丢失。完整源代码和可重复检查位于 SOURCE ZIP。
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+
+PGN 提示：如果大量记录的结果不可用（例如 *），程序会自动继续处理，无需按键。

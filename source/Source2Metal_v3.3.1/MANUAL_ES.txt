@@ -1,0 +1,19 @@
+Source2Metal v3.3.1
+
+CTG METAL
+Se conservan todas las jugadas accesibles y decodificadas en líneas RAW neutras, resultado *.
+Sin filtros de frecuencia, recomendaciones, pesos aprendidos ni resultados artificiales.
+METAL/Metal.pgn combina líneas CTG y partidas GAME seleccionadas sin cabeceras personales.
+Las líneas CTG sirven para importar el libro, no como señales de victoria/derrota.
+El informe JSON indica cobertura, cortes por profundidad y límites del decodificador.
+
+Uso
+Extraer el paquete RELEASE, colocar el EXE junto a las fuentes, iniciar y elegir idioma y RAW o RAW + METAL. Por defecto: mitad de los procesadores lógicos, redondeada hacia arriba (36 -> 18), ajustable. RAW: 100 medias jugadas. Profundidad CTG independiente: 0 = sin límite predefinido. Salida: !Source2Metal_Output/<fecha-hora>. Fuentes de solo lectura.
+RAW separa GAME y BOOK. RAW + METAL también crea METAL/Metal.pgn. Se mantienen PGN/CBH/2CBH/BIN y el menú SyzygyCheck. BIN sigue generando solo RAW. La PGN Perfect2023 separada está lista para importar como libro.
+El informe JSON cuenta posiciones, jugadas exportadas y cortes por profundidad. Las estadísticas JSONL van separadas; RawFooter conserva 33 bytes originales en base64. Los demás campos mantienen la interpretación anterior, sin acreditar pesos de aprendizaje Fritz.
+Límites: subpromociones y simetría sin peones no validadas; las promociones reconocidas se interpretan como dama. CompleteCTG sigue false. Se cubren pares posición/jugada, no todas las rutas de transposición. Los ciclos no se expanden indefinidamente.
+Perfect2023 superó la validación PGN independiente. La prueba en Windows con Perfect2023 terminó correctamente: los 15.325 registros exportados se procesaron sin jugadas ilegales ni errores de lectura. También se examinó la vista del libro en Fritz; no se detectó pérdida de 1...e5, 1...c6 ni de la variante berlinesa en la PGN. Código completo y controles reproducibles en SOURCE ZIP.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+
+Aviso PGN: si muchos registros tienen un resultado no utilizable (como *), el procesamiento continúa automáticamente, sin pulsar ninguna tecla.

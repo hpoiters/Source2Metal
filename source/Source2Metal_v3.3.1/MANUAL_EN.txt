@@ -1,0 +1,23 @@
+Source2Metal v3.3.1
+
+CTG METAL
+All decoded reachable book moves are preserved through neutral RAW lines, with result *.
+No frequency filter, recommendations, learned weights or artificial results are imported.
+METAL/Metal.pgn automatically combines CTG lines and selected GAME records without personal headers.
+Use CTG lines for book import; they are not win/loss learning signals.
+See the CTG JSON report for coverage, depth cutoffs and decoder limitations.
+
+Use
+Extract the RELEASE package and place the EXE beside the input files. Start it, choose a language, then RAW or RAW + METAL. Workers default to half the logical CPUs, rounded up (36 -> 18), and can be changed. RAW defaults to 100 plies; separate CTG depth 0 means no preset limit. Results are written under !Source2Metal_Output/<timestamp>. Sources are read-only.
+
+RAW keeps GAME and BOOK sources separate. RAW + METAL also creates METAL/Metal.pgn. PGN/CBH/2CBH/BIN processing and the SyzygyCheck menu remain available. BIN still produces RAW only. The separately supplied Perfect2023 PGN is ready for book import; program packages contain no external books.
+
+Each CTG output includes a JSON report and JSONL statistics. Positions/Edges count unique positions/moves; ExportedEdges counts represented moves; DepthCutMoves counts moves beyond the limit. RawFooter contains 33 original bytes in base64. Other statistics retain the legacy interpretation, not verified Fritz learning weights. They never enter neutral PGN.
+
+Limits
+Underpromotion and pawnless symmetry are unverified; recognized promotions assume a queen. CompleteCTG remains false. Coverage concerns position/move pairs, not every transposition path. Each position is processed at its shortest reachable depth. Cycles are represented without infinite expansion.
+Perfect2023 passed independent PGN legality validation. The Windows test with Perfect2023 completed successfully: all 15,325 exported records were processed without illegal moves or parse errors. The Fritz book display was also investigated; no loss of 1...e5, 1...c6 or the Berlin route was found in the PGN. Full source and reproducible checks are in the separate SOURCE ZIP.
+
+CLI: --input PATH --mode all --workers 18 --ctg-max-ply 0 --no-pause
+
+PGN warning: if many records have an unusable result (such as *), processing continues automatically; no keyboard input is needed.
