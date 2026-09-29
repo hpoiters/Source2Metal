@@ -1,0 +1,38 @@
+name: Verify and publish Source2Metal v3.4.1-RC3
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'source/Source2Metal_core/**'
+      - 'source/Source2Metal_console/**'
+      - 'tools/*rc3*'
+      - 'validation/rc3_release_hashes.json'
+      - '*.md'
+      - '.github/workflows/release-rc3.yml'
+permissions:
+  contents: write
+concurrency:
+  group: source2metal-rc3-release
+  cancel-in-progress: false
+jobs:
+  verify-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.2'
+          cache: false
+      - name: Test, vet, self-test and rebuild the unchanged RC3
+        run: bash tools/build_rc3.sh
+      - name: Verify source and binary identity, multilingual documents and package
+        run: python3 tools/release_rc3.py package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Source2Metal-v3.4.1-RC3-verified
+          path: release_v3.4.1-RC3/*
+      - name: Publish verified assets and then mark Latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/release_rc3.py publish

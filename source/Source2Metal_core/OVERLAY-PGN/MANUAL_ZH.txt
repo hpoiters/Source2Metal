@@ -1,0 +1,21 @@
+OVERLAY-PGN — 可选开局线路 — Source2Metal v3.4.1-RC3
+
+1. 用途与选择
+OVERLAY-PGN 将用户选定的合法开局线路加入 Metal.pgn，完全可以不使用。普通 GAME 来源包含实际对局，用于统计和选择模型对局；短开局线路不能证明胜、和、负，因此单独处理。仅将结果设为 *，不会使普通 PGN 成为 overlay。
+
+2. 适用文件与自行制作
+使用从标准初始局面开始的标准 PGN，至少包含一个合法着法，采用国际 SAN 记谱，每条记录一条主线。允许短线路及结果 *。FEN/SetUp 局面、空线路和非法着法会被拒绝。在国际象棋软件中输入自己的着法，将每条需要的线路保存为独立对局，导出 PGN，设置 Result "*" 并以 * 结束。每个需要的分支应单独导出为记录：括号内变例不会作为额外线路导入。只使用有权使用的材料。原开局库权重不会转移；此过程不是引擎分析，也不保证棋艺质量。
+
+3. 放置与运行
+将 PGN 放入所选输入目录下的 OVERLAY-PGN 文件夹，或使用 .overlay.pgn 后缀。选择 RAW + METAL（命令行：--mode all）。仅 RAW 不会向最终文件添加 overlay 线路。避免在同一输入目录树中留下误作 GAME 来源的副本。
+VoorbeeldOverlay.pgn 含六条专为本说明编写的演示记录，没有复制开局库数据。文件位于扫描目录时就是有效输入。正式处理或对比测试前，请删除它或移到整个输入目录树之外。示例着法及文字可自由使用、修改和再分发。
+
+4. 处理与去重
+解析器读取主线，将合法着法规范为标准 SAN。先检查整条原始主线是否合法，再应用 RAW 深度限制（默认 100 半回合）。GAME 长度和 Elo 过滤器不适用于 overlay。注释、评注及开局库权重不会作为着法权重使用；输出使用结果 * 和中性标签。
+仅完全相同的完整规范着法序列会去重，与标签和结果无关。设置深度限制时，比较的是保留后的完整序列：仅在深度限制以外存在差异的线路可能合并。保留长度不同的前缀线路仍单独保留。着法顺序不同的换序线路也保留，即使最终局面相同。已有模型对局优先，其结果及字节保持不变。Overlay 不贡献 GAME 统计。未闭合注释等结构错误会报告为来源错误。
+
+5. 检查输出
+在 !Source2Metal_Output 下的时间戳目录中，检查 REPORTS/Source2Metal_Overlay_Report.txt 和 METAL/Metal.pgn。
+Read = Accepted + Rejected。Accepted = Deduplicated + RAW。这是第一阶段验证和去重。随后，Exact full-line duplicates 表示最终集合中已经存在的完整 RAW 线路数。Final Metal contribution / bijdrage 是每个来源实际追加的数量。Final Metal verified records 是验证后的最终总数。New position/move pairs 只是补充信息，不是收录条件。
+控制台显示 base、added、exact full-line duplicates 和 verified total。仅 RAW 模式或失败的运行未完成最终贡献；仅凭 RAW 计数不能证明已加入 Metal.pgn。
+仅使用 VoorbeeldOverlay.pgn、RAW + METAL 和深度 100 的独立测试应得到 Read 6、Accepted 6、Deduplicated 1、RAW 5、Rejected 0、Final Metal contribution 5、Final Metal verified records 5。若已有相同线路，实际贡献可能减少。

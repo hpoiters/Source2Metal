@@ -1,0 +1,21 @@
+OVERLAY-PGN — optional opening lines — Source2Metal v3.4.1-RC3
+
+1. Purpose and choice
+OVERLAY-PGN adds your selected legal opening lines to Metal.pgn. It is completely optional. Normal GAME sources contain played games used for statistics and model-game selection; short opening lines are not evidence of wins, draws or losses. They therefore use a separate route. Result * alone does not turn an ordinary PGN into an overlay.
+
+2. Suitable files and creating your own
+Use standard PGN from the normal starting position, at least one legal move, international SAN notation and one mainline per record. Short lines and result * are suitable. FEN/SetUp positions, empty lines and illegal moves are rejected. Enter your own moves in a chess program, save each desired line as a separate game and export PGN with Result "*" and a final *. Export each desired branch as its own record: parenthesized variations are not imported as additional lines. Use only material you have permission to use. Original book weights are not transferred; this is neither engine analysis nor a quality guarantee.
+
+3. Location and execution
+Place PGN files in OVERLAY-PGN beneath the selected input folder, or use the .overlay.pgn suffix. Select RAW + METAL (CLI: --mode all). RAW alone makes no final overlay contribution. Avoid unintended copies as ordinary GAME sources in the same input tree.
+VoorbeeldOverlay.pgn contains six demonstration records composed specifically for this guide, without copied book data. It is ACTIVE input while inside the scanned folder. Remove it or move it outside the entire input tree before your production or comparison run. The example moves and text may be freely used, modified and redistributed.
+
+4. Processing and duplicates
+The parser reads mainlines and normalizes legal moves to canonical SAN. It validates the entire original mainline, then applies the RAW depth limit (default 100 plies). GAME length and Elo filters do not apply. Comments, annotations and book weights are not used as move weights; output uses result * and neutral tags.
+Only exactly identical complete canonical move sequences are deduplicated, regardless of tags or result. At a depth limit, the complete RETAINED sequence is compared: lines differing only beyond the limit can therefore merge. Prefixes remain separate when retained lengths differ. Transpositions remain separate when move order differs, even with the same final position. Existing model games take precedence; their result and bytes are preserved. Overlay contributes no GAME statistics. Structural damage such as an unclosed comment is reported as a source error.
+
+5. Check output
+In the timestamped directory under !Source2Metal_Output, inspect REPORTS/Source2Metal_Overlay_Report.txt and METAL/Metal.pgn.
+Read = Accepted + Rejected. Accepted = Deduplicated + RAW. These are the initial validation and deduplication. Next, Exact full-line duplicates counts RAW lines already present in the final set. Final Metal contribution / bijdrage is the number actually appended per source. Final Metal verified records is the verified final total. New position/move pairs is supplementary information, NOT an admission requirement.
+The console reports base, added, exact full-line duplicates and verified total. RAW mode or a failed run does not complete the final contribution; RAW counters alone do not prove inclusion in Metal.pgn.
+An isolated run using only VoorbeeldOverlay.pgn, RAW + METAL and depth 100 gives Read 6, Accepted 6, Deduplicated 1, RAW 5, Rejected 0, Final Metal contribution 5 and Final Metal verified records 5. Existing identical lines may reduce the contribution.

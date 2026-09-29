@@ -1,0 +1,21 @@
+OVERLAY-PGN — optionele openingslijnen — Source2Metal v3.4.1-RC3
+
+1. Doel en keuze
+OVERLAY-PGN voegt zelfgekozen legale openingslijnen toe aan Metal.pgn. Gebruik is volledig optioneel. Normale GAME-bronnen bevatten gespeelde partijen voor statistiek en selectie van modelpartijen; korte openingslijnen zijn geen bewijs van winst, remise of verlies. Daarom staan ze apart. Alleen uitslag * maakt een gewone PGN niet tot overlay.
+
+2. Geschikte bestanden en zelf maken
+Gebruik standaard-PGN vanaf de normale beginstelling, met ten minste één legale zet, internationale SAN-notatie en één hoofdlijn per record. Korte lijnen en uitslag * zijn geschikt. FEN/SetUp-stellingen, lege lijnen en illegale zetten worden afgewezen. Voer eigen zetten in een schaakprogramma in, bewaar iedere gewenste lijn als afzonderlijke partij en exporteer als PGN met Result "*" en afsluitend *. Exporteer bij vertakkingen iedere gewenste variant als eigen record: varianten tussen haakjes worden niet als extra lijnen geïmporteerd. Gebruik alleen materiaal dat je mag gebruiken. Oorspronkelijke boekgewichten worden niet overgenomen; dit is geen engine-analyse of kwaliteitsgarantie.
+
+3. Plaatsen en uitvoeren
+Zet de PGN in OVERLAY-PGN onder de gekozen invoermap, of geef een bestand de uitgang .overlay.pgn. Kies RAW + METAL (CLI: --mode all). RAW alleen maakt geen definitieve overlaybijdrage. Bewaar geen onbedoelde kopie als gewone GAME-bron in dezelfde invoerboom.
+VoorbeeldOverlay.pgn bevat zes speciaal voor deze handleiding samengestelde demonstratierecords, zonder overgenomen boekgegevens. Als het bestand in de gescande map staat, is het ACTIEVE invoer. Verwijder het of verplaats het buiten de hele invoerboom voor je eigen productie- of vergelijkingsrun. De voorbeeldzetten en teksten mogen vrij worden gebruikt, gewijzigd en verspreid.
+
+4. Verwerking en ontdubbelen
+De parser leest hoofdlijnen en normaliseert legale zetten naar canonieke SAN. De gehele oorspronkelijke hoofdlijn wordt op legaliteit gecontroleerd; daarna geldt de ingestelde RAW-diepte (standaard 100 halfzetten). GAME-lengte- en Elo-filters gelden niet voor overlay. Commentaar, annotaties en boekgewichten worden niet als zetgewicht gebruikt; de uitvoer krijgt uitslag * en neutrale tags.
+Alleen exact gelijke volledige canonieke zettenreeksen worden ontdubbeld, onafhankelijk van tags of uitslag. Bij een dieptelimiet wordt de volledige BEWAARDE reeks vergeleken: lijnen die alleen voorbij de limiet verschillen kunnen dus samenvallen. Prefixen blijven afzonderlijk behouden als de bewaarde reeksen in lengte verschillen. Transposities blijven behouden als de zettenvolgorde verschilt, ook bij dezelfde eindstelling. Bestaande modelpartijen gaan voor; hun uitslag en bytes blijven behouden. Overlay levert geen GAME-statistiek. Een fout in de structuur, zoals een onafgesloten commentaar, wordt als bronfout gemeld.
+
+5. Uitvoer controleren
+Bekijk in de tijdstempelmap onder !Source2Metal_Output het bestand REPORTS/Source2Metal_Overlay_Report.txt en METAL/Metal.pgn.
+Read = Accepted + Rejected. Accepted = Deduplicated + RAW. Dit zijn de eerste validatie en ontdubbeling. Daarna betekent Exact full-line duplicates: volledige RAW-lijnen die al in de uiteindelijke set staan. Final Metal contribution / bijdrage is het werkelijk toegevoegde aantal per bron. Final Metal verified records is het geverifieerde eindtotaal. New position/move pairs is aanvullende informatie, GEEN toelatingseis.
+De console geeft base, added, exact full-line duplicates en verified total. Bij RAW-modus of een mislukte run is de eindbijdrage niet voltooid; RAW-tellers alleen bewijzen geen toevoeging aan Metal.pgn.
+Een geïsoleerde proef met alleen VoorbeeldOverlay.pgn, RAW + METAL en diepte 100 geeft Read 6, Accepted 6, Deduplicated 1, RAW 5, Rejected 0, Final Metal contribution 5 en Final Metal verified records 5. Bij bestaande identieke lijnen kan de bijdrage lager zijn.

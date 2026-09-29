@@ -1,0 +1,29 @@
+Source2Metal v3.4.1-RC3 — algemene handleiding
+
+1. Invoer kiezen
+Gebruik je eigen bronnen. Gewone PGN-, CBH- en 2CBH-bestanden zijn GAME-bronnen. Complete CTG/CTO/CTB-sets en BIN-bestanden zijn BOOK-bronnen. ZIP- en EXE-bestanden zijn geen invoerbronnen. Bronnen worden alleen gelezen.
+Voor korte openingslijnen in PGN gebruik je bewust de OVERLAY-route: zet de gewenste PGN-bestanden in een submap OVERLAY-PGN van de gekozen invoermap, of gebruik de bestandsuitgang .overlay.pgn. Dit geldt voor willekeurige geschikte openingsbestanden; er zijn geen verplichte namen, aantallen of specifieke boeken. Laat geen onbedoelde GAME-kopie van dezelfde overlaybron elders in de invoerboom staan. Een uitslag * alleen maakt een gewone PGN niet tot OVERLAY.
+
+2. Verwerking starten
+Pak het programmapakket uit en start !Source2Metal_v3.4.1-RC3.exe bij de invoerbestanden. Kies de gewenste taal en Bronnen verwerken. Kies RAW of RAW + METAL; voor een definitieve Metal.pgn is RAW + METAL nodig. De standaard RAW-diepte is 100 halfzetten. De aparte CTG-diepte kan daarvan afwijken; 0 betekent zonder vooraf ingestelde CTG-dieptelimiet. Standaard wordt de helft van de logische CPU-threads gebruikt, naar boven afgerond. Workers zijn instelbaar. Uitvoermappen worden uitgesloten van opnieuw inlezen.
+CLI-voorbeeld: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+SyzygyCheck is via het menu als apart pakket uit te pakken; Source2Metal voert geen tablebasecontrole uit.
+
+3. Regels voor OVERLAY-PGN
+De route neemt openingsdekking over, maar NIET de oorspronkelijke Polyglot-gewichten, keys of recordnummers. Uitslagen worden neutraal *. Er worden geen winstpartijen of nieuwe engine-analyses verzonnen.
+Meerregelige commentaren blijven bij hun PGN-record. Onafgesloten commentaren/varianten of ongebalanceerde sluittekens geven een expliciete bronfout; alleen het geldige begin van zo'n beschadigd record wordt niet geaccepteerd. De bronverwerking stopt bij zo'n fout. Onbruikbare GAME-uitslagen geven daarentegen geen toetsvraag: verwerking gaat automatisch door.
+
+4. Uitvoer lezen en toepassen
+Resultaten staan onder !Source2Metal_Output in een map met tijdstempel. RAW bewaart afzonderlijke en samengevoegde bronnen, met GAME en BOOK gescheiden. BIN levert volgens de bestaande route alleen RAW. CTG METAL bewaart gedecodeerde bereikbare boekzetten via neutrale lijnen. GAME-METAL selecteert modelpartijen volgens de bestaande metaliseringsregels.
+De parser leest hoofdlijnen en normaliseert legale zetten naar canonieke SAN. De gehele oorspronkelijke hoofdlijn wordt op legaliteit gecontroleerd; daarna geldt de ingestelde RAW-diepte (standaard 100 halfzetten). GAME-lengte- en Elo-filters gelden niet voor overlay. Commentaar, annotaties en boekgewichten worden niet als zetgewicht gebruikt; de uitvoer krijgt uitslag * en neutrale tags.
+Alleen exact gelijke volledige canonieke zettenreeksen worden ontdubbeld, onafhankelijk van tags of uitslag. Bij een dieptelimiet wordt de volledige BEWAARDE reeks vergeleken: lijnen die alleen voorbij de limiet verschillen kunnen dus samenvallen. Prefixen blijven afzonderlijk behouden als de bewaarde reeksen in lengte verschillen. Transposities blijven behouden als de zettenvolgorde verschilt, ook bij dezelfde eindstelling. Bestaande modelpartijen gaan voor; hun uitslag en bytes blijven behouden. Overlay levert geen GAME-statistiek. Een fout in de structuur, zoals een onafgesloten commentaar, wordt als bronfout gemeld.
+REPORTS/Source2Metal_Overlay_Report.txt geeft per bron read, accepted, rejected, duplicate, RAW, reeds gedekt, toegevoegd en nieuwe stelling-zetparen. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. RAW-modus alleen voegt niets aan METAL toe.
+
+5. Grenzen en validatie
+CTG-rapporten naast RAW gebruiken Positions/Edges voor stellingen/zetten, ExportedEdges voor gedekte zetten, DepthCutMoves voor diepteafbrekingen en DecodeErrors voor decoderfouten. CompleteCTG blijft false: volledige formaatondersteuning is niet bewezen. Onderpromoties en bijzondere pionloze symmetrie zijn beperkt; herkende promoties veronderstellen een dame. RawFooter bevat oorspronkelijke statistiekbytes; deze bewijzen geen Fritz-leergewichten.
+RC3 is getest op Linux en gebouwd voor Windows 64-bit. Een daaropvolgende Windows-praktijkproef is geslaagd; de aangeleverde rapporten bevestigen het verwachte resultaat. De programmabestanden en Go-broncode zijn gelijk aan de geteste RC3. Broncode en tests staan in Source2Metal_v3.4.1-RC3_SOURCE.zip; pak die alleen uit in een aparte ontwikkelmap.
+
+OVERLAY-PGN/MANUAL_NL.txt — VoorbeeldOverlay.pgn
+Zet de PGN in OVERLAY-PGN onder de gekozen invoermap, of geef een bestand de uitgang .overlay.pgn. Kies RAW + METAL (CLI: --mode all). RAW alleen maakt geen definitieve overlaybijdrage. Bewaar geen onbedoelde kopie als gewone GAME-bron in dezelfde invoerboom.
+VoorbeeldOverlay.pgn bevat zes speciaal voor deze handleiding samengestelde demonstratierecords, zonder overgenomen boekgegevens. Als het bestand in de gescande map staat, is het ACTIEVE invoer. Verwijder het of verplaats het buiten de hele invoerboom voor je eigen productie- of vergelijkingsrun. De voorbeeldzetten en teksten mogen vrij worden gebruikt, gewijzigd en verspreid.
+

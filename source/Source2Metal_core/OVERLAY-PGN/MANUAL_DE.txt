@@ -1,0 +1,21 @@
+OVERLAY-PGN — optionale Eröffnungslinien — Source2Metal v3.4.1-RC3
+
+1. Zweck und Wahl
+OVERLAY-PGN ergänzt Metal.pgn um ausgewählte legale Eröffnungslinien. Die Verwendung ist vollständig optional. Normale GAME-Quellen enthalten gespielte Partien für Statistik und Auswahl von Modellpartien. Kurze Eröffnungslinien sind kein Beleg für Sieg, Remis oder Niederlage und werden deshalb getrennt verarbeitet. Ergebnis * allein macht eine normale PGN nicht zur Overlay-Quelle.
+
+2. Geeignete Dateien selbst erstellen
+Verwenden Sie Standard-PGN aus der normalen Anfangsstellung, mindestens einen legalen Zug, internationale SAN-Notation und eine Hauptlinie je Datensatz. Kurze Linien und Ergebnis * sind geeignet. FEN/SetUp-Stellungen, leere Linien und illegale Züge werden abgewiesen. Geben Sie eigene Züge in einem Schachprogramm ein, speichern Sie jede gewünschte Linie als eigene Partie und exportieren Sie PGN mit Result "*" und abschließendem *. Exportieren Sie jede gewünschte Abzweigung einzeln: Varianten in Klammern werden nicht als zusätzliche Linien übernommen. Verwenden Sie nur Material mit entsprechender Erlaubnis. Ursprüngliche Buchgewichte werden nicht übertragen; dies ist weder Engine-Analyse noch Qualitätsgarantie.
+
+3. Ablage und Start
+Legen Sie PGN-Dateien in OVERLAY-PGN unter dem gewählten Eingabeordner ab oder verwenden Sie die Endung .overlay.pgn. Wählen Sie RAW + METAL (CLI: --mode all). RAW allein ergänzt die endgültige Ausgabe nicht. Vermeiden Sie unbeabsichtigte GAME-Kopien im selben Eingabebaum.
+VoorbeeldOverlay.pgn enthält sechs eigens für diese Anleitung zusammengestellte Demonstrationsdatensätze ohne kopierte Buchdaten. Im gescannten Ordner ist die Datei AKTIVE Eingabe. Entfernen Sie sie oder verschieben Sie sie vor Produktions- oder Vergleichsläufen ganz außerhalb des Eingabebaums. Beispielzüge und Texte dürfen frei verwendet, geändert und weitergegeben werden.
+
+4. Verarbeitung und Duplikate
+Der Parser liest Hauptlinien und normalisiert legale Züge zu kanonischer SAN. Die gesamte ursprüngliche Hauptlinie wird auf Legalität geprüft; danach gilt die RAW-Tiefengrenze (Standard: 100 Halbzüge). GAME-Längen- und Elo-Filter gelten nicht. Kommentare, Anmerkungen und Buchgewichte dienen nicht als Zuggewichte; die Ausgabe erhält Ergebnis * und neutrale Tags.
+Nur exakt gleiche vollständige kanonische Zugfolgen werden dedupliziert, unabhängig von Tags oder Ergebnis. Bei einer Tiefengrenze wird die vollständige BEIBEHALTENE Folge verglichen: Unterschiede erst jenseits der Grenze können entfallen. Präfixe bleiben bei unterschiedlicher beibehaltener Länge getrennt. Zugumstellungen bleiben bei unterschiedlicher Zugfolge erhalten, auch bei gleicher Endstellung. Vorhandene Modellpartien haben Vorrang; ihr Ergebnis und ihre Bytes bleiben erhalten. Overlay liefert keine GAME-Statistik. Strukturelle Fehler wie nicht geschlossene Kommentare werden als Quellenfehler gemeldet.
+
+5. Ausgabe prüfen
+Prüfen Sie REPORTS/Source2Metal_Overlay_Report.txt und METAL/Metal.pgn im Zeitstempelordner unter !Source2Metal_Output.
+Read = Accepted + Rejected. Accepted = Deduplicated + RAW: erste Validierung und Deduplizierung. Anschließend zählt Exact full-line duplicates die bereits in der endgültigen Menge enthaltenen RAW-Linien. Final Metal contribution / bijdrage ist die tatsächlich angehängte Anzahl je Quelle. Final Metal verified records ist die geprüfte Endsumme. New position/move pairs ist Zusatzinformation, KEINE Aufnahmebedingung.
+Die Konsole zeigt base, added, exact full-line duplicates und verified total. RAW-Modus oder ein fehlgeschlagener Lauf vollendet den Endbeitrag nicht; RAW-Zähler allein beweisen keine Aufnahme in Metal.pgn.
+Ein isolierter Lauf nur mit VoorbeeldOverlay.pgn, RAW + METAL und Tiefe 100 ergibt Read 6, Accepted 6, Deduplicated 1, RAW 5, Rejected 0, Final Metal contribution 5 und Final Metal verified records 5. Bereits vorhandene identische Linien können den Beitrag verringern.

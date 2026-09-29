@@ -2,16 +2,6 @@ name: Verify and publish Source2Metal v3.3.1
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main, 'bugfix/v3.3.1']
-    paths:
-      - 'source/Source2Metal_v3.3.1/**'
-      - 'source/Source2Metal_console/**'
-      - 'validation/ctg_v3.3.0/**'
-      - 'validation/approved_console_hashes.json'
-      - 'tools/**'
-      - '*.md'
-      - '.github/workflows/build-release-v3.3.1.yml'
 
 permissions:
   contents: write

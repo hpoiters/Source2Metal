@@ -1,75 +1,30 @@
-# Source2Metal
+# Source2Metal v3.4.1-RC3
 
-Source2Metal is an open-source Windows toolset for building, analysing and
-improving computer-chess opening-book material.
+Windows 64-bit release package. The v3.4.1-RC3 build identifier is retained
+to identify the exact Windows-tested executables.
 
-## Source2Metal v3.3.1 — PGN warning fix
+Source2Metal processes GAME sources (PGN, CBH, 2CBH) and BOOK sources
+(CTG sets, Polyglot BIN, optional opening-line PGN). The existing GAME
+selection and corrected PGN parser are retained. BIN remains RAW-only.
 
-Version 3.3.1 continues automatically after warning that many PGN records have
-unusable results, including 100 rejected records at the start of a source.
-The later games and subsequent sources proceed without a keyboard prompt.
+OVERLAY-PGN is optional. Put legal opening-line PGN in that directory beneath
+an input root, or use a .overlay.pgn suffix. In RAW + METAL mode, distinct
+complete canonical lines are appended to Metal.pgn with result *.
+Only exact full-line duplicates are removed. Prefixes of different retained
+lengths and different move orders remain. The RAW depth limit still applies.
+Overlay does not contribute GAME win/draw/loss statistics or book weights.
 
-Version 3.3.0 replaced the former CTG route sampling with a complete traversal
-of every decoded reachable position/move pair. CTG moves are exported as
-neutral PGN lines with result `*`; frequency fields, recommendations and
-unverified learning weights are kept out of the PGN.
+The package includes an original, freely reusable VoorbeeldOverlay.pgn and
+seven overlay guides: DE, EN, ES, FR, NL, RU and ZH. The example is active
+input if included in a scan. Remove it or move it outside the complete input
+tree before production or comparison runs. Its isolated test produces five
+final records from six input records.
 
-The CTG conversion now supports workers within one book and a separate CTG
-depth setting. A CTG depth of 0 means no preset limit. Each extraction writes a
-coverage report and separate JSONL statistics. CTG RAW can be reused directly
-for CTG METAL, while GAME and BOOK sources remain separate.
+Start with the multilingual HTML guide and OVERLAY-PGN/MANUAL_EN.txt.
+Source and reproducible tests are included separately; extract source only
+into a separate development directory, outside the production input tree.
+See BUILDING.md, LICENSE and THIRD_PARTY_NOTICES.md.
 
-Perfect2023 validation found 56,857 reachable positions, 60,747 unique
-position/move pairs, 3,891 transpositions and 15,325 exported lines. All 15,325
-PGN records passed legal-move and parser checks. The Windows practical run
-completed successfully. Additional route checks confirmed that `1...e5`,
-`1...c6` and the Berlin route are present in the PGN.
-
-The user package contains:
-
-- `!Source2Metal_v3.3.1.exe`
-- a multilingual HTML introduction with jump links
-- a clearly named documentation folder with manuals in seven languages
-- release notes, validation summary, privacy and build information
-
-The leading exclamation mark keeps the executable near the top of a folder in
-Windows Explorer.
-
-Source2Metal v3.3.1 retains PGN, CBH, 2CBH and Polyglot BIN processing and the
-published SyzygyCheck v2.2.0 utility. BIN remains RAW-only. RAW output keeps
-GAME and BOOK sources separate, and `METAL/Metal.pgn` remains the combined
-neutral training output.
-
-## Known CTG decoder limits
-
-Underpromotions and special pawnless symmetry are not independently verified.
-Recognized promotions currently assume a queen, so `CompleteCTG` remains
-`false`. Coverage certifies decoded reachable position/move pairs; it does not
-claim every possible transposition path or every physical CTG record.
-
-## Source material and third-party content
-
-Source2Metal does not include or distribute opening books, chess databases or
-third-party game collections. Users supply their own source material and are
-responsible for the rights to process, use and redistribute it and derived
-output.
-
-SyzygyCheck's verification core is based on the original Syzygy tablebase
-verification code by Ronald de Man. Source2Metal and SyzygyCheck work locally;
-source files, tablebase files, filenames and results are not uploaded.
-
-## Verification and code signing
-
-The release workflow tests and vets both Go modules, builds and runs the Windows
-executable, runs the packaged self-test, checks the unpacked package in seven
-languages, validates all documentation and publishes only after every check
-passes. The executable is unsigned, so Windows may display a Microsoft Defender
-SmartScreen or "Unknown publisher" warning. See
-[CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md).
-
-## License
-
-Source2Metal contains GPL-covered code and is distributed under the GNU General
-Public License version 3 or later, subject to the third-party notices in this
-repository. See [LICENSE](LICENSE) and
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+CTG format support remains incomplete: underpromotions and special pawnless
+symmetries are limited. CompleteCTG remains false. No engine evaluation or
+playing-strength guarantee is implied by legal-move validation.

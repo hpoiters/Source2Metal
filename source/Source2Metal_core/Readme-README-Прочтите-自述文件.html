@@ -1,0 +1,199 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Source2Metal v3.4.1-RC3</title><style>body{max-width:960px;margin:3em auto;font:18px/1.5 sans-serif;padding:0 20px}pre{white-space:pre-wrap}nav a{margin-right:1em}</style></head><body><h1>Source2Metal v3.4.1-RC3</h1><nav><a href="#MANUAL_DE">DE</a> <a href="#MANUAL_EN">EN</a> <a href="#MANUAL_ES">ES</a> <a href="#MANUAL_FR">FR</a> <a href="#MANUAL_NL">NL</a> <a href="#MANUAL_RU">RU</a> <a href="#MANUAL_ZH">ZH</a></nav><section id="MANUAL_DE"><pre>Source2Metal v3.4.1-RC3 — allgemeine Anleitung
+
+1. Eingabe
+Eigene Quellen verwenden: PGN/CBH/2CBH sind GAME-Quellen; vollständige CTG/CTO/CTB-Sätze und BIN sind BOOK-Quellen. ZIP und EXE werden nicht als Quellen verarbeitet. Quelldateien werden nur gelesen.
+PGN-Eröffnungslinien ausdrücklich über OVERLAY wählen: Dateien in den Unterordner OVERLAY-PGN des Eingabeordners legen oder die Endung .overlay.pgn verwenden. Bestimmte Dateinamen, Bücher oder Dateizahlen sind nicht vorgeschrieben. Unbeabsichtigte GAME-Kopien derselben Dateien vermeiden. Ergebnis * allein wählt OVERLAY nicht aus.
+
+2. Verarbeitung
+Paket entpacken und !Source2Metal_v3.4.1-RC3.exe bei den Eingaben starten. Sprache und Quellenverarbeitung wählen. RAW + METAL erzeugt die endgültige Metal.pgn; RAW allein nicht. Standardtiefe: 100 Halbzüge. Separate CTG-Tiefe 0 bedeutet ohne vorgegebenes Tiefenlimit. Standardmäßig wird die Hälfte der logischen CPU-Threads, aufgerundet, verwendet; einstellbar. Ausgabeordner werden nicht erneut eingelesen.
+CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+SyzygyCheck lässt sich als separates Hilfsprogramm über das Menü entpacken.
+
+3. OVERLAY-Regeln
+Mehrzeilige Kommentare bleiben im Datensatz. Nicht geschlossene Kommentare/Varianten oder unpassende Schlusszeichen erzeugen einen Quellfehler und stoppen diese Quelle; kein gültiger Anfang eines beschädigten Datensatzes wird akzeptiert. Unbrauchbare GAME-Ergebnisse blockieren dagegen nicht mit einer Tastaturabfrage.
+
+4. Ausgabe und Anwendung
+Ausgaben: !Source2Metal_Output mit Zeitstempel. RAW enthält getrennte und zusammengeführte Quellen; GAME und BOOK bleiben getrennt. BIN liefert weiterhin nur RAW. CTG METAL bewahrt dekodierte erreichbare Buchzüge als neutrale Linien; GAME-METAL wählt Modellpartien nach den bisherigen Regeln.
+Der Parser liest Hauptlinien und normalisiert legale Züge zu kanonischer SAN. Die gesamte ursprüngliche Hauptlinie wird auf Legalität geprüft; danach gilt die RAW-Tiefengrenze (Standard: 100 Halbzüge). GAME-Längen- und Elo-Filter gelten nicht. Kommentare, Anmerkungen und Buchgewichte dienen nicht als Zuggewichte; die Ausgabe erhält Ergebnis * und neutrale Tags.
+Nur exakt gleiche vollständige kanonische Zugfolgen werden dedupliziert, unabhängig von Tags oder Ergebnis. Bei einer Tiefengrenze wird die vollständige BEIBEHALTENE Folge verglichen: Unterschiede erst jenseits der Grenze können entfallen. Präfixe bleiben bei unterschiedlicher beibehaltener Länge getrennt. Zugumstellungen bleiben bei unterschiedlicher Zugfolge erhalten, auch bei gleicher Endstellung. Vorhandene Modellpartien haben Vorrang; ihr Ergebnis und ihre Bytes bleiben erhalten. Overlay liefert keine GAME-Statistik. Strukturelle Fehler wie nicht geschlossene Kommentare werden als Quellenfehler gemeldet.
+REPORTS/Source2Metal_Overlay_Report.txt zeigt je Quelle Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution und neue Paare. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. RAW-Modus ergänzt METAL nicht.
+
+5. Grenzen und Validierung
+CTG-Berichte: Positions/Edges, ExportedEdges, DepthCutMoves, DecodeErrors. CompleteCTG bleibt false. Unterverwandlungen und besondere bauernlose Symmetrien sind eingeschränkt; erkannte Verwandlungen nehmen eine Dame an. RawFooter-Statistikbytes belegen keine Fritz-Lerngewichte.
+RC3 wurde unter Linux getestet und für Windows 64-Bit gebaut. Eine anschließende Windows-Praxisprüfung wurde erfolgreich abgeschlossen; die bereitgestellten Berichte bestätigen das erwartete Ergebnis. Programmdateien und Go-Quellcode entsprechen unverändert der getesteten RC3. Source2Metal_v3.4.1-RC3_SOURCE.zip enthält Quellcode und Tests; nur in einen separaten Entwicklungsordner entpacken.
+
+OVERLAY-PGN/MANUAL_DE.txt — VoorbeeldOverlay.pgn
+Legen Sie PGN-Dateien in OVERLAY-PGN unter dem gewählten Eingabeordner ab oder verwenden Sie die Endung .overlay.pgn. Wählen Sie RAW + METAL (CLI: --mode all). RAW allein ergänzt die endgültige Ausgabe nicht. Vermeiden Sie unbeabsichtigte GAME-Kopien im selben Eingabebaum.
+VoorbeeldOverlay.pgn enthält sechs eigens für diese Anleitung zusammengestellte Demonstrationsdatensätze ohne kopierte Buchdaten. Im gescannten Ordner ist die Datei AKTIVE Eingabe. Entfernen Sie sie oder verschieben Sie sie vor Produktions- oder Vergleichsläufen ganz außerhalb des Eingabebaums. Beispielzüge und Texte dürfen frei verwendet, geändert und weitergegeben werden.
+
+</pre></section><section id="MANUAL_EN"><pre>Source2Metal v3.4.1-RC3 — general manual
+
+1. Select input
+Use your own sources. Ordinary PGN/CBH/2CBH files are GAME sources; complete CTG/CTO/CTB sets and BIN files are BOOK sources. ZIP and EXE files are not inputs. Sources are read-only.
+For PGN opening lines, explicitly choose OVERLAY: put the desired files in an OVERLAY-PGN subfolder of your input folder, or use the .overlay.pgn suffix. No particular names, books or number of files are required. Avoid leaving unintended GAME copies of overlay sources elsewhere in the input tree. Result * alone never selects OVERLAY.
+
+2. Run processing
+Extract the package and start !Source2Metal_v3.4.1-RC3.exe beside your inputs. Select a language and source processing. Choose RAW or RAW + METAL; the latter produces final Metal.pgn. RAW defaults to 100 plies. Separate CTG depth 0 means no preset CTG depth cap. Workers default to half the logical CPU threads, rounded up, and are adjustable. Output directories are excluded from input scanning.
+CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+The menu can extract the separate SyzygyCheck utility; Source2Metal does not check tablebases itself.
+
+3. OVERLAY rules
+Opening coverage is imported; original Polyglot weights, keys and record numbers are NOT transferred. Results become neutral *. No wins or new engine analysis are invented.
+Multiline comments stay in their record. Unclosed comments/variations or unmatched closing delimiters cause an explicit source error and stop that source; a damaged record&#x27;s valid prefix is not accepted. Unusable GAME results instead allow automatic continuation without a keyboard prompt.
+
+4. Understand and use output
+Outputs are placed under !Source2Metal_Output in a timestamped directory. RAW holds separate and merged sources, separating GAME and BOOK. BIN still produces RAW only. CTG METAL preserves decoded reachable book moves through neutral lines. GAME-METAL selects model games using the existing rules.
+The parser reads mainlines and normalizes legal moves to canonical SAN. It validates the entire original mainline, then applies the RAW depth limit (default 100 plies). GAME length and Elo filters do not apply. Comments, annotations and book weights are not used as move weights; output uses result * and neutral tags.
+Only exactly identical complete canonical move sequences are deduplicated, regardless of tags or result. At a depth limit, the complete RETAINED sequence is compared: lines differing only beyond the limit can therefore merge. Prefixes remain separate when retained lengths differ. Transpositions remain separate when move order differs, even with the same final position. Existing model games take precedence; their result and bytes are preserved. Overlay contributes no GAME statistics. Structural damage such as an unclosed comment is reported as a source error.
+REPORTS/Source2Metal_Overlay_Report.txt lists Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution and new position/move pairs per source. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. RAW-only mode adds nothing to METAL.
+
+5. Limits and validation
+CTG reports list Positions/Edges, ExportedEdges, DepthCutMoves and DecodeErrors. CompleteCTG remains false; full format support is unproven. Underpromotion and special pawnless symmetry are limited; recognized promotions assume a queen. RawFooter contains original statistics bytes, not proof of Fritz learning weights.
+RC3 was tested on Linux and built for Windows 64-bit. A subsequent Windows practice run completed successfully; the supplied reports confirm the expected result. Executables and Go source are unchanged from the tested RC3. Source and tests are in Source2Metal_v3.4.1-RC3_SOURCE.zip; extract it only into a separate development directory.
+
+OVERLAY-PGN/MANUAL_EN.txt — VoorbeeldOverlay.pgn
+Place PGN files in OVERLAY-PGN beneath the selected input folder, or use the .overlay.pgn suffix. Select RAW + METAL (CLI: --mode all). RAW alone makes no final overlay contribution. Avoid unintended copies as ordinary GAME sources in the same input tree.
+VoorbeeldOverlay.pgn contains six demonstration records composed specifically for this guide, without copied book data. It is ACTIVE input while inside the scanned folder. Remove it or move it outside the entire input tree before your production or comparison run. The example moves and text may be freely used, modified and redistributed.
+
+</pre></section><section id="MANUAL_ES"><pre>Source2Metal v3.4.1-RC3 — manual general
+
+1. Entradas
+Use sus propias fuentes: PGN/CBH/2CBH son GAME; conjuntos completos CTG/CTO/CTB y BIN son BOOK. ZIP y EXE no son fuentes. Las entradas solo se leen.
+Para líneas de apertura PGN, elija OVERLAY explícitamente: subcarpeta OVERLAY-PGN del directorio de entrada o sufijo .overlay.pgn. No se requieren nombres, libros ni cantidades concretas. Evite copias GAME involuntarias de las mismas fuentes. El resultado * solo no activa OVERLAY.
+
+2. Procesamiento
+Extraiga el paquete e inicie !Source2Metal_v3.4.1-RC3.exe junto a las entradas. Elija idioma y procesamiento de fuentes. RAW + METAL crea Metal.pgn; RAW solo no. Profundidad RAW predeterminada: 100 medios movimientos. Profundidad CTG separada 0: sin límite predefinido. Se propone la mitad de los hilos lógicos, redondeada hacia arriba; configurable. Las carpetas de salida se excluyen de la búsqueda.
+CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+El menú permite extraer la utilidad separada SyzygyCheck.
+
+3. Reglas OVERLAY
+Los comentarios multilínea permanecen en su registro. Comentarios/variantes sin cerrar o cierres sin apertura generan un error explícito y detienen esa fuente; no se acepta el prefijo válido del registro dañado. Los resultados GAME inutilizables permiten continuar automáticamente sin pulsar teclas.
+
+4. Salidas y uso
+Salidas en !Source2Metal_Output, carpeta con fecha y hora. RAW contiene fuentes separadas y combinadas, distinguiendo GAME y BOOK. BIN sigue produciendo solo RAW. CTG METAL conserva jugadas decodificadas accesibles mediante líneas neutras; GAME-METAL selecciona partidas modelo según las reglas existentes.
+El analizador lee líneas principales y normaliza jugadas legales a SAN canónica. Valida toda la línea original y después aplica la profundidad RAW (100 medios movimientos por defecto). No se aplican los filtros GAME de longitud y Elo. Los comentarios, anotaciones y pesos del libro no se usan como pesos de jugada; la salida lleva resultado * y etiquetas neutras.
+Solo se eliminan secuencias canónicas completas exactamente iguales, independientemente de etiquetas o resultado. Con límite de profundidad se compara la secuencia CONSERVADA completa: las diferencias posteriores al límite pueden desaparecer. Los prefijos con longitudes conservadas distintas permanecen separados. Las transposiciones se conservan si cambia el orden de jugadas, incluso con la misma posición final. Las partidas modelo existentes tienen preferencia; se conservan su resultado y sus bytes. Overlay no aporta estadísticas GAME. Un fallo estructural, como un comentario sin cerrar, se indica como error de fuente.
+REPORTS/Source2Metal_Overlay_Report.txt muestra por fuente Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution y pares nuevos. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. RAW solo no añade a METAL.
+
+5. Límites y validación
+Informes CTG: Positions/Edges, ExportedEdges, DepthCutMoves, DecodeErrors. CompleteCTG sigue siendo false. Subpromociones y simetrías especiales sin peones son limitadas; se supone dama en promociones reconocidas. Los bytes RawFooter no demuestran pesos de aprendizaje Fritz.
+RC3 se probó en Linux y se compiló para Windows de 64 bits. Una prueba práctica posterior en Windows terminó correctamente; los informes proporcionados confirman el resultado esperado. Los ejecutables y el código Go no han cambiado respecto a la RC3 probada. Source2Metal_v3.4.1-RC3_SOURCE.zip contiene código y pruebas; extraer solo en una carpeta de desarrollo separada.
+
+OVERLAY-PGN/MANUAL_ES.txt — VoorbeeldOverlay.pgn
+Coloque los PGN en OVERLAY-PGN dentro de la carpeta de entrada elegida o use el sufijo .overlay.pgn. Seleccione RAW + METAL (CLI: --mode all). RAW solo no aporta líneas al resultado final. Evite copias GAME involuntarias en el mismo árbol de entrada.
+VoorbeeldOverlay.pgn contiene seis registros de demostración compuestos para esta guía, sin datos copiados de libros. Es entrada ACTIVA mientras esté en la carpeta examinada. Elimínelo o muévalo fuera de todo el árbol de entrada antes de una ejecución de producción o comparación. Las jugadas y los textos del ejemplo pueden usarse, modificarse y redistribuirse libremente.
+
+</pre></section><section id="MANUAL_FR"><pre>Source2Metal v3.4.1-RC3 — guide général
+
+1. Entrées
+Utilisez vos propres sources : PGN/CBH/2CBH sont des sources GAME ; ensembles complets CTG/CTO/CTB et fichiers BIN sont des sources BOOK. ZIP et EXE ne sont pas des sources. Les entrées restent en lecture seule.
+Pour les lignes d’ouverture PGN, choisissez explicitement OVERLAY : sous-dossier OVERLAY-PGN du dossier d’entrée ou suffixe .overlay.pgn. Aucun nom, livre ou nombre de fichiers particulier n’est requis. Évitez les copies GAME involontaires des mêmes sources. Le résultat * seul n’active pas OVERLAY.
+
+2. Traitement
+Décompressez le paquet et lancez !Source2Metal_v3.4.1-RC3.exe près des entrées. Choisissez langue et traitement des sources. RAW + METAL crée Metal.pgn ; RAW seul ne le fait pas. Profondeur RAW par défaut : 100 demi-coups. Profondeur CTG séparée 0 : aucune limite prédéfinie. La moitié des threads logiques, arrondie au supérieur, est proposée et modifiable. Les dossiers de sortie sont exclus de la recherche de sources.
+CLI : --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+Le menu permet d’extraire l’utilitaire séparé SyzygyCheck.
+
+3. Règles OVERLAY
+Les commentaires multilignes restent dans leur enregistrement. Commentaires/variantes non fermés ou fermetures non appariées provoquent une erreur explicite et arrêtent cette source ; le préfixe valide du record endommagé est refusé. Les résultats GAME inutilisables permettent au contraire une poursuite automatique sans touche.
+
+4. Sorties et utilisation
+Sorties dans !Source2Metal_Output, dossier horodaté. RAW contient sources séparées et fusionnées, GAME et BOOK distincts. BIN produit toujours seulement RAW. CTG METAL conserve les coups décodés accessibles via des lignes neutres ; GAME-METAL sélectionne les parties modèles selon les règles existantes.
+Le parseur lit les lignes principales et normalise les coups légaux en SAN canonique. Il vérifie toute la ligne originale, puis applique la profondeur RAW (100 demi-coups par défaut). Les filtres de longueur et d’Elo GAME ne s’appliquent pas. Commentaires, annotations et poids de livre ne servent pas de poids de coups ; la sortie porte le résultat * et des tags neutres.
+Seules les séquences canoniques complètes exactement identiques sont dédoublonnées, indépendamment des tags et du résultat. Avec une limite de profondeur, la séquence CONSERVÉE complète est comparée : des différences au-delà de la limite peuvent disparaître. Les préfixes de longueurs conservées différentes restent distincts. Les transpositions restent distinctes si l’ordre des coups diffère, même avec la même position finale. Les parties modèles existantes sont prioritaires ; leur résultat et leurs octets restent inchangés. L’overlay ne fournit aucune statistique GAME. Un défaut structurel, comme un commentaire non fermé, est signalé comme erreur de source.
+REPORTS/Source2Metal_Overlay_Report.txt donne par source Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution et nouvelles paires. Accepted = Deduplicated + RAW ; Read = Accepted + Rejected. Le mode RAW seul ne complète pas METAL.
+
+5. Limites et validation
+Rapports CTG : Positions/Edges, ExportedEdges, DepthCutMoves, DecodeErrors. CompleteCTG reste false. Sous-promotions et symétries particulières sans pions sont limitées ; les promotions reconnues supposent une dame. Les octets RawFooter ne prouvent pas des poids d’apprentissage Fritz.
+RC3 a été testée sous Linux et compilée pour Windows 64 bits. Un essai pratique ultérieur sous Windows a réussi ; les rapports fournis confirment le résultat attendu. Les exécutables et le code Go sont identiques à ceux de la RC3 testée. Source2Metal_v3.4.1-RC3_SOURCE.zip contient le code et les tests ; à extraire uniquement dans un dossier de développement séparé.
+
+OVERLAY-PGN/MANUAL_FR.txt — VoorbeeldOverlay.pgn
+Placez les PGN dans OVERLAY-PGN sous le dossier d’entrée choisi, ou utilisez le suffixe .overlay.pgn. Choisissez RAW + METAL (CLI : --mode all). RAW seul n’ajoute rien au résultat final. Évitez les copies GAME involontaires dans le même arbre d’entrée.
+VoorbeeldOverlay.pgn contient six enregistrements de démonstration composés pour ce guide, sans données copiées d’un livre. Dans le dossier analysé, il constitue une entrée ACTIVE. Supprimez-le ou déplacez-le hors de tout l’arbre d’entrée avant un traitement réel ou comparatif. Les coups et textes de l’exemple peuvent être librement utilisés, modifiés et redistribués.
+
+</pre></section><section id="MANUAL_NL"><pre>Source2Metal v3.4.1-RC3 — algemene handleiding
+
+1. Invoer kiezen
+Gebruik je eigen bronnen. Gewone PGN-, CBH- en 2CBH-bestanden zijn GAME-bronnen. Complete CTG/CTO/CTB-sets en BIN-bestanden zijn BOOK-bronnen. ZIP- en EXE-bestanden zijn geen invoerbronnen. Bronnen worden alleen gelezen.
+Voor korte openingslijnen in PGN gebruik je bewust de OVERLAY-route: zet de gewenste PGN-bestanden in een submap OVERLAY-PGN van de gekozen invoermap, of gebruik de bestandsuitgang .overlay.pgn. Dit geldt voor willekeurige geschikte openingsbestanden; er zijn geen verplichte namen, aantallen of specifieke boeken. Laat geen onbedoelde GAME-kopie van dezelfde overlaybron elders in de invoerboom staan. Een uitslag * alleen maakt een gewone PGN niet tot OVERLAY.
+
+2. Verwerking starten
+Pak het programmapakket uit en start !Source2Metal_v3.4.1-RC3.exe bij de invoerbestanden. Kies de gewenste taal en Bronnen verwerken. Kies RAW of RAW + METAL; voor een definitieve Metal.pgn is RAW + METAL nodig. De standaard RAW-diepte is 100 halfzetten. De aparte CTG-diepte kan daarvan afwijken; 0 betekent zonder vooraf ingestelde CTG-dieptelimiet. Standaard wordt de helft van de logische CPU-threads gebruikt, naar boven afgerond. Workers zijn instelbaar. Uitvoermappen worden uitgesloten van opnieuw inlezen.
+CLI-voorbeeld: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+SyzygyCheck is via het menu als apart pakket uit te pakken; Source2Metal voert geen tablebasecontrole uit.
+
+3. Regels voor OVERLAY-PGN
+De route neemt openingsdekking over, maar NIET de oorspronkelijke Polyglot-gewichten, keys of recordnummers. Uitslagen worden neutraal *. Er worden geen winstpartijen of nieuwe engine-analyses verzonnen.
+Meerregelige commentaren blijven bij hun PGN-record. Onafgesloten commentaren/varianten of ongebalanceerde sluittekens geven een expliciete bronfout; alleen het geldige begin van zo&#x27;n beschadigd record wordt niet geaccepteerd. De bronverwerking stopt bij zo&#x27;n fout. Onbruikbare GAME-uitslagen geven daarentegen geen toetsvraag: verwerking gaat automatisch door.
+
+4. Uitvoer lezen en toepassen
+Resultaten staan onder !Source2Metal_Output in een map met tijdstempel. RAW bewaart afzonderlijke en samengevoegde bronnen, met GAME en BOOK gescheiden. BIN levert volgens de bestaande route alleen RAW. CTG METAL bewaart gedecodeerde bereikbare boekzetten via neutrale lijnen. GAME-METAL selecteert modelpartijen volgens de bestaande metaliseringsregels.
+De parser leest hoofdlijnen en normaliseert legale zetten naar canonieke SAN. De gehele oorspronkelijke hoofdlijn wordt op legaliteit gecontroleerd; daarna geldt de ingestelde RAW-diepte (standaard 100 halfzetten). GAME-lengte- en Elo-filters gelden niet voor overlay. Commentaar, annotaties en boekgewichten worden niet als zetgewicht gebruikt; de uitvoer krijgt uitslag * en neutrale tags.
+Alleen exact gelijke volledige canonieke zettenreeksen worden ontdubbeld, onafhankelijk van tags of uitslag. Bij een dieptelimiet wordt de volledige BEWAARDE reeks vergeleken: lijnen die alleen voorbij de limiet verschillen kunnen dus samenvallen. Prefixen blijven afzonderlijk behouden als de bewaarde reeksen in lengte verschillen. Transposities blijven behouden als de zettenvolgorde verschilt, ook bij dezelfde eindstelling. Bestaande modelpartijen gaan voor; hun uitslag en bytes blijven behouden. Overlay levert geen GAME-statistiek. Een fout in de structuur, zoals een onafgesloten commentaar, wordt als bronfout gemeld.
+REPORTS/Source2Metal_Overlay_Report.txt geeft per bron read, accepted, rejected, duplicate, RAW, reeds gedekt, toegevoegd en nieuwe stelling-zetparen. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. RAW-modus alleen voegt niets aan METAL toe.
+
+5. Grenzen en validatie
+CTG-rapporten naast RAW gebruiken Positions/Edges voor stellingen/zetten, ExportedEdges voor gedekte zetten, DepthCutMoves voor diepteafbrekingen en DecodeErrors voor decoderfouten. CompleteCTG blijft false: volledige formaatondersteuning is niet bewezen. Onderpromoties en bijzondere pionloze symmetrie zijn beperkt; herkende promoties veronderstellen een dame. RawFooter bevat oorspronkelijke statistiekbytes; deze bewijzen geen Fritz-leergewichten.
+RC3 is getest op Linux en gebouwd voor Windows 64-bit. Een daaropvolgende Windows-praktijkproef is geslaagd; de aangeleverde rapporten bevestigen het verwachte resultaat. De programmabestanden en Go-broncode zijn gelijk aan de geteste RC3. Broncode en tests staan in Source2Metal_v3.4.1-RC3_SOURCE.zip; pak die alleen uit in een aparte ontwikkelmap.
+
+OVERLAY-PGN/MANUAL_NL.txt — VoorbeeldOverlay.pgn
+Zet de PGN in OVERLAY-PGN onder de gekozen invoermap, of geef een bestand de uitgang .overlay.pgn. Kies RAW + METAL (CLI: --mode all). RAW alleen maakt geen definitieve overlaybijdrage. Bewaar geen onbedoelde kopie als gewone GAME-bron in dezelfde invoerboom.
+VoorbeeldOverlay.pgn bevat zes speciaal voor deze handleiding samengestelde demonstratierecords, zonder overgenomen boekgegevens. Als het bestand in de gescande map staat, is het ACTIEVE invoer. Verwijder het of verplaats het buiten de hele invoerboom voor je eigen productie- of vergelijkingsrun. De voorbeeldzetten en teksten mogen vrij worden gebruikt, gewijzigd en verspreid.
+
+</pre></section><section id="MANUAL_RU"><pre>Source2Metal v3.4.1-RC3 — общее руководство
+
+1. Входные данные
+Используйте собственные источники: PGN/CBH/2CBH относятся к GAME; полные комплекты CTG/CTO/CTB и BIN — к BOOK. ZIP и EXE не являются источниками. Исходные файлы только читаются.
+Для дебютных линий PGN явно выберите OVERLAY: подпапка OVERLAY-PGN входного каталога либо суффикс .overlay.pgn. Определённые имена, книги или число файлов не требуются. Не оставляйте случайные GAME-копии этих же источников. Результат * сам по себе не включает OVERLAY.
+
+2. Обработка
+Распакуйте пакет и запустите !Source2Metal_v3.4.1-RC3.exe рядом с входными файлами. Выберите язык и обработку источников. RAW + METAL создаёт итоговую Metal.pgn; только RAW — нет. Глубина RAW по умолчанию: 100 полуходов. Отдельная глубина CTG 0 означает отсутствие заданного ограничения. По умолчанию используется половина логических потоков CPU с округлением вверх; значение изменяемое. Каталоги результатов исключаются из поиска источников.
+CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+Меню позволяет распаковать отдельную утилиту SyzygyCheck.
+
+3. Правила OVERLAY
+Многострочные комментарии остаются в записи. Незакрытые комментарии/варианты или непарные закрывающие символы вызывают явную ошибку и останавливают этот источник; корректное начало повреждённой записи не принимается. Непригодные результаты GAME, напротив, не требуют нажатия клавиш: обработка продолжается автоматически.
+
+4. Результаты и применение
+Результаты находятся в !Source2Metal_Output, в каталоге с отметкой времени. RAW содержит отдельные и объединённые источники с разделением GAME/BOOK. BIN по-прежнему создаёт только RAW. CTG METAL сохраняет декодированные достижимые ходы нейтральными линиями; GAME-METAL выбирает модельные партии по прежним правилам.
+Парсер читает главные линии и нормализует легальные ходы в каноническую SAN. Проверяется вся исходная линия, затем применяется глубина RAW (по умолчанию 100 полуходов). Фильтры GAME по длине и Elo не применяются. Комментарии, аннотации и книжные веса не используются как веса ходов; выход получает результат * и нейтральные теги.
+Удаляются только точно одинаковые полные канонические последовательности ходов независимо от тегов и результата. При ограничении глубины сравнивается полная СОХРАНЁННАЯ последовательность: различия за пределом глубины могут исчезнуть. Префиксы разной сохранённой длины остаются отдельными. Перестановки ходов сохраняются при различном порядке ходов, даже с одинаковой конечной позицией. Существующие модельные партии имеют приоритет; их результат и байты сохраняются. Overlay не добавляет статистику GAME. Структурные повреждения, например незакрытый комментарий, сообщаются как ошибка источника.
+REPORTS/Source2Metal_Overlay_Report.txt показывает по каждому источнику Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution и новые пары. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. Режим только RAW ничего не добавляет в METAL.
+
+5. Ограничения и проверка
+Отчёты CTG: Positions/Edges, ExportedEdges, DepthCutMoves, DecodeErrors. CompleteCTG остаётся false. Слабые превращения и особая симметрия беспешечных позиций ограничены; распознанные превращения предполагают ферзя. Байты RawFooter не доказывают наличие учебных весов Fritz.
+RC3 проверена в Linux и собрана для Windows 64-bit. Последующий практический запуск в Windows завершился успешно; предоставленные отчёты подтверждают ожидаемый результат. Исполняемые файлы и исходный код Go не изменены по сравнению с проверенной RC3. Source2Metal_v3.4.1-RC3_SOURCE.zip содержит код и тесты; распаковывайте только в отдельный каталог разработки.
+
+OVERLAY-PGN/MANUAL_RU.txt — VoorbeeldOverlay.pgn
+Поместите PGN в OVERLAY-PGN внутри выбранного входного каталога либо используйте суффикс .overlay.pgn. Выберите RAW + METAL (CLI: --mode all). Только RAW не добавляет линии в итоговый файл. Избегайте непреднамеренных копий GAME в том же дереве входных данных.
+VoorbeeldOverlay.pgn содержит шесть демонстрационных записей, составленных для этого руководства без копирования книжных данных. В сканируемом каталоге это АКТИВНЫЙ источник. Перед рабочим или сравнительным запуском удалите его либо перенесите за пределы всего входного дерева. Ходы и текст примера разрешено свободно использовать, изменять и распространять.
+
+</pre></section><section id="MANUAL_ZH"><pre>Source2Metal v3.4.1-RC3 — 通用使用说明
+
+1. 输入来源
+使用自己的文件。普通 PGN/CBH/2CBH 属于 GAME；完整 CTG/CTO/CTB 文件组及 BIN 属于 BOOK。ZIP 和 EXE 不是输入来源。源文件只读。
+PGN 开局线路须明确选择 OVERLAY：放入输入目录的 OVERLAY-PGN 子目录，或使用 .overlay.pgn 后缀。不要求特定文件名、开局库或文件数量。避免在输入树其他位置留下同一文件的非预期 GAME 副本。仅有结果 * 不会自动启用 OVERLAY。
+
+2. 启动处理
+解压程序包，在输入文件旁启动 !Source2Metal_v3.4.1-RC3.exe。选择语言和来源处理。RAW + METAL 才生成最终 Metal.pgn；仅 RAW 不生成。RAW 默认深度为 100 半回合。独立 CTG 深度设为 0 表示没有预设深度上限。默认使用逻辑 CPU 线程数的一半，向上取整，可调整。输出目录不会被重新当作来源读取。
+命令行：--input PATH --mode all --workers 6 --max-ply 100 --no-pause
+菜单可解压独立 SyzygyCheck 工具；Source2Metal 本身不检查残局库。
+
+3. OVERLAY 规则
+多行注释保留在原记录内。未闭合的注释、变例或不配对的闭合符号会产生明确错误并停止该来源；不会接受损坏记录的合法前缀。无法使用的 GAME 结果则会自动继续，无需按键。
+
+4. 输出与使用
+输出位于 !Source2Metal_Output 的时间戳目录内。RAW 保存独立及合并来源，并区分 GAME/BOOK。BIN 仍仅生成 RAW。CTG METAL 通过中性线路保留已解码且可到达的书库着法；GAME-METAL 按既有规则选择模型对局。
+解析器读取主线，将合法着法规范为标准 SAN。先检查整条原始主线是否合法，再应用 RAW 深度限制（默认 100 半回合）。GAME 长度和 Elo 过滤器不适用于 overlay。注释、评注及开局库权重不会作为着法权重使用；输出使用结果 * 和中性标签。
+仅完全相同的完整规范着法序列会去重，与标签和结果无关。设置深度限制时，比较的是保留后的完整序列：仅在深度限制以外存在差异的线路可能合并。保留长度不同的前缀线路仍单独保留。着法顺序不同的换序线路也保留，即使最终局面相同。已有模型对局优先，其结果及字节保持不变。Overlay 不贡献 GAME 统计。未闭合注释等结构错误会报告为来源错误。
+REPORTS/Source2Metal_Overlay_Report.txt 按来源列出 Read、Accepted、Rejected、Deduplicated、RAW、Exact full-line duplicates、Final Metal contribution 及新局面-着法对。Accepted = Deduplicated + RAW；Read = Accepted + Rejected。仅 RAW 模式不向 METAL 添加内容。
+
+5. 限制与验证
+CTG 报告含 Positions/Edges、ExportedEdges、DepthCutMoves、DecodeErrors。CompleteCTG 仍为 false，完整格式支持尚未证明。低升变及特殊无兵对称局面支持有限；识别到的升变假定升后。RawFooter 原始统计字节不证明 Fritz 学习权重。
+RC3 已在 Linux 测试，并编译为 Windows 64 位程序。随后进行的 Windows 实际运行测试成功完成，所提供的报告确认结果符合预期。可执行文件和 Go 源代码与已测试的 RC3 完全相同。Source2Metal_v3.4.1-RC3_SOURCE.zip 包含源代码和测试，只应解压到独立开发目录。
+
+OVERLAY-PGN/MANUAL_ZH.txt — VoorbeeldOverlay.pgn
+将 PGN 放入所选输入目录下的 OVERLAY-PGN 文件夹，或使用 .overlay.pgn 后缀。选择 RAW + METAL（命令行：--mode all）。仅 RAW 不会向最终文件添加 overlay 线路。避免在同一输入目录树中留下误作 GAME 来源的副本。
+VoorbeeldOverlay.pgn 含六条专为本说明编写的演示记录，没有复制开局库数据。文件位于扫描目录时就是有效输入。正式处理或对比测试前，请删除它或移到整个输入目录树之外。示例着法及文字可自由使用、修改和再分发。
+
+</pre></section></body></html>

@@ -1,0 +1,29 @@
+Source2Metal v3.4.1-RC3 — general manual
+
+1. Select input
+Use your own sources. Ordinary PGN/CBH/2CBH files are GAME sources; complete CTG/CTO/CTB sets and BIN files are BOOK sources. ZIP and EXE files are not inputs. Sources are read-only.
+For PGN opening lines, explicitly choose OVERLAY: put the desired files in an OVERLAY-PGN subfolder of your input folder, or use the .overlay.pgn suffix. No particular names, books or number of files are required. Avoid leaving unintended GAME copies of overlay sources elsewhere in the input tree. Result * alone never selects OVERLAY.
+
+2. Run processing
+Extract the package and start !Source2Metal_v3.4.1-RC3.exe beside your inputs. Select a language and source processing. Choose RAW or RAW + METAL; the latter produces final Metal.pgn. RAW defaults to 100 plies. Separate CTG depth 0 means no preset CTG depth cap. Workers default to half the logical CPU threads, rounded up, and are adjustable. Output directories are excluded from input scanning.
+CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+The menu can extract the separate SyzygyCheck utility; Source2Metal does not check tablebases itself.
+
+3. OVERLAY rules
+Opening coverage is imported; original Polyglot weights, keys and record numbers are NOT transferred. Results become neutral *. No wins or new engine analysis are invented.
+Multiline comments stay in their record. Unclosed comments/variations or unmatched closing delimiters cause an explicit source error and stop that source; a damaged record's valid prefix is not accepted. Unusable GAME results instead allow automatic continuation without a keyboard prompt.
+
+4. Understand and use output
+Outputs are placed under !Source2Metal_Output in a timestamped directory. RAW holds separate and merged sources, separating GAME and BOOK. BIN still produces RAW only. CTG METAL preserves decoded reachable book moves through neutral lines. GAME-METAL selects model games using the existing rules.
+The parser reads mainlines and normalizes legal moves to canonical SAN. It validates the entire original mainline, then applies the RAW depth limit (default 100 plies). GAME length and Elo filters do not apply. Comments, annotations and book weights are not used as move weights; output uses result * and neutral tags.
+Only exactly identical complete canonical move sequences are deduplicated, regardless of tags or result. At a depth limit, the complete RETAINED sequence is compared: lines differing only beyond the limit can therefore merge. Prefixes remain separate when retained lengths differ. Transpositions remain separate when move order differs, even with the same final position. Existing model games take precedence; their result and bytes are preserved. Overlay contributes no GAME statistics. Structural damage such as an unclosed comment is reported as a source error.
+REPORTS/Source2Metal_Overlay_Report.txt lists Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution and new position/move pairs per source. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. RAW-only mode adds nothing to METAL.
+
+5. Limits and validation
+CTG reports list Positions/Edges, ExportedEdges, DepthCutMoves and DecodeErrors. CompleteCTG remains false; full format support is unproven. Underpromotion and special pawnless symmetry are limited; recognized promotions assume a queen. RawFooter contains original statistics bytes, not proof of Fritz learning weights.
+RC3 was tested on Linux and built for Windows 64-bit. A subsequent Windows practice run completed successfully; the supplied reports confirm the expected result. Executables and Go source are unchanged from the tested RC3. Source and tests are in Source2Metal_v3.4.1-RC3_SOURCE.zip; extract it only into a separate development directory.
+
+OVERLAY-PGN/MANUAL_EN.txt — VoorbeeldOverlay.pgn
+Place PGN files in OVERLAY-PGN beneath the selected input folder, or use the .overlay.pgn suffix. Select RAW + METAL (CLI: --mode all). RAW alone makes no final overlay contribution. Avoid unintended copies as ordinary GAME sources in the same input tree.
+VoorbeeldOverlay.pgn contains six demonstration records composed specifically for this guide, without copied book data. It is ACTIVE input while inside the scanned folder. Remove it or move it outside the entire input tree before your production or comparison run. The example moves and text may be freely used, modified and redistributed.
+

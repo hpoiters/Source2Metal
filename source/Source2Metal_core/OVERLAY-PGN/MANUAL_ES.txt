@@ -1,0 +1,21 @@
+OVERLAY-PGN — líneas de apertura opcionales — Source2Metal v3.4.1-RC3
+
+1. Finalidad y elección
+OVERLAY-PGN añade a Metal.pgn líneas de apertura legales elegidas por el usuario. Su uso es totalmente opcional. Las fuentes GAME normales contienen partidas jugadas para estadísticas y selección de partidas modelo. Las líneas cortas no demuestran victorias, tablas ni derrotas, por lo que se procesan por separado. El resultado * por sí solo no convierte una PGN normal en overlay.
+
+2. Archivos adecuados y creación
+Utilice PGN estándar desde la posición inicial normal, al menos una jugada legal, notación SAN internacional y una línea principal por registro. Se admiten líneas cortas y resultado *. Se rechazan posiciones FEN/SetUp, líneas vacías y jugadas ilegales. Introduzca sus propias jugadas en un programa de ajedrez, guarde cada línea deseada como partida separada y exporte PGN con Result "*" y un * final. Exporte cada rama deseada por separado: las variantes entre paréntesis no se importan como líneas adicionales. Utilice solo material autorizado. No se transfieren los pesos originales del libro; esto no es análisis de motor ni garantía de calidad.
+
+3. Ubicación y ejecución
+Coloque los PGN en OVERLAY-PGN dentro de la carpeta de entrada elegida o use el sufijo .overlay.pgn. Seleccione RAW + METAL (CLI: --mode all). RAW solo no aporta líneas al resultado final. Evite copias GAME involuntarias en el mismo árbol de entrada.
+VoorbeeldOverlay.pgn contiene seis registros de demostración compuestos para esta guía, sin datos copiados de libros. Es entrada ACTIVA mientras esté en la carpeta examinada. Elimínelo o muévalo fuera de todo el árbol de entrada antes de una ejecución de producción o comparación. Las jugadas y los textos del ejemplo pueden usarse, modificarse y redistribuirse libremente.
+
+4. Procesamiento y duplicados
+El analizador lee líneas principales y normaliza jugadas legales a SAN canónica. Valida toda la línea original y después aplica la profundidad RAW (100 medios movimientos por defecto). No se aplican los filtros GAME de longitud y Elo. Los comentarios, anotaciones y pesos del libro no se usan como pesos de jugada; la salida lleva resultado * y etiquetas neutras.
+Solo se eliminan secuencias canónicas completas exactamente iguales, independientemente de etiquetas o resultado. Con límite de profundidad se compara la secuencia CONSERVADA completa: las diferencias posteriores al límite pueden desaparecer. Los prefijos con longitudes conservadas distintas permanecen separados. Las transposiciones se conservan si cambia el orden de jugadas, incluso con la misma posición final. Las partidas modelo existentes tienen preferencia; se conservan su resultado y sus bytes. Overlay no aporta estadísticas GAME. Un fallo estructural, como un comentario sin cerrar, se indica como error de fuente.
+
+5. Comprobar la salida
+Consulte REPORTS/Source2Metal_Overlay_Report.txt y METAL/Metal.pgn en la carpeta con fecha y hora bajo !Source2Metal_Output.
+Read = Accepted + Rejected. Accepted = Deduplicated + RAW: validación y eliminación inicial de duplicados. Después, Exact full-line duplicates cuenta las líneas RAW ya presentes en el conjunto final. Final Metal contribution / bijdrage es el número realmente añadido por fuente. Final Metal verified records es el total final verificado. New position/move pairs es información adicional, NO un requisito de admisión.
+La consola muestra base, added, exact full-line duplicates y verified total. El modo RAW o una ejecución fallida no completan la aportación final; los contadores RAW solos no prueban la inclusión en Metal.pgn.
+Una prueba aislada con solo VoorbeeldOverlay.pgn, RAW + METAL y profundidad 100 da Read 6, Accepted 6, Deduplicated 1, RAW 5, Rejected 0, Final Metal contribution 5 y Final Metal verified records 5. Las líneas idénticas ya existentes pueden reducir la aportación.

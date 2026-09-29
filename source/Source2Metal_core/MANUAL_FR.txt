@@ -1,0 +1,28 @@
+Source2Metal v3.4.1-RC3 — guide général
+
+1. Entrées
+Utilisez vos propres sources : PGN/CBH/2CBH sont des sources GAME ; ensembles complets CTG/CTO/CTB et fichiers BIN sont des sources BOOK. ZIP et EXE ne sont pas des sources. Les entrées restent en lecture seule.
+Pour les lignes d’ouverture PGN, choisissez explicitement OVERLAY : sous-dossier OVERLAY-PGN du dossier d’entrée ou suffixe .overlay.pgn. Aucun nom, livre ou nombre de fichiers particulier n’est requis. Évitez les copies GAME involontaires des mêmes sources. Le résultat * seul n’active pas OVERLAY.
+
+2. Traitement
+Décompressez le paquet et lancez !Source2Metal_v3.4.1-RC3.exe près des entrées. Choisissez langue et traitement des sources. RAW + METAL crée Metal.pgn ; RAW seul ne le fait pas. Profondeur RAW par défaut : 100 demi-coups. Profondeur CTG séparée 0 : aucune limite prédéfinie. La moitié des threads logiques, arrondie au supérieur, est proposée et modifiable. Les dossiers de sortie sont exclus de la recherche de sources.
+CLI : --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+Le menu permet d’extraire l’utilitaire séparé SyzygyCheck.
+
+3. Règles OVERLAY
+Les commentaires multilignes restent dans leur enregistrement. Commentaires/variantes non fermés ou fermetures non appariées provoquent une erreur explicite et arrêtent cette source ; le préfixe valide du record endommagé est refusé. Les résultats GAME inutilisables permettent au contraire une poursuite automatique sans touche.
+
+4. Sorties et utilisation
+Sorties dans !Source2Metal_Output, dossier horodaté. RAW contient sources séparées et fusionnées, GAME et BOOK distincts. BIN produit toujours seulement RAW. CTG METAL conserve les coups décodés accessibles via des lignes neutres ; GAME-METAL sélectionne les parties modèles selon les règles existantes.
+Le parseur lit les lignes principales et normalise les coups légaux en SAN canonique. Il vérifie toute la ligne originale, puis applique la profondeur RAW (100 demi-coups par défaut). Les filtres de longueur et d’Elo GAME ne s’appliquent pas. Commentaires, annotations et poids de livre ne servent pas de poids de coups ; la sortie porte le résultat * et des tags neutres.
+Seules les séquences canoniques complètes exactement identiques sont dédoublonnées, indépendamment des tags et du résultat. Avec une limite de profondeur, la séquence CONSERVÉE complète est comparée : des différences au-delà de la limite peuvent disparaître. Les préfixes de longueurs conservées différentes restent distincts. Les transpositions restent distinctes si l’ordre des coups diffère, même avec la même position finale. Les parties modèles existantes sont prioritaires ; leur résultat et leurs octets restent inchangés. L’overlay ne fournit aucune statistique GAME. Un défaut structurel, comme un commentaire non fermé, est signalé comme erreur de source.
+REPORTS/Source2Metal_Overlay_Report.txt donne par source Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution et nouvelles paires. Accepted = Deduplicated + RAW ; Read = Accepted + Rejected. Le mode RAW seul ne complète pas METAL.
+
+5. Limites et validation
+Rapports CTG : Positions/Edges, ExportedEdges, DepthCutMoves, DecodeErrors. CompleteCTG reste false. Sous-promotions et symétries particulières sans pions sont limitées ; les promotions reconnues supposent une dame. Les octets RawFooter ne prouvent pas des poids d’apprentissage Fritz.
+RC3 a été testée sous Linux et compilée pour Windows 64 bits. Un essai pratique ultérieur sous Windows a réussi ; les rapports fournis confirment le résultat attendu. Les exécutables et le code Go sont identiques à ceux de la RC3 testée. Source2Metal_v3.4.1-RC3_SOURCE.zip contient le code et les tests ; à extraire uniquement dans un dossier de développement séparé.
+
+OVERLAY-PGN/MANUAL_FR.txt — VoorbeeldOverlay.pgn
+Placez les PGN dans OVERLAY-PGN sous le dossier d’entrée choisi, ou utilisez le suffixe .overlay.pgn. Choisissez RAW + METAL (CLI : --mode all). RAW seul n’ajoute rien au résultat final. Évitez les copies GAME involontaires dans le même arbre d’entrée.
+VoorbeeldOverlay.pgn contient six enregistrements de démonstration composés pour ce guide, sans données copiées d’un livre. Dans le dossier analysé, il constitue une entrée ACTIVE. Supprimez-le ou déplacez-le hors de tout l’arbre d’entrée avant un traitement réel ou comparatif. Les coups et textes de l’exemple peuvent être librement utilisés, modifiés et redistribués.
+

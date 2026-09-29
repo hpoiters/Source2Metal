@@ -1,0 +1,28 @@
+Source2Metal v3.4.1-RC3 — 通用使用说明
+
+1. 输入来源
+使用自己的文件。普通 PGN/CBH/2CBH 属于 GAME；完整 CTG/CTO/CTB 文件组及 BIN 属于 BOOK。ZIP 和 EXE 不是输入来源。源文件只读。
+PGN 开局线路须明确选择 OVERLAY：放入输入目录的 OVERLAY-PGN 子目录，或使用 .overlay.pgn 后缀。不要求特定文件名、开局库或文件数量。避免在输入树其他位置留下同一文件的非预期 GAME 副本。仅有结果 * 不会自动启用 OVERLAY。
+
+2. 启动处理
+解压程序包，在输入文件旁启动 !Source2Metal_v3.4.1-RC3.exe。选择语言和来源处理。RAW + METAL 才生成最终 Metal.pgn；仅 RAW 不生成。RAW 默认深度为 100 半回合。独立 CTG 深度设为 0 表示没有预设深度上限。默认使用逻辑 CPU 线程数的一半，向上取整，可调整。输出目录不会被重新当作来源读取。
+命令行：--input PATH --mode all --workers 6 --max-ply 100 --no-pause
+菜单可解压独立 SyzygyCheck 工具；Source2Metal 本身不检查残局库。
+
+3. OVERLAY 规则
+多行注释保留在原记录内。未闭合的注释、变例或不配对的闭合符号会产生明确错误并停止该来源；不会接受损坏记录的合法前缀。无法使用的 GAME 结果则会自动继续，无需按键。
+
+4. 输出与使用
+输出位于 !Source2Metal_Output 的时间戳目录内。RAW 保存独立及合并来源，并区分 GAME/BOOK。BIN 仍仅生成 RAW。CTG METAL 通过中性线路保留已解码且可到达的书库着法；GAME-METAL 按既有规则选择模型对局。
+解析器读取主线，将合法着法规范为标准 SAN。先检查整条原始主线是否合法，再应用 RAW 深度限制（默认 100 半回合）。GAME 长度和 Elo 过滤器不适用于 overlay。注释、评注及开局库权重不会作为着法权重使用；输出使用结果 * 和中性标签。
+仅完全相同的完整规范着法序列会去重，与标签和结果无关。设置深度限制时，比较的是保留后的完整序列：仅在深度限制以外存在差异的线路可能合并。保留长度不同的前缀线路仍单独保留。着法顺序不同的换序线路也保留，即使最终局面相同。已有模型对局优先，其结果及字节保持不变。Overlay 不贡献 GAME 统计。未闭合注释等结构错误会报告为来源错误。
+REPORTS/Source2Metal_Overlay_Report.txt 按来源列出 Read、Accepted、Rejected、Deduplicated、RAW、Exact full-line duplicates、Final Metal contribution 及新局面-着法对。Accepted = Deduplicated + RAW；Read = Accepted + Rejected。仅 RAW 模式不向 METAL 添加内容。
+
+5. 限制与验证
+CTG 报告含 Positions/Edges、ExportedEdges、DepthCutMoves、DecodeErrors。CompleteCTG 仍为 false，完整格式支持尚未证明。低升变及特殊无兵对称局面支持有限；识别到的升变假定升后。RawFooter 原始统计字节不证明 Fritz 学习权重。
+RC3 已在 Linux 测试，并编译为 Windows 64 位程序。随后进行的 Windows 实际运行测试成功完成，所提供的报告确认结果符合预期。可执行文件和 Go 源代码与已测试的 RC3 完全相同。Source2Metal_v3.4.1-RC3_SOURCE.zip 包含源代码和测试，只应解压到独立开发目录。
+
+OVERLAY-PGN/MANUAL_ZH.txt — VoorbeeldOverlay.pgn
+将 PGN 放入所选输入目录下的 OVERLAY-PGN 文件夹，或使用 .overlay.pgn 后缀。选择 RAW + METAL（命令行：--mode all）。仅 RAW 不会向最终文件添加 overlay 线路。避免在同一输入目录树中留下误作 GAME 来源的副本。
+VoorbeeldOverlay.pgn 含六条专为本说明编写的演示记录，没有复制开局库数据。文件位于扫描目录时就是有效输入。正式处理或对比测试前，请删除它或移到整个输入目录树之外。示例着法及文字可自由使用、修改和再分发。
+

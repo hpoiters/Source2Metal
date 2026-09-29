@@ -1,0 +1,28 @@
+Source2Metal v3.4.1-RC3 — manual general
+
+1. Entradas
+Use sus propias fuentes: PGN/CBH/2CBH son GAME; conjuntos completos CTG/CTO/CTB y BIN son BOOK. ZIP y EXE no son fuentes. Las entradas solo se leen.
+Para líneas de apertura PGN, elija OVERLAY explícitamente: subcarpeta OVERLAY-PGN del directorio de entrada o sufijo .overlay.pgn. No se requieren nombres, libros ni cantidades concretas. Evite copias GAME involuntarias de las mismas fuentes. El resultado * solo no activa OVERLAY.
+
+2. Procesamiento
+Extraiga el paquete e inicie !Source2Metal_v3.4.1-RC3.exe junto a las entradas. Elija idioma y procesamiento de fuentes. RAW + METAL crea Metal.pgn; RAW solo no. Profundidad RAW predeterminada: 100 medios movimientos. Profundidad CTG separada 0: sin límite predefinido. Se propone la mitad de los hilos lógicos, redondeada hacia arriba; configurable. Las carpetas de salida se excluyen de la búsqueda.
+CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
+El menú permite extraer la utilidad separada SyzygyCheck.
+
+3. Reglas OVERLAY
+Los comentarios multilínea permanecen en su registro. Comentarios/variantes sin cerrar o cierres sin apertura generan un error explícito y detienen esa fuente; no se acepta el prefijo válido del registro dañado. Los resultados GAME inutilizables permiten continuar automáticamente sin pulsar teclas.
+
+4. Salidas y uso
+Salidas en !Source2Metal_Output, carpeta con fecha y hora. RAW contiene fuentes separadas y combinadas, distinguiendo GAME y BOOK. BIN sigue produciendo solo RAW. CTG METAL conserva jugadas decodificadas accesibles mediante líneas neutras; GAME-METAL selecciona partidas modelo según las reglas existentes.
+El analizador lee líneas principales y normaliza jugadas legales a SAN canónica. Valida toda la línea original y después aplica la profundidad RAW (100 medios movimientos por defecto). No se aplican los filtros GAME de longitud y Elo. Los comentarios, anotaciones y pesos del libro no se usan como pesos de jugada; la salida lleva resultado * y etiquetas neutras.
+Solo se eliminan secuencias canónicas completas exactamente iguales, independientemente de etiquetas o resultado. Con límite de profundidad se compara la secuencia CONSERVADA completa: las diferencias posteriores al límite pueden desaparecer. Los prefijos con longitudes conservadas distintas permanecen separados. Las transposiciones se conservan si cambia el orden de jugadas, incluso con la misma posición final. Las partidas modelo existentes tienen preferencia; se conservan su resultado y sus bytes. Overlay no aporta estadísticas GAME. Un fallo estructural, como un comentario sin cerrar, se indica como error de fuente.
+REPORTS/Source2Metal_Overlay_Report.txt muestra por fuente Read, Accepted, Rejected, Deduplicated, RAW, Exact full-line duplicates, Final Metal contribution y pares nuevos. Accepted = Deduplicated + RAW; Read = Accepted + Rejected. RAW solo no añade a METAL.
+
+5. Límites y validación
+Informes CTG: Positions/Edges, ExportedEdges, DepthCutMoves, DecodeErrors. CompleteCTG sigue siendo false. Subpromociones y simetrías especiales sin peones son limitadas; se supone dama en promociones reconocidas. Los bytes RawFooter no demuestran pesos de aprendizaje Fritz.
+RC3 se probó en Linux y se compiló para Windows de 64 bits. Una prueba práctica posterior en Windows terminó correctamente; los informes proporcionados confirman el resultado esperado. Los ejecutables y el código Go no han cambiado respecto a la RC3 probada. Source2Metal_v3.4.1-RC3_SOURCE.zip contiene código y pruebas; extraer solo en una carpeta de desarrollo separada.
+
+OVERLAY-PGN/MANUAL_ES.txt — VoorbeeldOverlay.pgn
+Coloque los PGN en OVERLAY-PGN dentro de la carpeta de entrada elegida o use el sufijo .overlay.pgn. Seleccione RAW + METAL (CLI: --mode all). RAW solo no aporta líneas al resultado final. Evite copias GAME involuntarias en el mismo árbol de entrada.
+VoorbeeldOverlay.pgn contiene seis registros de demostración compuestos para esta guía, sin datos copiados de libros. Es entrada ACTIVA mientras esté en la carpeta examinada. Elimínelo o muévalo fuera de todo el árbol de entrada antes de una ejecución de producción o comparación. Las jugadas y los textos del ejemplo pueden usarse, modificarse y redistribuirse libremente.
+

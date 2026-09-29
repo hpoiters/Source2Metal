@@ -1,0 +1,60 @@
+[Event "Source2Metal example 01"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "01"]
+[White "Example"]
+[Black "Example"]
+[Result "*"]
+
+1. Nf3 Nf6 2. g3 g6 *
+
+[Event "Source2Metal example 02"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "02"]
+[White "Example"]
+[Black "Example"]
+[Result "*"]
+
+1. Nf3 Nf6 2. g3 g6 3. Bg2 Bg7 *
+
+[Event "Source2Metal example 03"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "03"]
+[White "Example"]
+[Black "Example"]
+[Result "*"]
+
+1. g3 g6 2. Nf3 Nf6 3. Bg2 Bg7 *
+
+[Event "Source2Metal example 04"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "04"]
+[White "Example"]
+[Black "Example"]
+[Result "*"]
+
+1. d4 d5 2. c4 e6 *
+
+[Event "Source2Metal example 05"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "05"]
+[White "Example"]
+[Black "Example"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 *
+
+[Event "Source2Metal example 06"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "06"]
+[White "Example"]
+[Black "Example"]
+[Result "*"]
+
+1. d4 d5 2. c4 e6 *
+
