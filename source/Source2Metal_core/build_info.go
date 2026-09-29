@@ -13,7 +13,7 @@ Practical direction and testing:
   Nocompany, Netherlands - computer-chess player
 
 Source code:
-  Source2Metal_v3.4.1-RC3_SOURCE.zip is included in this trial package; not published.
+  Source2Metal_v3.4.1_SOURCE.zip is included in this release package.
 
 Included utility:
   SyzygyCheck v%s can be unpacked via main-menu option 2.
@@ -27,7 +27,7 @@ Praxisrichtung und Tests:
   Nocompany, Niederlande - Computerschachspieler
 
 Quellcode:
-  Source2Metal_v3.4.1-RC3_SOURCE.zip ist im Testpaket enthalten; nicht veröffentlicht.
+  Source2Metal_v3.4.1_SOURCE.zip ist in diesem Veröffentlichungspaket enthalten.
 
 Enthaltenes Hilfsprogramm:
   SyzygyCheck v%s kann über Hauptmenü-Option 2 entpackt werden.
@@ -41,7 +41,7 @@ Praktijkrichting en testen:
   Nocompany, Nederland - computerschaker
 
 Broncode:
-  Source2Metal_v3.4.1-RC3_SOURCE.zip zit in dit proefpakket; niet gepubliceerd.
+  Source2Metal_v3.4.1_SOURCE.zip zit in dit definitieve releasepakket.
 
 Meegeleverd hulpprogramma:
   SyzygyCheck v%s kan worden uitgepakt via optie 2 in het hoofdmenu.
@@ -55,7 +55,7 @@ Orientation pratique et tests :
   Nocompany, Pays-Bas - joueur d'échecs informatiques
 
 Code source :
-  Source2Metal_v3.4.1-RC3_SOURCE.zip est inclus dans ce paquet de test ; non publié.
+  Source2Metal_v3.4.1_SOURCE.zip est inclus dans ce paquet de publication.
 
 Utilitaire inclus :
   SyzygyCheck v%s peut être extrait via l’option 2 du menu principal.
@@ -69,7 +69,7 @@ Orientación práctica y pruebas:
   Nocompany, Países Bajos - jugador de ajedrez informático
 
 Código fuente:
-  Source2Metal_v3.4.1-RC3_SOURCE.zip está incluido en este paquete de prueba; no publicado.
+  Source2Metal_v3.4.1_SOURCE.zip está incluido en este paquete de publicación.
 
 Utilidad incluida:
   SyzygyCheck v%s se puede extraer mediante la opción 2 del menú principal.
@@ -83,7 +83,7 @@ Utilidad incluida:
   Nocompany，荷兰 - 计算机国际象棋棋手
 
 源代码：
-  本测试包包含 Source2Metal_v3.4.1-RC3_SOURCE.zip；尚未发布。
+  本正式发布包包含 Source2Metal_v3.4.1_SOURCE.zip。
 
 随附实用工具：
   可通过主菜单选项 2 解压 SyzygyCheck v%s。
@@ -97,7 +97,7 @@ Utilidad incluida:
   Nocompany, Нидерланды - компьютерный шахматист
 
 Исходный код:
-  Source2Metal_v3.4.1-RC3_SOURCE.zip включён в тестовый пакет; не опубликован.
+  Source2Metal_v3.4.1_SOURCE.zip включён в этот выпуск.
 
 Включённая утилита:
   SyzygyCheck v%s можно извлечь через пункт 2 главного меню.

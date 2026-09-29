@@ -1,11 +1,11 @@
-Source2Metal v3.4.1-RC3 — general manual
+Source2Metal v3.4.1 — general manual
 
 1. Select input
 Use your own sources. Ordinary PGN/CBH/2CBH files are GAME sources; complete CTG/CTO/CTB sets and BIN files are BOOK sources. ZIP and EXE files are not inputs. Sources are read-only.
 For PGN opening lines, explicitly choose OVERLAY: put the desired files in an OVERLAY-PGN subfolder of your input folder, or use the .overlay.pgn suffix. No particular names, books or number of files are required. Avoid leaving unintended GAME copies of overlay sources elsewhere in the input tree. Result * alone never selects OVERLAY.
 
 2. Run processing
-Extract the package and start !Source2Metal_v3.4.1-RC3.exe beside your inputs. Select a language and source processing. Choose RAW or RAW + METAL; the latter produces final Metal.pgn. RAW defaults to 100 plies. Separate CTG depth 0 means no preset CTG depth cap. Workers default to half the logical CPU threads, rounded up, and are adjustable. Output directories are excluded from input scanning.
+Extract the package and start !Source2Metal_v3.4.1.exe beside your inputs. Select a language and source processing. Choose RAW or RAW + METAL; the latter produces final Metal.pgn. RAW defaults to 100 plies. Separate CTG depth 0 means no preset CTG depth cap. Workers default to half the logical CPU threads, rounded up, and are adjustable. Output directories are excluded from input scanning.
 CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
 The menu can extract the separate SyzygyCheck utility; Source2Metal does not check tablebases itself.
 
@@ -21,7 +21,7 @@ REPORTS/Source2Metal_Overlay_Report.txt lists Read, Accepted, Rejected, Deduplic
 
 5. Limits and validation
 CTG reports list Positions/Edges, ExportedEdges, DepthCutMoves and DecodeErrors. CompleteCTG remains false; full format support is unproven. Underpromotion and special pawnless symmetry are limited; recognized promotions assume a queen. RawFooter contains original statistics bytes, not proof of Fritz learning weights.
-RC3 was tested on Linux and built for Windows 64-bit. A subsequent Windows practice run completed successfully; the supplied reports confirm the expected result. Executables and Go source are unchanged from the tested RC3. Source and tests are in Source2Metal_v3.4.1-RC3_SOURCE.zip; extract it only into a separate development directory.
+v3.4.1 is the final release using the processing logic tested on Windows. Only version identifiers and release text were adjusted, and the executables were rebuilt. Source and tests are in Source2Metal_v3.4.1_SOURCE.zip; extract it only into a separate development directory.
 
 OVERLAY-PGN/MANUAL_EN.txt — VoorbeeldOverlay.pgn
 Place PGN files in OVERLAY-PGN beneath the selected input folder, or use the .overlay.pgn suffix. Select RAW + METAL (CLI: --mode all). RAW alone makes no final overlay contribution. Avoid unintended copies as ordinary GAME sources in the same input tree.

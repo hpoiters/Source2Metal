@@ -1,7 +1,7 @@
-# Source2Metal v3.4.1-RC3
+# Source2Metal v3.4.1
 
-Windows 64-bit release package. The v3.4.1-RC3 build identifier is retained
-to identify the exact Windows-tested executables.
+Final Windows 64-bit release. Processing logic is retained from the
+Windows-tested candidate; version labels and release text are updated.
 
 Source2Metal processes GAME sources (PGN, CBH, 2CBH) and BOOK sources
 (CTG sets, Polyglot BIN, optional opening-line PGN). The existing GAME

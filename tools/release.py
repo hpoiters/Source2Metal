@@ -1,4 +1,4 @@
-"""Package the unchanged Windows-tested RC3; publish only after identity checks."""
+"""Package final v3.4.1; publish only after source and consistency checks."""
 import hashlib
 import html
 import io
@@ -13,14 +13,14 @@ import tempfile
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '3.4.1-RC3'
+VERSION = '3.4.1'
 TAG = 'v' + VERSION
 REPO = 'hpoiters/Source2Metal'
 CORE = ROOT / 'source/Source2Metal_core'
 OUT = ROOT / ('release_v' + VERSION)
 LANGS = ('DE', 'EN', 'ES', 'FR', 'NL', 'RU', 'ZH')
 DOCS = ('BUILDING.md', 'CODE_SIGNING_POLICY.md', 'LICENSE', 'PRIVACY.md',
-        'README.md', 'RELEASE_NOTES_RC3.md', 'THIRD_PARTY_NOTICES.md', 'VALIDATION_RC3.md')
+        'README.md', 'RELEASE_NOTES.md', 'THIRD_PARTY_NOTICES.md', 'VALIDATION.md')
 HTML_NAME = 'Readme-README-Прочтите-自述文件.html'
 SOURCE_NAME = 'Source2Metal_v' + VERSION + '_SOURCE.zip'
 PACKAGE_NAME = 'Source2Metal_v' + VERSION + '_RELEASE.zip'
@@ -29,12 +29,26 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 def verify():
-    hashes = json.loads((ROOT / 'validation/rc3_release_hashes.json').read_text())
+    hashes = json.loads((ROOT / 'validation/release_hashes.json').read_text())
     for name, wanted in hashes.items():
         assert digest((ROOT / name).read_bytes()) == wanted, 'Identity mismatch: ' + name
     core = (ROOT / 'dist/Source2Metal_core.exe').read_bytes()
     launcher = (ROOT / ('dist/!Source2Metal_v' + VERSION + '.exe')).read_bytes()
     assert core in launcher, 'Launcher does not embed the exact core'
+    config = ROOT / 'dist/Source2Metal.ini'
+    previous = config.read_bytes() if config.exists() else None
+    try:
+        for lang in LANGS:
+            config.write_text('Language=' + lang.lower() + '\n')
+            info = subprocess.check_output([str(ROOT / 'dist/core-native'), '--build-info'], text=True)
+            assert 'Source2Metal v3.4.1\n' in info
+            assert 'Source2Metal_v3.4.1_SOURCE.zip' in info
+            assert 'RC3' not in info and 'trial package' not in info
+    finally:
+        if previous is None:
+            config.unlink(missing_ok=True)
+        else:
+            config.write_bytes(previous)
     page = (CORE / HTML_NAME).read_text()
     sections = dict(re.findall(r'<section id="MANUAL_(\w+)"><pre>(.*?)</pre></section>', page, re.S))
     assert set(sections) == set(LANGS)
@@ -69,7 +83,7 @@ def package():
         for p in (ROOT / directory).rglob('*'):
             if p.is_file() and p.suffix != '.exe':
                 source[p.relative_to(ROOT).as_posix()] = p.read_bytes()
-    for name in DOCS + ('tools/build_rc3.sh', 'validation/approved_console_hashes.json'):
+    for name in DOCS + ('tools/build_release.sh', 'validation/approved_console_hashes.json'):
         source[name] = (ROOT / name).read_bytes()
     files = {SOURCE_NAME: archive(source)}
     for name in DOCS:
@@ -94,7 +108,7 @@ def package():
     (OUT / SOURCE_NAME).write_bytes(files[SOURCE_NAME])
     sums = OUT / ('SHA256_Source2Metal_v' + VERSION + '.txt')
     sums.write_text(''.join(digest((OUT / n).read_bytes()) + '  ' + n + '\n' for n in (PACKAGE_NAME, SOURCE_NAME)))
-    print('Verified package, source, binary identity and seven languages.')
+    print('Verified package, source, embedded core and seven languages.')
 
 def gh(*args):
     return subprocess.check_output(['gh', *args], text=True)
@@ -120,14 +134,14 @@ def publish():
         if tag_sha != sha:
             comparison = api('compare/' + tag_sha + '...' + sha)
             assert comparison['status'] == 'ahead'
-            assert {f['filename'] for f in comparison['files']} <= {'tools/release_rc3.py'}, 'Release inputs changed'
+            assert {f['filename'] for f in comparison['files']} <= {'tools/release.py'}, 'Release inputs changed'
     else:
         assert all(t['name'] != TAG for t in api('tags?per_page=100')), 'Unrelated tag already exists'
         gh('api', '--method', 'POST', 'repos/' + REPO + '/git/refs',
            '-f', 'ref=refs/tags/' + TAG, '-f', 'sha=' + sha)
         tag_sha = sha
         gh('release', 'create', TAG, '--repo', REPO, '--verify-tag', '--draft',
-           '--title', 'Source2Metal v3.4.1-RC3', '--notes-file', str(ROOT / 'RELEASE_NOTES_RC3.md'),
+           '--title', 'Source2Metal v3.4.1', '--notes-file', str(ROOT / 'RELEASE_NOTES.md'),
            *map(str, assets))
         release = next(r for r in api('releases?per_page=100') if r['tag_name'] == TAG)
     assert release['draft'] and {a['name'] for a in release['assets']} == names
@@ -143,6 +157,13 @@ def publish():
        '-F', 'draft=false', '-F', 'prerelease=false', '-f', 'make_latest=true')
     release = api('releases/latest')
     assert release['tag_name'] == TAG and not release['prerelease'] and not release['draft']
+    # Keep the previous candidate available as a clearly labelled prerelease.
+    for old in api('releases?per_page=100'):
+        if old['tag_name'] == 'v3.4.1-RC3':
+            gh('api', '--method', 'PATCH', 'repos/' + REPO + '/releases/' + str(old['id']),
+               '-F', 'prerelease=true', '-f', 'make_latest=false',
+               '-f', 'name=Source2Metal v3.4.1-RC3 — superseded candidate')
+    assert api('releases/latest')['tag_name'] == TAG
     print('Published and verified:', release['html_url'])
 
 if __name__ == '__main__':

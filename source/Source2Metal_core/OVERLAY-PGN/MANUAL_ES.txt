@@ -1,4 +1,4 @@
-OVERLAY-PGN — líneas de apertura opcionales — Source2Metal v3.4.1-RC3
+OVERLAY-PGN — líneas de apertura opcionales — Source2Metal v3.4.1
 
 1. Finalidad y elección
 OVERLAY-PGN añade a Metal.pgn líneas de apertura legales elegidas por el usuario. Su uso es totalmente opcional. Las fuentes GAME normales contienen partidas jugadas para estadísticas y selección de partidas modelo. Las líneas cortas no demuestran victorias, tablas ni derrotas, por lo que se procesan por separado. El resultado * por sí solo no convierte una PGN normal en overlay.

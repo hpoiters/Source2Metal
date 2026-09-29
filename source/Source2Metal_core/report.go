@@ -24,7 +24,7 @@ func writeReports(layout OutputLayout, inv Inventory, cfg Config, hw HardwareInf
 	if err := atomicWriteFile(filepath.Join(layout.ReportDir, "Source2Metal_BuildInfo.txt"), []byte(buildInfoText()), 0644); err != nil {
 		return err
 	}
-	sourceInfo := fmt.Sprintf("Source2Metal v%s — RC / trial candidate\nSOURCE: Source2Metal_v%s_SOURCE.zip\nIncluded in the trial package. Not published.\n", version, version)
+	sourceInfo := fmt.Sprintf("Source2Metal v%s — final release\nSOURCE: Source2Metal_v%s_SOURCE.zip\nIncluded in the release package.\n", version, version)
 	if err := atomicWriteFile(filepath.Join(layout.ReportDir, "Source2Metal_SourceInfo.txt"), []byte(sourceInfo), 0644); err != nil {
 		return err
 	}

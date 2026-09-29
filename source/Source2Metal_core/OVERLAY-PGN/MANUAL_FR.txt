@@ -1,4 +1,4 @@
-OVERLAY-PGN — lignes d’ouverture facultatives — Source2Metal v3.4.1-RC3
+OVERLAY-PGN — lignes d’ouverture facultatives — Source2Metal v3.4.1
 
 1. But et choix
 OVERLAY-PGN ajoute à Metal.pgn des lignes d’ouverture légales choisies par l’utilisateur. Son utilisation est entièrement facultative. Les sources GAME normales contiennent des parties jouées pour les statistiques et la sélection de parties modèles. Les courtes lignes d’ouverture ne prouvent ni gain, ni nulle, ni perte ; elles suivent donc un traitement séparé. Le résultat * seul ne transforme pas une PGN ordinaire en overlay.

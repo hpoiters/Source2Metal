@@ -1,4 +1,4 @@
-OVERLAY-PGN — optionele openingslijnen — Source2Metal v3.4.1-RC3
+OVERLAY-PGN — optionele openingslijnen — Source2Metal v3.4.1
 
 1. Doel en keuze
 OVERLAY-PGN voegt zelfgekozen legale openingslijnen toe aan Metal.pgn. Gebruik is volledig optioneel. Normale GAME-bronnen bevatten gespeelde partijen voor statistiek en selectie van modelpartijen; korte openingslijnen zijn geen bewijs van winst, remise of verlies. Daarom staan ze apart. Alleen uitslag * maakt een gewone PGN niet tot overlay.

@@ -17,7 +17,7 @@ import (
 //go:embed core.exe
 var coreEXE []byte
 
-const buildMarker = "2026-09-29_Source2Metal_v3.4.1-RC3"
+const buildMarker = "2026-09-29_Source2Metal_v3.4.1"
 
 type locale int
 

@@ -1,4 +1,4 @@
-OVERLAY-PGN — 可选开局线路 — Source2Metal v3.4.1-RC3
+OVERLAY-PGN — 可选开局线路 — Source2Metal v3.4.1
 
 1. 用途与选择
 OVERLAY-PGN 将用户选定的合法开局线路加入 Metal.pgn，完全可以不使用。普通 GAME 来源包含实际对局，用于统计和选择模型对局；短开局线路不能证明胜、和、负，因此单独处理。仅将结果设为 *，不会使普通 PGN 成为 overlay。

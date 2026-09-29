@@ -1,4 +1,4 @@
-# Source2Metal v3.4.1-RC3 — release
+# Source2Metal v3.4.1 — release
 
 - Retains the corrected PGN parser and existing GAME processing.
 - Retains exact complete-line overlay merging, including prefixes and transpositions.
@@ -12,5 +12,7 @@ for production/comparison runs. RAW depth is applied before sequence deduplicati
 Windows amd64 executables are cross-compiled; automated runtime regressions
 were run on Linux. A subsequent Windows practice run was reported successful
 and its supplied reports confirmed the expected processing and final counts.
-The release package preserves the tested executables and all Go source bytes.
-Only release documentation, packaging and checksums have been updated.
+This final release preserves the tested processing logic. Version identifiers
+and release-status text are updated consistently in the programs, seven
+language guides, HTML guide and package names. Executables are rebuilt; their
+new checksums are included. No parser or overlay algorithm has changed.

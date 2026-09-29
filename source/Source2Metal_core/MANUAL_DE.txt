@@ -1,11 +1,11 @@
-Source2Metal v3.4.1-RC3 — allgemeine Anleitung
+Source2Metal v3.4.1 — allgemeine Anleitung
 
 1. Eingabe
 Eigene Quellen verwenden: PGN/CBH/2CBH sind GAME-Quellen; vollständige CTG/CTO/CTB-Sätze und BIN sind BOOK-Quellen. ZIP und EXE werden nicht als Quellen verarbeitet. Quelldateien werden nur gelesen.
 PGN-Eröffnungslinien ausdrücklich über OVERLAY wählen: Dateien in den Unterordner OVERLAY-PGN des Eingabeordners legen oder die Endung .overlay.pgn verwenden. Bestimmte Dateinamen, Bücher oder Dateizahlen sind nicht vorgeschrieben. Unbeabsichtigte GAME-Kopien derselben Dateien vermeiden. Ergebnis * allein wählt OVERLAY nicht aus.
 
 2. Verarbeitung
-Paket entpacken und !Source2Metal_v3.4.1-RC3.exe bei den Eingaben starten. Sprache und Quellenverarbeitung wählen. RAW + METAL erzeugt die endgültige Metal.pgn; RAW allein nicht. Standardtiefe: 100 Halbzüge. Separate CTG-Tiefe 0 bedeutet ohne vorgegebenes Tiefenlimit. Standardmäßig wird die Hälfte der logischen CPU-Threads, aufgerundet, verwendet; einstellbar. Ausgabeordner werden nicht erneut eingelesen.
+Paket entpacken und !Source2Metal_v3.4.1.exe bei den Eingaben starten. Sprache und Quellenverarbeitung wählen. RAW + METAL erzeugt die endgültige Metal.pgn; RAW allein nicht. Standardtiefe: 100 Halbzüge. Separate CTG-Tiefe 0 bedeutet ohne vorgegebenes Tiefenlimit. Standardmäßig wird die Hälfte der logischen CPU-Threads, aufgerundet, verwendet; einstellbar. Ausgabeordner werden nicht erneut eingelesen.
 CLI: --input PATH --mode all --workers 6 --max-ply 100 --no-pause
 SyzygyCheck lässt sich als separates Hilfsprogramm über das Menü entpacken.
 
@@ -20,7 +20,7 @@ REPORTS/Source2Metal_Overlay_Report.txt zeigt je Quelle Read, Accepted, Rejected
 
 5. Grenzen und Validierung
 CTG-Berichte: Positions/Edges, ExportedEdges, DepthCutMoves, DecodeErrors. CompleteCTG bleibt false. Unterverwandlungen und besondere bauernlose Symmetrien sind eingeschränkt; erkannte Verwandlungen nehmen eine Dame an. RawFooter-Statistikbytes belegen keine Fritz-Lerngewichte.
-RC3 wurde unter Linux getestet und für Windows 64-Bit gebaut. Eine anschließende Windows-Praxisprüfung wurde erfolgreich abgeschlossen; die bereitgestellten Berichte bestätigen das erwartete Ergebnis. Programmdateien und Go-Quellcode entsprechen unverändert der getesteten RC3. Source2Metal_v3.4.1-RC3_SOURCE.zip enthält Quellcode und Tests; nur in einen separaten Entwicklungsordner entpacken.
+v3.4.1 ist die endgültige Veröffentlichung mit der unter Windows getesteten Verarbeitungslogik. Nur Versionsangaben und Veröffentlichungstexte wurden angepasst und die Programme neu gebaut. Source2Metal_v3.4.1_SOURCE.zip enthält Quellcode und Tests; nur in einen separaten Entwicklungsordner entpacken.
 
 OVERLAY-PGN/MANUAL_DE.txt — VoorbeeldOverlay.pgn
 Legen Sie PGN-Dateien in OVERLAY-PGN unter dem gewählten Eingabeordner ab oder verwenden Sie die Endung .overlay.pgn. Wählen Sie RAW + METAL (CLI: --mode all). RAW allein ergänzt die endgültige Ausgabe nicht. Vermeiden Sie unbeabsichtigte GAME-Kopien im selben Eingabebaum.

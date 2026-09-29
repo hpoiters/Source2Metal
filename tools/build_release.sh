@@ -12,5 +12,5 @@ unformatted=$(find source/Source2Metal_core source/Source2Metal_console -name '*
 if [ -n "$unformatted" ]; then printf '%s\n' "$unformatted"; exit 1; fi
 (cd source/Source2Metal_core && go test ./... && go vet ./... && GOOS=windows GOARCH=amd64 go build -trimpath -buildvcs=false -ldflags='-s -w' -o ../Source2Metal_console/core.exe . && go build -trimpath -buildvcs=false -o ../../dist/core-native .)
 cp source/Source2Metal_console/core.exe dist/Source2Metal_core.exe
-(cd source/Source2Metal_console && go test ./... && go vet ./... && GOOS=windows GOARCH=amd64 go build -trimpath -buildvcs=false -ldflags='-s -w' -o '../../dist/!Source2Metal_v3.4.1-RC3.exe' .)
+(cd source/Source2Metal_console && go test ./... && go vet ./... && GOOS=windows GOARCH=amd64 go build -trimpath -buildvcs=false -ldflags='-s -w' -o '../../dist/!Source2Metal_v3.4.1.exe' .)
 dist/core-native -selftest

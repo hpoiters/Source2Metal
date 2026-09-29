@@ -3,7 +3,7 @@ package main
 import "time"
 
 const (
-	version                    = "3.4.1-RC3"
+	version                    = "3.4.1"
 	syzygyCheckVersion         = "2.2.0"
 	syzygyCheckDisplay         = "2.2.0"
 	syzygyCheckExeFilename     = "!SyzygyCheck_v2.2.0.exe"
