@@ -111,21 +111,36 @@ def publish():
     assets = sorted(OUT.iterdir())
     assert {p.name for p in assets} == names
     wanted = {p.name: digest(p.read_bytes()) for p in assets}
-    assert all(t['name'] != TAG for t in api('tags?per_page=100')), 'Tag already exists; no overwrite'
-    gh('api', '--method', 'POST', 'repos/' + REPO + '/git/refs',
-       '-f', 'ref=refs/tags/' + TAG, '-f', 'sha=' + sha)
-    gh('release', 'create', TAG, '--repo', REPO, '--verify-tag', '--draft',
-       '--title', 'Source2Metal v3.4.1-RC3', '--notes-file', str(ROOT / 'RELEASE_NOTES_RC3.md'),
-       *map(str, assets))
-    release = api('releases/tags/' + TAG)
+    # GitHub's by-tag endpoint may omit drafts. Resolve the draft by its ID.
+    matches = [r for r in api('releases?per_page=100') if r['tag_name'] == TAG]
+    if matches:
+        assert len(matches) == 1 and matches[0]['draft'], 'Existing public release; no overwrite'
+        release = api('releases/' + str(matches[0]['id']))
+        tag_sha = api('git/ref/tags/' + TAG)['object']['sha']
+        if tag_sha != sha:
+            comparison = api('compare/' + tag_sha + '...' + sha)
+            assert comparison['status'] == 'ahead'
+            assert {f['filename'] for f in comparison['files']} <= {'tools/release_rc3.py'}, 'Release inputs changed'
+    else:
+        assert all(t['name'] != TAG for t in api('tags?per_page=100')), 'Unrelated tag already exists'
+        gh('api', '--method', 'POST', 'repos/' + REPO + '/git/refs',
+           '-f', 'ref=refs/tags/' + TAG, '-f', 'sha=' + sha)
+        tag_sha = sha
+        gh('release', 'create', TAG, '--repo', REPO, '--verify-tag', '--draft',
+           '--title', 'Source2Metal v3.4.1-RC3', '--notes-file', str(ROOT / 'RELEASE_NOTES_RC3.md'),
+           *map(str, assets))
+        release = next(r for r in api('releases?per_page=100') if r['tag_name'] == TAG)
     assert release['draft'] and {a['name'] for a in release['assets']} == names
-    with tempfile.TemporaryDirectory() as tmp:
-        gh('release', 'download', TAG, '--repo', REPO, '--dir', tmp)
-        actual = {p.name: digest(p.read_bytes()) for p in Path(tmp).iterdir()}
-        assert actual == wanted, 'Uploaded release differs from verified local files'
-    assert api('git/ref/tags/' + TAG)['object']['sha'] == sha
+    actual = {}
+    for asset in release['assets']:
+        data = subprocess.check_output(['gh', 'api', 'repos/' + REPO + '/releases/assets/' + str(asset['id']),
+                                        '-H', 'Accept: application/octet-stream'])
+        actual[asset['name']] = digest(data)
+    assert actual == wanted, 'Uploaded release differs from verified local files'
+    assert api('git/ref/tags/' + TAG)['object']['sha'] == tag_sha
     assert api('git/ref/heads/main')['object']['sha'] == sha
-    gh('release', 'edit', TAG, '--repo', REPO, '--draft=false', '--prerelease=false', '--latest')
+    gh('api', '--method', 'PATCH', 'repos/' + REPO + '/releases/' + str(release['id']),
+       '-F', 'draft=false', '-F', 'prerelease=false', '-f', 'make_latest=true')
     release = api('releases/latest')
     assert release['tag_name'] == TAG and not release['prerelease'] and not release['draft']
     print('Published and verified:', release['html_url'])
