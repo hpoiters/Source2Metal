@@ -396,14 +396,7 @@ internal sealed class MainForm : Form
             var byPath = new Dictionary<string, InputPgn>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var file in CleanerEngine.DiscoverPgnFiles(_baseDirectory))
-            {
-                // Een zelfgekozen uitvoermap die toevallig onder de programmamap ligt,
-                // mag bij opnieuw zoeken nooit automatisch als bron terugkomen.
-                if (IsUnderDirectory(file.Path, _outputRootDirectory))
-                    continue;
-
                 byPath[file.Path] = file;
-            }
 
             foreach (string path in _manualPgnPaths.ToArray())
             {
