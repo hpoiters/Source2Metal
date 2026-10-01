@@ -18,8 +18,10 @@ internal static class SelfTest
             File.WriteAllText(source, BuildSample(), Encoding.ASCII);
 
             string source2 = Path.Combine(nested, "testgames_extra.pgn");
-            File.WriteAllText(source2, BuildGame(
-                "Extra strong", 2750, 2720, "1-0", "900+5", 30), Encoding.ASCII);
+            File.WriteAllText(source2,
+                BuildGame("Extra strong", 2750, 2720, "1-0", "900+5", 30) +
+                BuildGame("Missing Event tag", 2720, 2710, "1-0", "900+5", 30, includeEvent: false),
+                Encoding.ASCII);
 
             // Bewijs dat een oude resultaatmap niet opnieuw als bron wordt gevonden.
             string oldResult = Path.Combine(root, CleanerEngine.ResultFolderName, "oud");
@@ -60,8 +62,8 @@ internal static class SelfTest
 
             var c = result.Counters;
             Require(!result.Cancelled, "Self-test werd onverwacht als geannuleerd gemarkeerd.");
-            Require(c.TotalGames == 8, $"Totaal moet 8 zijn, is {c.TotalGames}.");
-            Require(c.StrongGames == 3, $"StrongGames moet 3 zijn, is {c.StrongGames}.");
+            Require(c.TotalGames == 9, $"Totaal moet 9 zijn, is {c.TotalGames}.");
+            Require(c.StrongGames == 4, $"StrongGames moet 4 zijn, is {c.StrongGames}.");
             Require(c.RejectedGames == 5, $"Afgekeurd moet 5 zijn, is {c.RejectedGames}.");
             Require(c.Bullet == 1, $"Bullet moet 1 zijn, is {c.Bullet}.");
             Require(c.VeryFast == 1, $"Zeer snel moet 1 zijn, is {c.VeryFast}.");
@@ -72,9 +74,9 @@ internal static class SelfTest
             string strong = File.ReadAllText(result.StrongPath, Encoding.Latin1);
             string rejected = File.ReadAllText(result.RejectedPath, Encoding.Latin1);
 
-            Require(CountEvents(strong) == 3, "StrongGames.pgn bevat niet precies 3 partijen.");
-            Require(CountEvents(rejected) == 5, "Afgekeurd.pgn bevat niet precies 5 partijen.");
-            Require(CountEvents(strong) + CountEvents(rejected) == 8,
+            Require(CountGamesBySite(strong) == 4, "StrongGames.pgn bevat niet precies 4 partijen.");
+            Require(CountGamesBySite(rejected) == 5, "Afgekeurd.pgn bevat niet precies 5 partijen.");
+            Require(CountGamesBySite(strong) + CountGamesBySite(rejected) == 9,
                 "StrongGames + Afgekeurd vormen niet de complete self-testverzameling.");
 
             Directory.Delete(root, recursive: true);
@@ -129,10 +131,12 @@ internal static class SelfTest
         string timeControl,
         int moves,
         string white = "White",
-        string black = "Black")
+        string black = "Black",
+        bool includeEvent = true)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"[Event \"{eventName}\"]");
+        if (includeEvent)
+            sb.AppendLine($"[Event \"{eventName}\"]");
         sb.AppendLine("[Site \"SelfTest\"]");
         sb.AppendLine("[Date \"2026.10.01\"]");
         sb.AppendLine("[Round \"1\"]");
@@ -153,11 +157,11 @@ internal static class SelfTest
         return sb.ToString();
     }
 
-    private static int CountEvents(string text)
+    private static int CountGamesBySite(string text)
     {
         int count = 0;
         int index = 0;
-        const string marker = "[Event \"";
+        const string marker = "[Site \"SelfTest\"]";
 
         while ((index = text.IndexOf(marker, index, StringComparison.Ordinal)) >= 0)
         {
