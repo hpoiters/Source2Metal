@@ -85,6 +85,15 @@ grote samengevoegde PGN selecteert, wordt die ene bron bewust sequentieel gestre
 Dat voorkomt ingewikkelde splitsing midden in partijen en is bij zeer grote bestanden
 vaak al I/O-beperkt.
 
+Meer werkthreads betekent niet automatisch evenredig meer snelheid. Bij meerdere grote
+PGN's kan de winst op een gegeven moment afvlakken doordat opslag, geheugenverkeer en de
+gezamenlijke uitvoer naar StrongGames.pgn en Afgekeurd.pgn de nieuwe begrenzing worden.
+Ook verschillen bronbestanden in grootte, zodat de laatste grote bron aan het einde nog
+kan doorlopen terwijl andere workers al klaar zijn. Daarom blijft de standaard op
+ongeveer de helft van de logische CPU-threads staan. Wie wil, kan veilig alle beschikbare
+threads kiezen; op sommige systemen of datasets levert dat nog extra winst op, op andere
+slechts weinig.
+
 Voortgang
 ---------
 Het venster toont:
