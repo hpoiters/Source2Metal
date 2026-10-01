@@ -1,11 +1,16 @@
 using System.Diagnostics;
-using System.Globalization;
 
 namespace GamesCleaner;
 
 internal sealed class MainForm : Form
 {
-    private readonly string _baseDirectory = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
+    private readonly string _baseDirectory =
+        AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
+
+    private readonly HashSet<string> _manualPgnPaths =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    private string _outputRootDirectory;
 
     private readonly DataGridView _filesGrid = new();
     private readonly NumericUpDown _minimumElo = new();
@@ -18,9 +23,14 @@ internal sealed class MainForm : Form
     private readonly Label _currentFile = new();
     private readonly Label _counts = new();
     private readonly Label _fileSummary = new();
+    private readonly TextBox _outputPathBox = new();
+
     private readonly Button _refreshButton = new();
+    private readonly Button _addPgnButton = new();
     private readonly Button _allOnButton = new();
     private readonly Button _allOffButton = new();
+    private readonly Button _chooseOutputButton = new();
+    private readonly Button _defaultOutputButton = new();
     private readonly Button _startButton = new();
     private readonly Button _cancelButton = new();
     private readonly Button _openResultButton = new();
@@ -29,12 +39,17 @@ internal sealed class MainForm : Form
     private string? _lastOutputDirectory;
     private bool _running;
 
+    private string DefaultOutputRoot =>
+        Path.Combine(_baseDirectory, CleanerEngine.ResultFolderName);
+
     public MainForm()
     {
-        Text = "GamesCleaner";
+        _outputRootDirectory = DefaultOutputRoot;
+
+        Text = "GamesCleaner v2";
         StartPosition = FormStartPosition.CenterScreen;
-        MinimumSize = new Size(860, 600);
-        Size = new Size(1120, 760);
+        MinimumSize = new Size(900, 640);
+        Size = new Size(1180, 800);
 
         BuildUi();
         Shown += (_, _) => RefreshFiles();
@@ -48,12 +63,14 @@ internal sealed class MainForm : Form
             Dock = DockStyle.Fill,
             Padding = new Padding(12),
             ColumnCount = 1,
-            RowCount = 6
+            RowCount = 7
         };
+
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         Controls.Add(root);
@@ -66,21 +83,22 @@ internal sealed class MainForm : Form
             Margin = new Padding(0, 0, 0, 8)
         };
 
-        var title = new Label
+        titlePanel.Controls.Add(new Label
         {
             AutoSize = true,
             Font = new Font(Font, FontStyle.Bold),
-            Text = "GamesCleaner — sterke partijen bewaren, afgekeurde partijen apart houden"
-        };
-        titlePanel.Controls.Add(title);
+            Text = "GamesCleaner v2 — sterke partijen bewaren, afgekeurde partijen apart houden"
+        });
 
-        var location = new Label
+        titlePanel.Controls.Add(new Label
         {
             AutoSize = true,
-            MaximumSize = new Size(1000, 0),
-            Text = $"Hoofdmap: {_baseDirectory}\r\nEr wordt alleen in deze map en submappen gezocht. Bovenliggende mappen en resultaatmappen worden niet gebruikt."
-        };
-        titlePanel.Controls.Add(location);
+            MaximumSize = new Size(1120, 0),
+            Text =
+                $"Automatisch zoeken vanaf: {_baseDirectory}\r\n" +
+                "Daarnaast kunt u met ‘PGN's toevoegen…’ bestanden van elke andere map of schijf kiezen."
+        });
+
         root.Controls.Add(titlePanel, 0, 0);
 
         var settingsBox = new GroupBox
@@ -140,9 +158,11 @@ internal sealed class MainForm : Form
         {
             Dock = DockStyle.Top,
             AutoSize = true,
-            ColumnCount = 5,
+            ColumnCount = 6,
             Margin = new Padding(0, 0, 0, 4)
         };
+
+        fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
@@ -154,27 +174,77 @@ internal sealed class MainForm : Form
         _refreshButton.Click += (_, _) => RefreshFiles();
         fileToolbar.Controls.Add(_refreshButton, 0, 0);
 
+        _addPgnButton.Text = "PGN's toevoegen…";
+        _addPgnButton.AutoSize = true;
+        _addPgnButton.Margin = new Padding(8, 3, 0, 3);
+        _addPgnButton.Click += (_, _) => AddPgnFiles();
+        fileToolbar.Controls.Add(_addPgnButton, 1, 0);
+
         _allOnButton.Text = "Alles aan";
         _allOnButton.AutoSize = true;
         _allOnButton.Margin = new Padding(8, 3, 0, 3);
         _allOnButton.Click += (_, _) => SetAllChecked(true);
-        fileToolbar.Controls.Add(_allOnButton, 1, 0);
+        fileToolbar.Controls.Add(_allOnButton, 2, 0);
 
         _allOffButton.Text = "Alles uit";
         _allOffButton.AutoSize = true;
         _allOffButton.Margin = new Padding(8, 3, 0, 3);
         _allOffButton.Click += (_, _) => SetAllChecked(false);
-        fileToolbar.Controls.Add(_allOffButton, 2, 0);
+        fileToolbar.Controls.Add(_allOffButton, 3, 0);
 
         _fileSummary.AutoSize = true;
         _fileSummary.Anchor = AnchorStyles.Right;
         _fileSummary.TextAlign = ContentAlignment.MiddleRight;
-        fileToolbar.Controls.Add(_fileSummary, 4, 0);
+        fileToolbar.Controls.Add(_fileSummary, 5, 0);
 
         root.Controls.Add(fileToolbar, 0, 2);
 
         ConfigureGrid();
         root.Controls.Add(_filesGrid, 0, 3);
+
+        var outputBox = new GroupBox
+        {
+            Text = "Uitvoer",
+            Dock = DockStyle.Top,
+            AutoSize = true,
+            Padding = new Padding(10),
+            Margin = new Padding(0, 8, 0, 0)
+        };
+
+        var outputLayout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            ColumnCount = 4,
+            RowCount = 1
+        };
+
+        outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+
+        outputLayout.Controls.Add(MakeLabel("Uitvoermap:"), 0, 0);
+
+        _outputPathBox.ReadOnly = true;
+        _outputPathBox.Dock = DockStyle.Fill;
+        _outputPathBox.Text = _outputRootDirectory;
+        _outputPathBox.Margin = new Padding(6, 3, 6, 3);
+        outputLayout.Controls.Add(_outputPathBox, 1, 0);
+
+        _chooseOutputButton.Text = "Uitvoermap kiezen…";
+        _chooseOutputButton.AutoSize = true;
+        _chooseOutputButton.Click += (_, _) => ChooseOutputDirectory();
+        outputLayout.Controls.Add(_chooseOutputButton, 2, 0);
+
+        _defaultOutputButton.Text = "Standaard";
+        _defaultOutputButton.AutoSize = true;
+        _defaultOutputButton.Margin = new Padding(8, 3, 0, 3);
+        _defaultOutputButton.Click += (_, _) => ResetOutputDirectory();
+        outputLayout.Controls.Add(_defaultOutputButton, 3, 0);
+
+        outputBox.Controls.Add(outputLayout);
+        root.Controls.Add(outputBox, 0, 4);
 
         var statusBox = new GroupBox
         {
@@ -214,7 +284,7 @@ internal sealed class MainForm : Form
         statusLayout.Controls.Add(_counts, 0, 3);
 
         statusBox.Controls.Add(statusLayout);
-        root.Controls.Add(statusBox, 0, 4);
+        root.Controls.Add(statusBox, 0, 5);
 
         var buttons = new FlowLayoutPanel
         {
@@ -244,7 +314,7 @@ internal sealed class MainForm : Form
         _openResultButton.Click += (_, _) => OpenResultDirectory();
         buttons.Controls.Add(_openResultButton);
 
-        root.Controls.Add(buttons, 0, 5);
+        root.Controls.Add(buttons, 0, 6);
     }
 
     private void ConfigureGrid()
@@ -260,26 +330,36 @@ internal sealed class MainForm : Form
         _filesGrid.BackgroundColor = SystemColors.Window;
         _filesGrid.BorderStyle = BorderStyle.Fixed3D;
 
-        var useColumn = new DataGridViewCheckBoxColumn
+        _filesGrid.CurrentCellDirtyStateChanged += (_, _) =>
+        {
+            if (_filesGrid.IsCurrentCellDirty)
+                _filesGrid.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        };
+        _filesGrid.CellValueChanged += (_, e) =>
+        {
+            if (e.ColumnIndex == 0 && e.RowIndex >= 0)
+                UpdateFileSummary();
+        };
+
+        _filesGrid.Columns.Add(new DataGridViewCheckBoxColumn
         {
             HeaderText = "Gebruik",
             Width = 58,
             Frozen = true
-        };
-        _filesGrid.Columns.Add(useColumn);
+        });
 
         _filesGrid.Columns.Add(new DataGridViewTextBoxColumn
         {
             HeaderText = "PGN-bestand",
             AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-            MinimumWidth = 280,
+            MinimumWidth = 320,
             ReadOnly = true
         });
 
         _filesGrid.Columns.Add(new DataGridViewTextBoxColumn
         {
             HeaderText = "Grootte",
-            Width = 100,
+            Width = 105,
             ReadOnly = true
         });
     }
@@ -303,27 +383,83 @@ internal sealed class MainForm : Form
         if (_running)
             return;
 
+        var previousChecks = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        foreach (DataGridViewRow row in _filesGrid.Rows)
+        {
+            if (row.Tag is InputPgn input)
+                previousChecks[input.Path] = row.Cells[0].Value is bool b && b;
+        }
+
         Cursor = Cursors.WaitCursor;
         try
         {
-            var files = CleanerEngine.DiscoverPgnFiles(_baseDirectory);
+            var byPath = new Dictionary<string, InputPgn>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var file in CleanerEngine.DiscoverPgnFiles(_baseDirectory))
+            {
+                // Een zelfgekozen uitvoermap die toevallig onder de programmamap ligt,
+                // mag bij opnieuw zoeken nooit automatisch als bron terugkomen.
+                if (IsUnderDirectory(file.Path, _outputRootDirectory))
+                    continue;
+
+                byPath[file.Path] = file;
+            }
+
+            foreach (string path in _manualPgnPaths.ToArray())
+            {
+                try
+                {
+                    if (!File.Exists(path))
+                    {
+                        _manualPgnPaths.Remove(path);
+                        continue;
+                    }
+
+                    var fi = new FileInfo(path);
+                    if (fi.Length > 0)
+                        byPath[fi.FullName] = new InputPgn(fi.FullName, fi.Length);
+                }
+                catch
+                {
+                    _manualPgnPaths.Remove(path);
+                }
+            }
+
+            var files = byPath.Values
+                .OrderBy(f => f.Path, StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
             _filesGrid.Rows.Clear();
 
-            // Als er een samengevoegde GAME-bron aanwezig is, selecteer die standaard.
-            // Zo worden de onderliggende bron-PGN's niet per ongeluk nogmaals meegeteld.
             bool hasMergedGame = files.Any(f =>
-                Path.GetFileName(f.Path).Contains("Merged GAME Sources", StringComparison.OrdinalIgnoreCase));
+                Path.GetFileName(f.Path).Contains(
+                    "Merged GAME Sources",
+                    StringComparison.OrdinalIgnoreCase));
 
             foreach (var file in files)
             {
-                bool selected = !hasMergedGame ||
-                    Path.GetFileName(file.Path).Contains("Merged GAME Sources", StringComparison.OrdinalIgnoreCase);
+                bool selected;
+                if (previousChecks.TryGetValue(file.Path, out bool wasChecked))
+                {
+                    selected = wasChecked;
+                }
+                else if (_manualPgnPaths.Contains(file.Path))
+                {
+                    selected = true;
+                }
+                else
+                {
+                    selected = !hasMergedGame ||
+                        Path.GetFileName(file.Path).Contains(
+                            "Merged GAME Sources",
+                            StringComparison.OrdinalIgnoreCase);
+                }
 
                 int rowIndex = _filesGrid.Rows.Add(
                     selected,
-                    file.DisplayPath(_baseDirectory),
+                    DisplaySourcePath(file.Path),
                     file.DisplaySize);
+
                 _filesGrid.Rows[rowIndex].Tag = file;
             }
 
@@ -335,10 +471,92 @@ internal sealed class MainForm : Form
         }
     }
 
+    private void AddPgnFiles()
+    {
+        if (_running)
+            return;
+
+        using var dialog = new OpenFileDialog
+        {
+            Title = "PGN-bestanden toevoegen",
+            Filter = "PGN-bestanden (*.pgn)|*.pgn|Alle bestanden (*.*)|*.*",
+            Multiselect = true,
+            CheckFileExists = true,
+            CheckPathExists = true,
+            InitialDirectory = Directory.Exists(_baseDirectory) ? _baseDirectory : null
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        foreach (string file in dialog.FileNames)
+        {
+            try
+            {
+                string full = Path.GetFullPath(file);
+                if (File.Exists(full))
+                    _manualPgnPaths.Add(full);
+            }
+            catch
+            {
+                // Eén onbruikbaar gekozen pad mag de overige keuzes niet blokkeren.
+            }
+        }
+
+        RefreshFiles();
+    }
+
+    private void ChooseOutputDirectory()
+    {
+        if (_running)
+            return;
+
+        using var dialog = new FolderBrowserDialog
+        {
+            Description =
+                "Kies de map waaronder GamesCleaner voor deze run een eigen datum-tijdmap mag maken.",
+            UseDescriptionForTitle = true,
+            ShowNewFolderButton = true,
+            SelectedPath = Directory.Exists(_outputRootDirectory)
+                ? _outputRootDirectory
+                : _baseDirectory
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        try
+        {
+            _outputRootDirectory = Path.GetFullPath(dialog.SelectedPath);
+            _outputPathBox.Text = _outputRootDirectory;
+            RefreshFiles();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                "Deze uitvoermap kan niet worden gebruikt.\r\n\r\n" + ex.Message,
+                "GamesCleaner",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+        }
+    }
+
+    private void ResetOutputDirectory()
+    {
+        if (_running)
+            return;
+
+        _outputRootDirectory = DefaultOutputRoot;
+        _outputPathBox.Text = _outputRootDirectory;
+        RefreshFiles();
+    }
+
     private void SetAllChecked(bool value)
     {
         foreach (DataGridViewRow row in _filesGrid.Rows)
             row.Cells[0].Value = value;
+
         UpdateFileSummary();
     }
 
@@ -381,6 +599,21 @@ internal sealed class MainForm : Form
             return;
         }
 
+        try
+        {
+            Directory.CreateDirectory(_outputRootDirectory);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                "De gekozen uitvoermap kan niet worden aangemaakt of geopend.\r\n\r\n" + ex.Message,
+                "GamesCleaner — uitvoermap",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            return;
+        }
+
         var settings = new CleanerSettings
         {
             MinimumElo = (int)_minimumElo.Value,
@@ -404,7 +637,7 @@ internal sealed class MainForm : Form
         {
             CleanerResult result = await Task.Run(() =>
                 CleanerEngine.Run(
-                    _baseDirectory,
+                    _outputRootDirectory,
                     inputs,
                     settings,
                     progress,
@@ -415,10 +648,13 @@ internal sealed class MainForm : Form
 
             if (result.Cancelled)
             {
-                _currentFile.Text = "Afgebroken. De gedeeltelijke bestanden zijn als ONVOLLEDIG gemarkeerd.";
+                _currentFile.Text =
+                    "Afgebroken. De gedeeltelijke bestanden zijn als ONVOLLEDIG gemarkeerd.";
+
                 MessageBox.Show(
                     this,
-                    "De verwerking is afgebroken.\r\n\r\nGedeeltelijke uitvoer is bewaard met _ONVOLLEDIG in de bestandsnaam.",
+                    "De verwerking is afgebroken.\r\n\r\n" +
+                    "Gedeeltelijke uitvoer is bewaard met _ONVOLLEDIG in de bestandsnaam.",
                     "GamesCleaner",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -426,7 +662,8 @@ internal sealed class MainForm : Form
             else
             {
                 _progressBar.Value = _progressBar.Maximum;
-                _progressText.Text = $"100,0% — klaar in {CleanerEngine.FormatDuration(result.Elapsed)}";
+                _progressText.Text =
+                    $"100,0% — klaar in {CleanerEngine.FormatDuration(result.Elapsed)}";
                 _currentFile.Text = $"Klaar. Resultaat: {result.OutputDirectory}";
                 _counts.Text =
                     $"Partijen: {result.Counters.TotalGames:N0}   " +
@@ -439,6 +676,7 @@ internal sealed class MainForm : Form
                     $"Totaal: {result.Counters.TotalGames:N0}\r\n" +
                     $"StrongGames: {result.Counters.StrongGames:N0}\r\n" +
                     $"Afgekeurd: {result.Counters.RejectedGames:N0}\r\n\r\n" +
+                    $"Uitvoer:\r\n{result.OutputDirectory}\r\n\r\n" +
                     "StrongGames.pgn en Afgekeurd.pgn vormen samen de complete verwerkte verzameling.",
                     "GamesCleaner",
                     MessageBoxButtons.OK,
@@ -448,9 +686,11 @@ internal sealed class MainForm : Form
         catch (Exception ex)
         {
             _currentFile.Text = "Fout — verwerking gestopt.";
+
             MessageBox.Show(
                 this,
-                "GamesCleaner is gestopt omdat een fout optrad.\r\nDe bronbestanden zijn niet gewijzigd.\r\n\r\n" + ex.Message,
+                "GamesCleaner is gestopt omdat een fout optrad.\r\n" +
+                "De bronbestanden zijn niet gewijzigd.\r\n\r\n" + ex.Message,
                 "GamesCleaner — fout",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
@@ -466,7 +706,8 @@ internal sealed class MainForm : Form
     private void UpdateProgress(CleanerProgress p)
     {
         int value = (int)Math.Round(p.Percent * 10);
-        _progressBar.Value = Math.Clamp(value, _progressBar.Minimum, _progressBar.Maximum);
+        _progressBar.Value =
+            Math.Clamp(value, _progressBar.Minimum, _progressBar.Maximum);
 
         string eta = p.Eta.HasValue
             ? $" — resterend ca. {CleanerEngine.FormatDuration(p.Eta.Value)}"
@@ -476,7 +717,7 @@ internal sealed class MainForm : Form
             $"{p.Percent:0.0}% — {FormatBytes(p.ProcessedBytes)} / {FormatBytes(p.TotalBytes)}" +
             $" — verstreken {CleanerEngine.FormatDuration(p.Elapsed)}{eta}";
 
-        _currentFile.Text = "Nu: " + Path.GetRelativePath(_baseDirectory, p.CurrentFile);
+        _currentFile.Text = "Nu: " + DisplaySourcePath(p.CurrentFile);
         _counts.Text =
             $"Partijen: {p.Counters.TotalGames:N0}   " +
             $"StrongGames: {p.Counters.StrongGames:N0}   " +
@@ -488,8 +729,11 @@ internal sealed class MainForm : Form
         _running = running;
 
         _refreshButton.Enabled = !running;
+        _addPgnButton.Enabled = !running;
         _allOnButton.Enabled = !running;
         _allOffButton.Enabled = !running;
+        _chooseOutputButton.Enabled = !running;
+        _defaultOutputButton.Enabled = !running;
         _startButton.Enabled = !running;
         _cancelButton.Enabled = running;
 
@@ -514,6 +758,38 @@ internal sealed class MainForm : Form
         });
     }
 
+    private string DisplaySourcePath(string path)
+    {
+        try
+        {
+            if (IsUnderDirectory(path, _baseDirectory))
+                return Path.GetRelativePath(_baseDirectory, path);
+        }
+        catch
+        {
+            // Toon bij twijfel gewoon het volledige pad.
+        }
+
+        return path;
+    }
+
+    private static bool IsUnderDirectory(string filePath, string directoryPath)
+    {
+        try
+        {
+            string fullFile = Path.GetFullPath(filePath);
+            string fullDir = Path.GetFullPath(directoryPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                + Path.DirectorySeparatorChar;
+
+            return fullFile.StartsWith(fullDir, StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private void OnFormClosing(object? sender, FormClosingEventArgs e)
     {
         if (!_running)
@@ -521,7 +797,7 @@ internal sealed class MainForm : Form
 
         var answer = MessageBox.Show(
             this,
-            "GamesCleaner is nog bezig. Wilt u de verwerking annuleren en afsluiten?",
+            "GamesCleaner is nog bezig. Wilt u de verwerking annuleren?",
             "GamesCleaner",
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Warning);
@@ -534,7 +810,8 @@ internal sealed class MainForm : Form
 
         _cts?.Cancel();
         e.Cancel = true;
-        _currentFile.Text = "Annuleren… wacht tot de huidige partij veilig is weggeschreven.";
+        _currentFile.Text =
+            "Annuleren… wacht tot de huidige partij veilig is weggeschreven.";
     }
 
     private static string FormatBytes(long bytes)
