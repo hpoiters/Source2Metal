@@ -193,7 +193,6 @@ internal static class CleanerEngine
         long processedBytes = 0;
         var counters = new CleanerCounters();
         var stopwatch = Stopwatch.StartNew();
-        var lastProgress = TimeSpan.Zero;
 
         if (string.IsNullOrWhiteSpace(outputRootDirectory))
             throw new ArgumentException("De uitvoermap ontbreekt.", nameof(outputRootDirectory));
@@ -398,7 +397,7 @@ internal static class CleanerEngine
             {
                 // Beschermt tegen een zwaar beschadigd bestand zonder herkenbare partijgrenzen.
                 meta.ForceMalformed = true;
-                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
+                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters, outputLock);
                 game.Clear();
                 meta.Reset();
             }
