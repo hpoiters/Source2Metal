@@ -10,6 +10,7 @@ internal sealed class MainForm : Form
     private readonly HashSet<string> _externalRoots =
         new(StringComparer.OrdinalIgnoreCase);
 
+    private bool _includeBaseDirectory = true;
     private string _outputRootDirectory;
 
     private readonly DataGridView _filesGrid = new();
@@ -28,6 +29,7 @@ internal sealed class MainForm : Form
 
     private readonly Button _refreshButton = new();
     private readonly Button _addPgnButton = new();
+    private readonly Button _clearListButton = new();
     private readonly Button _allOnButton = new();
     private readonly Button _allOffButton = new();
     private readonly Button _chooseOutputButton = new();
@@ -184,7 +186,11 @@ internal sealed class MainForm : Form
 
         _refreshButton.Text = "PGN's eigen map";
         _refreshButton.AutoSize = true;
-        _refreshButton.Click += (_, _) => RefreshFiles();
+        _refreshButton.Click += (_, _) =>
+        {
+            _includeBaseDirectory = true;
+            RefreshFiles();
+        };
         fileToolbar.Controls.Add(_refreshButton);
 
         _addPgnButton.Text = "PGN's elders…";
@@ -192,6 +198,12 @@ internal sealed class MainForm : Form
         _addPgnButton.Margin = new Padding(8, 3, 0, 3);
         _addPgnButton.Click += (_, _) => AddExternalPgnRoot();
         fileToolbar.Controls.Add(_addPgnButton);
+
+        _clearListButton.Text = "Wissen";
+        _clearListButton.AutoSize = true;
+        _clearListButton.Margin = new Padding(8, 3, 0, 3);
+        _clearListButton.Click += (_, _) => ClearSourceList();
+        fileToolbar.Controls.Add(_clearListButton);
 
         _allOnButton.Text = "Alles aan";
         _allOnButton.AutoSize = true;
@@ -426,8 +438,11 @@ internal sealed class MainForm : Form
         {
             var byPath = new Dictionary<string, InputPgn>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var file in CleanerEngine.DiscoverPgnFiles(_baseDirectory))
-                byPath[file.Path] = file;
+            if (_includeBaseDirectory)
+            {
+                foreach (var file in CleanerEngine.DiscoverPgnFiles(_baseDirectory))
+                    byPath[file.Path] = file;
+            }
 
             foreach (string root in _externalRoots.ToArray())
             {
@@ -494,6 +509,17 @@ internal sealed class MainForm : Form
         {
             Cursor = Cursors.Default;
         }
+    }
+
+    private void ClearSourceList()
+    {
+        if (_running)
+            return;
+
+        _includeBaseDirectory = false;
+        _externalRoots.Clear();
+        _filesGrid.Rows.Clear();
+        UpdateFileSummary();
     }
 
     private void AddExternalPgnRoot()
@@ -759,6 +785,7 @@ internal sealed class MainForm : Form
 
         _refreshButton.Enabled = !running;
         _addPgnButton.Enabled = !running;
+        _clearListButton.Enabled = !running;
         _allOnButton.Enabled = !running;
         _allOffButton.Enabled = !running;
         _chooseOutputButton.Enabled = !running;
