@@ -42,6 +42,16 @@ jobs:
           }
           Get-Item "GamesCleaner/dist/GamesCleaner.exe" | Format-List Name,Length,LastWriteTime
 
+      - name: Run end-to-end self-test
+        shell: pwsh
+        run: |
+          & "GamesCleaner/dist/GamesCleaner.exe" --selftest
+          if ($LASTEXITCODE -ne 0) {
+            $diag = Join-Path $env:TEMP "GamesCleanerSelfTest_FAILED.txt"
+            if (Test-Path $diag) { Get-Content $diag }
+            throw "GamesCleaner self-test mislukt met exitcode $LASTEXITCODE."
+          }
+
       - name: Package artifact
         shell: pwsh
         run: |
