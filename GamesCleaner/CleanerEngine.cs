@@ -349,7 +349,7 @@ internal static class CleanerEngine
         int newlineBytes = DetectNewlineBytes(input.Path);
         string newline = newlineBytes == 1 ? "\n" : "\r\n";
         bool wholeFileBullet =
-            Path.GetFileName(input.Path).Contains("bullet", StringComparison.OrdinalIgnoreCase);
+            ContainsBulletClass(Path.GetFileNameWithoutExtension(input.Path));
 
         using var fs = new FileStream(
             input.Path, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -381,7 +381,7 @@ internal static class CleanerEngine
             // een headerregel begint, behandelen we dat eveneens als nieuwe partij.
             bool newGame =
                 game.Length > 0 &&
-                ((eventLine && meta.HasAnyHeader) ||
+                ((eventLine && (meta.SawEvent || meta.SawMovetext)) ||
                  (headerLine && meta.SawMovetext));
 
             if (newGame)
@@ -531,7 +531,37 @@ internal static class CleanerEngine
         if (!int.TryParse(basePart, NumberStyles.Integer, CultureInfo.InvariantCulture, out int seconds))
             return false;
 
-        return seconds > 0 && seconds <= maxBaseSeconds;
+        return seconds >= 0 && seconds <= maxBaseSeconds;
+    }
+
+    private static bool ContainsBulletClass(string value)
+    {
+        static bool ContainsWholeWord(string text, string word)
+        {
+            int start = 0;
+            while (start < text.Length)
+            {
+                int index = text.IndexOf(word, start, StringComparison.OrdinalIgnoreCase);
+                if (index < 0)
+                    return false;
+
+                int end = index + word.Length;
+                bool leftBoundary =
+                    index == 0 || !char.IsLetterOrDigit(text[index - 1]);
+                bool rightBoundary =
+                    end == text.Length || !char.IsLetterOrDigit(text[end]);
+
+                if (leftBoundary && rightBoundary)
+                    return true;
+
+                start = index + 1;
+            }
+
+            return false;
+        }
+
+        return ContainsWholeWord(value, "bullet") ||
+               ContainsWholeWord(value, "ultrabullet");
     }
 
     private static int DetectNewlineBytes(string path)
@@ -734,9 +764,12 @@ internal static class CleanerEngine
 
             if (_inHeaders)
             {
-                if (inspect.Length == 0)
+                if (string.IsNullOrWhiteSpace(inspect))
                 {
-                    _inHeaders = false;
+                    // Lege regels vóór de eerste tag zijn alleen voorloopruimte.
+                    // Pas na minimaal één header eindigt een lege regel de tagsectie.
+                    if (HasAnyHeader)
+                        _inHeaders = false;
                     return;
                 }
 
@@ -753,7 +786,7 @@ internal static class CleanerEngine
                          TryReadTag(inspect, "Site", out eventValue) ||
                          TryReadTag(inspect, "Speed", out eventValue) ||
                          TryReadTag(inspect, "TimeClass", out eventValue)) &&
-                        eventValue.Contains("bullet", StringComparison.OrdinalIgnoreCase))
+                        ContainsBulletClass(eventValue))
                     {
                         BulletInHeaders = true;
                     }
