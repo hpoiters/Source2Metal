@@ -23,9 +23,10 @@ GamesCleaner zoekt standaard NIET:
 - in mappen met bekende resultaatnamen zoals Output, Result, Results, Resultaat of Resultaten.
 
 Nieuw in versie 2:
-- met de knop "PGN's toevoegen…" kunt u één of meer PGN-bestanden kiezen
-  uit elke andere map of schijf;
-- zo'n extra PGN wordt alleen gelezen en hoeft dus niet onder de programmamap te staan;
+- met "PGN's eigen map" ververst u de automatische bronlijst onder de programmamap;
+- met "PGN's elders…" kiest u één andere map op de pc of het netwerk;
+- bij "PGN's elders…" worden alleen PGN-bestanden gebruikt die rechtstreeks in die
+  gekozen map staan: bovenliggende mappen en submappen worden niet doorzocht;
 - hetzelfde volledige bestandspad wordt niet dubbel in de lijst opgenomen.
 
 Als een samengevoegde GAME-bron met "Merged GAME Sources" in de naam aanwezig is,
@@ -88,6 +89,8 @@ Het venster toont:
 - geschatte resterende tijd.
 
 Het venster mag tijdens de verwerking worden vergroot, verkleind of gemaximaliseerd.
+De PGN-lijst krijgt bewust extra verticale ruimte zodat meerdere bronbestanden tegelijk
+zichtbaar blijven; bij grotere aantallen verschijnt een normale verticale schuifbalk.
 
 Annuleren
 ---------
@@ -97,7 +100,7 @@ met _ONVOLLEDIG in de bestandsnaam, zodat die nooit met een complete run wordt v
 Opmerking over snelle partijen
 ------------------------------
 GamesCleaner gebruikt waar aanwezig de PGN-tag TimeControl. Event-, Site-, Speed- of
-TimeClass-velden met het woord Bullet worden eveneens als Bullet herkend. Een speler
+TimeClass-velden met het afzonderlijke woord Bullet worden eveneens als Bullet herkend. Een speler
 met "Bullet" in zijn gebruikersnaam wordt daardoor niet ten onrechte afgekeurd.
 Een onbekende tijdcontrole is op zichzelf geen reden om een partij af te keuren.
 
