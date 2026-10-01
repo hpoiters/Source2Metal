@@ -191,6 +191,7 @@ internal sealed class MainForm : Form
         _refreshButton.Click += (_, _) =>
         {
             _includeBaseDirectory = true;
+            _externalRoots.Clear();
             RefreshFiles();
         };
         fileToolbar.Controls.Add(_refreshButton);
@@ -528,6 +529,14 @@ internal sealed class MainForm : Form
     {
         if (_running)
             return;
+
+        // 'PGN's elders…' betekent: een nieuwe, afzonderlijke bron kiezen.
+        // Maak daarom de huidige lijst en bronselectie meteen leeg.
+        // De laatst bezochte externe browse-map blijft wel onthouden.
+        _includeBaseDirectory = false;
+        _externalRoots.Clear();
+        _filesGrid.Rows.Clear();
+        UpdateFileSummary();
 
         using var dialog = new FolderBrowserDialog
         {
