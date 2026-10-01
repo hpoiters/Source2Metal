@@ -532,10 +532,11 @@ internal static class CleanerEngine
     private static string CreateUniqueRunDirectory(string root)
     {
         string stamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
-        string candidate = Path.Combine(root, stamp);
+        string folderName = "GamesCleaner_" + stamp;
+        string candidate = Path.Combine(root, folderName);
         int n = 2;
         while (Directory.Exists(candidate))
-            candidate = Path.Combine(root, $"{stamp}_{n++}");
+            candidate = Path.Combine(root, $"{folderName}_{n++}");
         return candidate;
     }
 
