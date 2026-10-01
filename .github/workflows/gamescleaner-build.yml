@@ -45,11 +45,11 @@ jobs:
       - name: Run end-to-end self-test
         shell: pwsh
         run: |
-          & "GamesCleaner/dist/GamesCleaner.exe" --selftest
-          if ($LASTEXITCODE -ne 0) {
+          $p = Start-Process -FilePath "GamesCleaner/dist/GamesCleaner.exe" -ArgumentList "--selftest" -Wait -PassThru
+          if ($p.ExitCode -ne 0) {
             $diag = Join-Path $env:TEMP "GamesCleanerSelfTest_FAILED.txt"
             if (Test-Path $diag) { Get-Content $diag }
-            throw "GamesCleaner self-test mislukt met exitcode $LASTEXITCODE."
+            throw "GamesCleaner self-test mislukt met exitcode $($p.ExitCode)."
           }
 
       - name: Package artifact
