@@ -46,8 +46,8 @@ internal static class SelfTest
 
             var c = result.Counters;
             Require(!result.Cancelled, "Self-test werd onverwacht als geannuleerd gemarkeerd.");
-            Require(c.TotalGames == 6, $"Totaal moet 6 zijn, is {c.TotalGames}.");
-            Require(c.StrongGames == 1, $"StrongGames moet 1 zijn, is {c.StrongGames}.");
+            Require(c.TotalGames == 7, $"Totaal moet 7 zijn, is {c.TotalGames}.");
+            Require(c.StrongGames == 2, $"StrongGames moet 2 zijn, is {c.StrongGames}.");
             Require(c.RejectedGames == 5, $"Afgekeurd moet 5 zijn, is {c.RejectedGames}.");
             Require(c.Bullet == 1, $"Bullet moet 1 zijn, is {c.Bullet}.");
             Require(c.VeryFast == 1, $"Zeer snel moet 1 zijn, is {c.VeryFast}.");
@@ -58,9 +58,9 @@ internal static class SelfTest
             string strong = File.ReadAllText(result.StrongPath, Encoding.Latin1);
             string rejected = File.ReadAllText(result.RejectedPath, Encoding.Latin1);
 
-            Require(CountEvents(strong) == 1, "StrongGames.pgn bevat niet precies 1 partij.");
+            Require(CountEvents(strong) == 2, "StrongGames.pgn bevat niet precies 2 partijen.");
             Require(CountEvents(rejected) == 5, "Afgekeurd.pgn bevat niet precies 5 partijen.");
-            Require(CountEvents(strong) + CountEvents(rejected) == 6,
+            Require(CountEvents(strong) + CountEvents(rejected) == 7,
                 "StrongGames + Afgekeurd vormen niet de complete self-testverzameling.");
 
             Directory.Delete(root, recursive: true);
@@ -103,6 +103,7 @@ internal static class SelfTest
         sb.Append(BuildGame("Very fast game", 2700, 2680, "1-0", "120+1", 25));
         sb.Append(BuildGame("Too short", 2700, 2680, "1-0", "600+0", 10));
         sb.Append(BuildGame("Unfinished", 2700, 2680, "*", "600+0", 25));
+        sb.Append(BuildGame("Classical with player named BulletMaster", 2700, 2680, "1-0", "600+0", 25, "BulletMaster", "NormalPlayer"));
         return sb.ToString();
     }
 
@@ -112,15 +113,17 @@ internal static class SelfTest
         int blackElo,
         string result,
         string timeControl,
-        int moves)
+        int moves,
+        string white = "White",
+        string black = "Black")
     {
         var sb = new StringBuilder();
         sb.AppendLine($"[Event \"{eventName}\"]");
         sb.AppendLine("[Site \"SelfTest\"]");
         sb.AppendLine("[Date \"2026.10.01\"]");
         sb.AppendLine("[Round \"1\"]");
-        sb.AppendLine("[White \"White\"]");
-        sb.AppendLine("[Black \"Black\"]");
+        sb.AppendLine($"[White \"{white}\"]");
+        sb.AppendLine($"[Black \"{black}\"]");
         sb.AppendLine($"[WhiteElo \"{whiteElo}\"]");
         sb.AppendLine($"[BlackElo \"{blackElo}\"]");
         sb.AppendLine($"[Result \"{result}\"]");
