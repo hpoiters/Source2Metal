@@ -100,7 +100,7 @@ internal static class SelfTest
         sb.Append(BuildGame("Strong classical", 2650, 2580, "1-0", "600+0", 25));
         sb.Append(BuildGame("Low Elo", 2399, 2600, "0-1", "600+0", 25));
         sb.Append(BuildGame("Rated Bullet game", 2700, 2680, "1-0", "60+0", 25));
-        sb.Append(BuildGame("Fast without Bullet word", 2700, 2680, "1-0", "120+1", 25));
+        sb.Append(BuildGame("Very fast game", 2700, 2680, "1-0", "120+1", 25));
         sb.Append(BuildGame("Too short", 2700, 2680, "1-0", "600+0", 10));
         sb.Append(BuildGame("Unfinished", 2700, 2680, "*", "600+0", 25));
         return sb.ToString();
