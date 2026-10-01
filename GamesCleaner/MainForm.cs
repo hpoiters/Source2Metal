@@ -16,6 +16,7 @@ internal sealed class MainForm : Form
     private readonly NumericUpDown _minimumElo = new();
     private readonly NumericUpDown _minimumMoves = new();
     private readonly NumericUpDown _fastSeconds = new();
+    private readonly NumericUpDown _workerThreads = new();
     private readonly CheckBox _rejectBullet = new();
     private readonly CheckBox _rejectFast = new();
     private readonly ProgressBar _progressBar = new();
@@ -150,6 +151,21 @@ internal sealed class MainForm : Form
         _fastSeconds.Value = 120;
         _fastSeconds.Width = 70;
         settingsFlow.Controls.Add(_fastSeconds);
+
+        settingsFlow.Controls.Add(MakeSpacer());
+        settingsFlow.Controls.Add(MakeLabel("Max. werkthreads:"));
+        _workerThreads.Minimum = 1;
+        _workerThreads.Maximum = Math.Max(1, Environment.ProcessorCount);
+        _workerThreads.Value = Math.Max(1, Environment.ProcessorCount / 2);
+        _workerThreads.Width = 70;
+        settingsFlow.Controls.Add(_workerThreads);
+
+        settingsFlow.Controls.Add(new Label
+        {
+            AutoSize = true,
+            Text = "(standaard: helft van de logische CPU-threads)",
+            Margin = new Padding(3, 7, 3, 3)
+        });
 
         settingsBox.Controls.Add(settingsFlow);
         root.Controls.Add(settingsBox, 0, 1);
@@ -613,7 +629,8 @@ internal sealed class MainForm : Form
             MinimumFullMoves = (int)_minimumMoves.Value,
             RejectBullet = _rejectBullet.Checked,
             RejectVeryFast = _rejectFast.Checked,
-            VeryFastBaseSeconds = (int)_fastSeconds.Value
+            VeryFastBaseSeconds = (int)_fastSeconds.Value,
+            WorkerThreads = (int)_workerThreads.Value
         };
 
         _cts = new CancellationTokenSource();
@@ -736,6 +753,7 @@ internal sealed class MainForm : Form
         _rejectBullet.Enabled = !running;
         _rejectFast.Enabled = !running;
         _fastSeconds.Enabled = !running;
+        _workerThreads.Enabled = !running;
     }
 
     private void OpenResultDirectory()
