@@ -22,6 +22,7 @@ internal sealed class CleanerSettings
     public bool RejectBullet { get; init; } = true;
     public bool RejectVeryFast { get; init; } = true;
     public int VeryFastBaseSeconds { get; init; } = 120;
+    public int WorkerThreads { get; init; } = Math.Max(1, Environment.ProcessorCount / 2);
 }
 
 internal enum RejectReason
@@ -224,27 +225,51 @@ internal static class CleanerEngine
             using (var rejectedWriter = new StreamWriter(
                 rejectedStream, Encoding.Latin1, 1024 * 1024, leaveOpen: false))
             {
-                foreach (var input in inputs)
+                var outputLock = new object();
+                int maxWorkers = Math.Max(1, settings.WorkerThreads);
+
+                if (maxWorkers == 1 || inputs.Count == 1)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    foreach (var input in inputs)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        ProcessOneFile(
+                            input,
+                            settings,
+                            strongWriter,
+                            rejectedWriter,
+                            counters,
+                            outputLock,
+                            ref processedBytes,
+                            totalBytes,
+                            stopwatch,
+                            progress,
+                            cancellationToken);
+                    }
+                }
+                else
+                {
+                    var options = new ParallelOptions
+                    {
+                        CancellationToken = cancellationToken,
+                        MaxDegreeOfParallelism = Math.Min(maxWorkers, inputs.Count)
+                    };
 
-                    long fileStart = processedBytes;
-                    ProcessOneFile(
-                        input,
-                        settings,
-                        strongWriter,
-                        rejectedWriter,
-                        counters,
-                        ref processedBytes,
-                        totalBytes,
-                        stopwatch,
-                        ref lastProgress,
-                        progress,
-                        cancellationToken);
-
-                    // Maak de voortgang aan het einde van ieder bestand exact.
-                    processedBytes = Math.Min(totalBytes, fileStart + input.SizeBytes);
-                    ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+                    Parallel.ForEach(inputs, options, input =>
+                    {
+                        ProcessOneFile(
+                            input,
+                            settings,
+                            strongWriter,
+                            rejectedWriter,
+                            counters,
+                            outputLock,
+                            ref processedBytes,
+                            totalBytes,
+                            stopwatch,
+                            progress,
+                            options.CancellationToken);
+                    });
                 }
 
                 strongWriter.Flush();
@@ -311,10 +336,10 @@ internal static class CleanerEngine
         StreamWriter strongWriter,
         StreamWriter rejectedWriter,
         CleanerCounters counters,
+        object outputLock,
         ref long processedBytes,
         long totalBytes,
         Stopwatch stopwatch,
-        ref TimeSpan lastProgress,
         IProgress<CleanerProgress>? progress,
         CancellationToken cancellationToken)
     {
@@ -334,18 +359,21 @@ internal static class CleanerEngine
         var meta = new GameMeta();
         bool firstLine = true;
         string? line;
+        long localBytes = 0;
+        TimeSpan lastProgress = stopwatch.Elapsed;
 
         while ((line = reader.ReadLine()) is not null)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             long lineBytes = line.Length + newlineBytes;
-            processedBytes = Math.Min(totalBytes, processedBytes + lineBytes);
+            localBytes += lineBytes;
+            Interlocked.Add(ref processedBytes, lineBytes);
 
             bool newGame = IsEventLine(line, firstLine);
             if (newGame && game.Length > 0 && meta.SawEvent)
             {
-                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
+                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters, outputLock);
                 game.Clear();
                 meta.Reset();
             }
@@ -359,7 +387,11 @@ internal static class CleanerEngine
             if (stopwatch.Elapsed - lastProgress >= TimeSpan.FromMilliseconds(250))
             {
                 lastProgress = stopwatch.Elapsed;
-                ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+                long nowBytes = Math.Min(totalBytes, Interlocked.Read(ref processedBytes));
+                lock (outputLock)
+                {
+                    ReportProgress(progress, input.Path, nowBytes, totalBytes, counters, stopwatch.Elapsed);
+                }
             }
 
             if (game.Length > 64 * 1024 * 1024)
@@ -375,7 +407,16 @@ internal static class CleanerEngine
         if (game.Length > 0)
             FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
 
-        ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+        // Maak de bytevoortgang per bronbestand exact, ook bij een ontbrekende slot-newline.
+        long correction = input.SizeBytes - localBytes;
+        if (correction != 0)
+            Interlocked.Add(ref processedBytes, correction);
+
+        long doneBytes = Math.Min(totalBytes, Interlocked.Read(ref processedBytes));
+        lock (outputLock)
+        {
+            ReportProgress(progress, input.Path, doneBytes, totalBytes, counters, stopwatch.Elapsed);
+        }
     }
 
     private static bool IsEventLine(string line, bool firstLine)
@@ -400,16 +441,21 @@ internal static class CleanerEngine
         CleanerSettings settings,
         StreamWriter strongWriter,
         StreamWriter rejectedWriter,
-        CleanerCounters counters)
+        CleanerCounters counters,
+        object outputLock)
     {
         var reason = Classify(meta, wholeFileBullet, settings);
-        counters.Count(reason);
 
-        var writer = reason == RejectReason.None ? strongWriter : rejectedWriter;
-        foreach (var chunk in game.GetChunks())
-            writer.Write(chunk.Span);
-        if (game.Length > 0 && game[^1] != '\n')
-            writer.WriteLine();
+        lock (outputLock)
+        {
+            counters.Count(reason);
+
+            var writer = reason == RejectReason.None ? strongWriter : rejectedWriter;
+            foreach (var chunk in game.GetChunks())
+                writer.Write(chunk.Span);
+            if (game.Length > 0 && game[^1] != '\n')
+                writer.WriteLine();
+        }
     }
 
     private static RejectReason Classify(GameMeta meta, bool wholeFileBullet, CleanerSettings settings)
@@ -577,6 +623,7 @@ internal static class CleanerEngine
         w.WriteLine($"Bullet afkeuren         : {(settings.RejectBullet ? "JA" : "NEE")}");
         w.WriteLine($"Zeer snel afkeuren      : {(settings.RejectVeryFast ? "JA" : "NEE")}");
         w.WriteLine($"Zeer snel t/m basis     : {settings.VeryFastBaseSeconds} seconden");
+        w.WriteLine($"Max. werkthreads        : {settings.WorkerThreads}");
         w.WriteLine();
         w.WriteLine("Uitkomst");
         w.WriteLine("--------");
