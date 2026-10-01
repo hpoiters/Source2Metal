@@ -70,6 +70,8 @@ internal static class SelfTest
             Require(c.TooShort == 1, $"Te kort moet 1 zijn, is {c.TooShort}.");
             Require(c.LowElo == 1, $"Lage Elo moet 1 zijn, is {c.LowElo}.");
             Require(c.InvalidResult == 1, $"Ongeldige uitslag moet 1 zijn, is {c.InvalidResult}.");
+            Require(c.WithoutEventTag == 1,
+                $"Partijen zonder Event-tag moet 1 zijn, is {c.WithoutEventTag}.");
 
             string strong = File.ReadAllText(result.StrongPath, Encoding.Latin1);
             string rejected = File.ReadAllText(result.RejectedPath, Encoding.Latin1);
