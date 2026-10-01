@@ -104,3 +104,11 @@ Een onbekende tijdcontrole is op zichzelf geen reden om een partij af te keuren.
 Versie
 ------
 GamesCleaner v2 proefbuild voor Windows x64.
+
+
+Diagnostiek
+-----------
+Naar aanleiding van de eerste V1-praktijkrun rapporteert V2 ook hoeveel herkende
+partijen geen Event-tag hadden. Zulke partijen kunnen nog steeds geldig zijn en worden
+niet alleen vanwege die ontbrekende tag afgekeurd. Deze telling helpt verschillen tussen
+PGN-parsers van GamesCleaner, ChessBase en Scid te onderzoeken.
