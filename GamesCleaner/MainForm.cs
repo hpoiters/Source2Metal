@@ -96,7 +96,7 @@ internal sealed class MainForm : Form
             AutoSize = true,
             MaximumSize = new Size(580, 0),
             Text =
-                $"Eigen map: {_baseDirectory}   |   ‘PGN's elders…’ toont alleen PGN's uit de gekozen map"
+                $"Eigen map: {_baseDirectory}   |   ‘PGN's elders…’ zoekt alleen in de gekozen map en submappen"
         });
 
         root.Controls.Add(titlePanel, 0, 0);
@@ -439,16 +439,10 @@ internal sealed class MainForm : Form
                         continue;
                     }
 
-                    // Bij 'PGN's elders' bewust NIET recursief zoeken.
-                    // Alleen de rechtstreeks gekozen map wordt bekeken, zodat een
-                    // grote schaakschijf niet ineens honderden bestanden oplevert.
-                    foreach (string path in Directory.EnumerateFiles(
-                                 root, "*.pgn", SearchOption.TopDirectoryOnly))
-                    {
-                        var fi = new FileInfo(path);
-                        if (fi.Length > 0)
-                            byPath[fi.FullName] = new InputPgn(fi.FullName, fi.Length);
-                    }
+                    // Bij 'PGN's elders' wordt uitsluitend binnen de bewust gekozen
+                    // map gezocht, inclusief submappen. Nooit erboven of elders.
+                    foreach (var file in CleanerEngine.DiscoverPgnFiles(root))
+                        byPath[file.Path] = file;
                 }
                 catch
                 {
@@ -510,8 +504,8 @@ internal sealed class MainForm : Form
         using var dialog = new FolderBrowserDialog
         {
             Description =
-                "Kies de map met de gewenste PGN-bestanden. " +
-                "GamesCleaner toont alleen PGN's die rechtstreeks in deze map staan; submappen en bovenliggende mappen worden niet doorzocht.",
+                "Kies de map waarin GamesCleaner PGN-bestanden mag zoeken. " +
+                "De gekozen map en de submappen daaronder worden doorzocht; bovenliggende mappen en andere locaties nooit.",
             UseDescriptionForTitle = true,
             ShowNewFolderButton = false,
             SelectedPath = Directory.Exists(_baseDirectory) ? _baseDirectory : null
