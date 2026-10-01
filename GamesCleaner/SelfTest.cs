@@ -103,7 +103,7 @@ internal static class SelfTest
         sb.Append(BuildGame("Very fast game", 2700, 2680, "1-0", "120+1", 25));
         sb.Append(BuildGame("Too short", 2700, 2680, "1-0", "600+0", 10));
         sb.Append(BuildGame("Unfinished", 2700, 2680, "*", "600+0", 25));
-        sb.Append(BuildGame("Classical with player named BulletMaster", 2700, 2680, "1-0", "600+0", 25, "BulletMaster", "NormalPlayer"));
+        sb.Append(BuildGame("Classical game", 2700, 2680, "1-0", "600+0", 25, "BulletMaster", "NormalPlayer"));
         return sb.ToString();
     }
 
