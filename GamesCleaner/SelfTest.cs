@@ -37,12 +37,19 @@ internal static class SelfTest
                 VeryFastBaseSeconds = 120
             };
 
+            string customOutputRoot = Path.Combine(root, "ZelfGekozenUitvoer");
             var result = CleanerEngine.Run(
-                root,
+                customOutputRoot,
                 discovered,
                 settings,
                 progress: null,
                 CancellationToken.None);
+
+            Require(
+                result.OutputDirectory.StartsWith(
+                    Path.GetFullPath(customOutputRoot) + Path.DirectorySeparatorChar,
+                    StringComparison.OrdinalIgnoreCase),
+                "De uitvoer staat niet onder de gekozen uitvoermap.");
 
             var c = result.Counters;
             Require(!result.Cancelled, "Self-test werd onverwacht als geannuleerd gemarkeerd.");
