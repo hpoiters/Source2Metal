@@ -49,8 +49,8 @@ internal sealed class MainForm : Form
 
         Text = "GamesCleaner v2";
         StartPosition = FormStartPosition.CenterScreen;
-        MinimumSize = new Size(760, 500);
-        Size = new Size(900, 600);
+        MinimumSize = new Size(620, 500);
+        Size = new Size(760, 620);
 
         BuildUi();
         Shown += (_, _) => RefreshFiles();
@@ -110,107 +110,104 @@ internal sealed class MainForm : Form
             Margin = new Padding(0, 0, 0, 4)
         };
 
-        var settingsFlow = new FlowLayoutPanel
+        var settingsLayout = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
-            WrapContents = true
+            ColumnCount = 1,
+            RowCount = 3,
+            Margin = Padding.Empty,
+            Padding = Padding.Empty
         };
 
-        settingsFlow.Controls.Add(MakeLabel("Minimum Elo beide:"));
+        var settingsRow1 = MakeWrapFlow();
+        var settingsRow2 = MakeWrapFlow();
+        var settingsRow3 = MakeWrapFlow();
+
+        settingsRow1.Controls.Add(MakeLabel("Minimum Elo beide:"));
         _minimumElo.Minimum = 0;
         _minimumElo.Maximum = 4000;
         _minimumElo.Value = 2400;
         _minimumElo.Width = 80;
-        settingsFlow.Controls.Add(_minimumElo);
+        settingsRow1.Controls.Add(_minimumElo);
 
-        settingsFlow.Controls.Add(MakeSpacer());
-        settingsFlow.Controls.Add(MakeLabel("Minimum zetten:"));
+        settingsRow1.Controls.Add(MakeSpacer());
+        settingsRow1.Controls.Add(MakeLabel("Minimum zetten:"));
         _minimumMoves.Minimum = 0;
         _minimumMoves.Maximum = 500;
         _minimumMoves.Value = 20;
         _minimumMoves.Width = 70;
-        settingsFlow.Controls.Add(_minimumMoves);
+        settingsRow1.Controls.Add(_minimumMoves);
 
-        settingsFlow.Controls.Add(MakeSpacer());
         _rejectBullet.Text = "Bullet afkeuren";
         _rejectBullet.Checked = true;
         _rejectBullet.AutoSize = true;
-        settingsFlow.Controls.Add(_rejectBullet);
+        settingsRow2.Controls.Add(_rejectBullet);
 
-        settingsFlow.Controls.Add(MakeSpacer());
+        settingsRow2.Controls.Add(MakeSpacer());
         _rejectFast.Text = "Zeer snelle tijdcontrole afkeuren";
         _rejectFast.Checked = true;
         _rejectFast.AutoSize = true;
-        settingsFlow.Controls.Add(_rejectFast);
+        settingsRow2.Controls.Add(_rejectFast);
 
-        settingsFlow.Controls.Add(MakeLabel("t/m basis-seconden:"));
+        settingsRow2.Controls.Add(MakeLabel("t/m basis-seconden:"));
         _fastSeconds.Minimum = 1;
         _fastSeconds.Maximum = 1800;
         _fastSeconds.Value = 120;
         _fastSeconds.Width = 70;
-        settingsFlow.Controls.Add(_fastSeconds);
+        settingsRow2.Controls.Add(_fastSeconds);
 
-        settingsFlow.Controls.Add(MakeSpacer());
-        settingsFlow.Controls.Add(MakeLabel("Max. werkthreads:"));
+        settingsRow3.Controls.Add(MakeLabel("Max. werkthreads:"));
         _workerThreads.Minimum = 1;
         _workerThreads.Maximum = Math.Max(1, Environment.ProcessorCount);
         _workerThreads.Value = Math.Max(1, Environment.ProcessorCount / 2);
         _workerThreads.Width = 70;
-        settingsFlow.Controls.Add(_workerThreads);
+        settingsRow3.Controls.Add(_workerThreads);
 
-        settingsFlow.Controls.Add(new Label
+        settingsRow3.Controls.Add(new Label
         {
             AutoSize = true,
             Text = "(standaard: helft van de logische CPU-threads)",
             Margin = new Padding(3, 5, 3, 2)
         });
 
-        settingsBox.Controls.Add(settingsFlow);
+        settingsLayout.Controls.Add(settingsRow1, 0, 0);
+        settingsLayout.Controls.Add(settingsRow2, 0, 1);
+        settingsLayout.Controls.Add(settingsRow3, 0, 2);
+
+        settingsBox.Controls.Add(settingsLayout);
         root.Controls.Add(settingsBox, 0, 1);
 
-        var fileToolbar = new TableLayoutPanel
-        {
-            Dock = DockStyle.Top,
-            AutoSize = true,
-            ColumnCount = 6,
-            Margin = new Padding(0, 0, 0, 4)
-        };
-
-        fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        fileToolbar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        var fileToolbar = MakeWrapFlow();
+        fileToolbar.Dock = DockStyle.Top;
+        fileToolbar.Margin = new Padding(0, 0, 0, 4);
 
         _refreshButton.Text = "PGN's opnieuw zoeken";
         _refreshButton.AutoSize = true;
         _refreshButton.Click += (_, _) => RefreshFiles();
-        fileToolbar.Controls.Add(_refreshButton, 0, 0);
+        fileToolbar.Controls.Add(_refreshButton);
 
         _addPgnButton.Text = "PGN's toevoegen…";
         _addPgnButton.AutoSize = true;
         _addPgnButton.Margin = new Padding(8, 3, 0, 3);
         _addPgnButton.Click += (_, _) => AddPgnFiles();
-        fileToolbar.Controls.Add(_addPgnButton, 1, 0);
+        fileToolbar.Controls.Add(_addPgnButton);
 
         _allOnButton.Text = "Alles aan";
         _allOnButton.AutoSize = true;
         _allOnButton.Margin = new Padding(8, 3, 0, 3);
         _allOnButton.Click += (_, _) => SetAllChecked(true);
-        fileToolbar.Controls.Add(_allOnButton, 2, 0);
+        fileToolbar.Controls.Add(_allOnButton);
 
         _allOffButton.Text = "Alles uit";
         _allOffButton.AutoSize = true;
         _allOffButton.Margin = new Padding(8, 3, 0, 3);
         _allOffButton.Click += (_, _) => SetAllChecked(false);
-        fileToolbar.Controls.Add(_allOffButton, 3, 0);
+        fileToolbar.Controls.Add(_allOffButton);
 
         _fileSummary.AutoSize = true;
-        _fileSummary.Anchor = AnchorStyles.Right;
-        _fileSummary.TextAlign = ContentAlignment.MiddleRight;
-        fileToolbar.Controls.Add(_fileSummary, 5, 0);
+        _fileSummary.Margin = new Padding(12, 7, 3, 3);
+        fileToolbar.Controls.Add(_fileSummary);
 
         root.Controls.Add(fileToolbar, 0, 2);
 
@@ -230,33 +227,40 @@ internal sealed class MainForm : Form
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
-            ColumnCount = 4,
-            RowCount = 1
+            ColumnCount = 2,
+            RowCount = 2
         };
 
         outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        outputLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        outputLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
         outputLayout.Controls.Add(MakeLabel("Uitvoermap:"), 0, 0);
 
         _outputPathBox.ReadOnly = true;
         _outputPathBox.Dock = DockStyle.Fill;
         _outputPathBox.Text = _outputRootDirectory;
-        _outputPathBox.Margin = new Padding(6, 3, 6, 3);
+        _outputPathBox.Margin = new Padding(6, 3, 3, 3);
         outputLayout.Controls.Add(_outputPathBox, 1, 0);
+
+        var outputButtons = MakeWrapFlow();
+        outputButtons.FlowDirection = FlowDirection.RightToLeft;
+        outputButtons.Dock = DockStyle.Fill;
 
         _chooseOutputButton.Text = "Uitvoermap kiezen…";
         _chooseOutputButton.AutoSize = true;
         _chooseOutputButton.Click += (_, _) => ChooseOutputDirectory();
-        outputLayout.Controls.Add(_chooseOutputButton, 2, 0);
+        outputButtons.Controls.Add(_chooseOutputButton);
 
         _defaultOutputButton.Text = "Standaard";
         _defaultOutputButton.AutoSize = true;
         _defaultOutputButton.Margin = new Padding(8, 3, 0, 3);
         _defaultOutputButton.Click += (_, _) => ResetOutputDirectory();
-        outputLayout.Controls.Add(_defaultOutputButton, 3, 0);
+        outputButtons.Controls.Add(_defaultOutputButton);
+
+        outputLayout.Controls.Add(outputButtons, 0, 1);
+        outputLayout.SetColumnSpan(outputButtons, 2);
 
         outputBox.Controls.Add(outputLayout);
         root.Controls.Add(outputBox, 0, 4);
@@ -306,7 +310,7 @@ internal sealed class MainForm : Form
             Dock = DockStyle.Fill,
             AutoSize = true,
             FlowDirection = FlowDirection.RightToLeft,
-            WrapContents = false
+            WrapContents = true
         };
 
         _startButton.Text = "Start GamesCleaner";
@@ -379,11 +383,22 @@ internal sealed class MainForm : Form
         });
     }
 
+    private static FlowLayoutPanel MakeWrapFlow() => new()
+    {
+        Dock = DockStyle.Top,
+        AutoSize = true,
+        AutoSizeMode = AutoSizeMode.GrowAndShrink,
+        FlowDirection = FlowDirection.LeftToRight,
+        WrapContents = true,
+        Margin = Padding.Empty,
+        Padding = Padding.Empty
+    };
+
     private static Label MakeLabel(string text) => new()
     {
         AutoSize = true,
         Text = text,
-        Margin = new Padding(3, 7, 3, 3)
+        Margin = new Padding(3, 5, 3, 2)
     };
 
     private static Control MakeSpacer() => new Panel
