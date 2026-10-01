@@ -25,6 +25,8 @@ GamesCleaner zoekt standaard NIET:
 Nieuw in versie 2:
 - met "PGN's eigen map" ververst u de automatische bronlijst onder de programmamap;
 - met "PGN's elders…" kiest u één andere map op de pc of het netwerk;
+- met "Wissen" maakt u de bronlijst leeg en worden eerder gekozen externe bronmappen vergeten;
+  daarna kunt u bijvoorbeeld uitsluitend één nieuwe jaarmap kiezen;
 - bij "PGN's elders…" worden alleen de gekozen map en de submappen daaronder doorzocht;
   bovenliggende mappen en andere locaties worden nooit meegenomen;
 - hetzelfde volledige bestandspad wordt niet dubbel in de lijst opgenomen.
