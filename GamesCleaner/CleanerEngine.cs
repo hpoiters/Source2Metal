@@ -49,10 +49,14 @@ internal sealed class CleanerCounters
     public long LowElo;
     public long InvalidResult;
     public long Malformed;
+    public long WithoutEventTag;
 
-    public void Count(RejectReason reason)
+    public void Count(RejectReason reason, bool hasEventTag)
     {
         TotalGames++;
+        if (!hasEventTag)
+            WithoutEventTag++;
+
         if (reason == RejectReason.None)
         {
             StrongGames++;
@@ -468,7 +472,7 @@ internal static class CleanerEngine
 
         lock (outputLock)
         {
-            counters.Count(reason);
+            counters.Count(reason, meta.SawEvent);
 
             var writer = reason == RejectReason.None ? strongWriter : rejectedWriter;
             foreach (var chunk in game.GetChunks())
@@ -592,7 +596,8 @@ internal static class CleanerEngine
         MissingElo = c.MissingElo,
         LowElo = c.LowElo,
         InvalidResult = c.InvalidResult,
-        Malformed = c.Malformed
+        Malformed = c.Malformed,
+        WithoutEventTag = c.WithoutEventTag
     };
 
     private static string CreateUniqueRunDirectory(string root)
@@ -660,6 +665,10 @@ internal static class CleanerEngine
         w.WriteLine($"Elo te laag             : {c.LowElo:N0}");
         w.WriteLine($"Uitslag ongeldig/onaf   : {c.InvalidResult:N0}");
         w.WriteLine($"PGN afwijkend/beschadigd: {c.Malformed:N0}");
+        w.WriteLine();
+        w.WriteLine("Diagnostiek partijgrenzen");
+        w.WriteLine("------------------------");
+        w.WriteLine($"Partijen zonder Event-tag: {c.WithoutEventTag:N0}");
         w.WriteLine();
         w.WriteLine($"Uitvoermap              : {Path.GetDirectoryName(strongPath)}");
         w.WriteLine($"StrongGames-bestand     : {strongPath}");
