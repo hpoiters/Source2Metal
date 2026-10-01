@@ -226,6 +226,7 @@ internal static class CleanerEngine
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                long fileStart = processedBytes;
                 ProcessOneFile(
                     input,
                     settings,
@@ -238,6 +239,10 @@ internal static class CleanerEngine
                     ref lastProgress,
                     progress,
                     cancellationToken);
+
+                // Maak de voortgang aan het einde van ieder bestand exact.
+                processedBytes = Math.Min(totalBytes, fileStart + input.SizeBytes);
+                ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
             }
 
             strongWriter.Flush();
@@ -336,7 +341,7 @@ internal static class CleanerEngine
             processedBytes = Math.Min(totalBytes, processedBytes + lineBytes);
 
             bool newGame = IsEventLine(line, firstLine);
-            if (newGame && game.Length > 0)
+            if (newGame && game.Length > 0 && meta.SawEvent)
             {
                 FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
                 game.Clear();
@@ -368,14 +373,7 @@ internal static class CleanerEngine
         if (game.Length > 0)
             FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
 
-        // Corrigeer kleine voortgangsafwijkingen door LF/CRLF of een ontbrekende slot-newline.
-        long exactCompleted = inputsBytesBeforeNotAvailable();
-        processedBytes = Math.Min(totalBytes, processedBytes + Math.Max(0, input.SizeBytes - Math.Min(input.SizeBytes, fs.Length)));
-        // De globale teller wordt aan het einde van elk bestand minimaal met de bestandsgrootte
-        // gecorrigeerd in de aanroeper via de benaderde lijnentelling; onderstaande helper is bewust no-op.
         ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
-
-        static long inputsBytesBeforeNotAvailable() => 0;
     }
 
     private static bool IsEventLine(string line, bool firstLine)
@@ -406,7 +404,8 @@ internal static class CleanerEngine
         counters.Count(reason);
 
         var writer = reason == RejectReason.None ? strongWriter : rejectedWriter;
-        writer.Write(game);
+        foreach (var chunk in game.GetChunks())
+            writer.Write(chunk.Span);
         if (game.Length > 0 && game[^1] != '\n')
             writer.WriteLine();
     }
