@@ -33,7 +33,7 @@ Nieuw in versie 2:
   eigen map en een externe map worden dus niet ongemerkt samengevoegd;
 - met "Wissen" maakt u de bronlijst leeg en worden actieve externe bronmappen vergeten;
   de laatst bezochte externe browse-map blijft wel onthouden, zodat "PGN's elders…"
-  daar opnieuw opent;
+  de volgende keer direct ín die map opent;
 - "PGN's eigen map" verandert die onthouden externe browse-locatie niet;
 - hetzelfde volledige bestandspad wordt niet dubbel in de lijst opgenomen.
 
