@@ -17,6 +17,10 @@ internal static class SelfTest
             string source = Path.Combine(nested, "testgames.pgn");
             File.WriteAllText(source, BuildSample(), Encoding.ASCII);
 
+            string source2 = Path.Combine(nested, "testgames_extra.pgn");
+            File.WriteAllText(source2, BuildGame(
+                "Extra strong", 2750, 2720, "1-0", "900+5", 30), Encoding.ASCII);
+
             // Bewijs dat een oude resultaatmap niet opnieuw als bron wordt gevonden.
             string oldResult = Path.Combine(root, CleanerEngine.ResultFolderName, "oud");
             Directory.CreateDirectory(oldResult);
@@ -24,9 +28,11 @@ internal static class SelfTest
                 "MOET WORDEN OVERGESLAGEN", 2700, 2700, "1-0", "600+0", 25), Encoding.ASCII);
 
             var discovered = CleanerEngine.DiscoverPgnFiles(root);
-            Require(discovered.Count == 1, $"Verwacht 1 bron-PGN, gevonden: {discovered.Count}");
-            Require(discovered[0].Path.Equals(source, StringComparison.OrdinalIgnoreCase),
-                "De gevonden bron-PGN is niet het verwachte bestand.");
+            Require(discovered.Count == 2, $"Verwacht 2 bron-PGN's, gevonden: {discovered.Count}");
+            Require(discovered.Any(x => x.Path.Equals(source, StringComparison.OrdinalIgnoreCase)),
+                "Het eerste verwachte bron-PGN ontbreekt.");
+            Require(discovered.Any(x => x.Path.Equals(source2, StringComparison.OrdinalIgnoreCase)),
+                "Het tweede verwachte bron-PGN ontbreekt.");
 
             var settings = new CleanerSettings
             {
@@ -34,7 +40,8 @@ internal static class SelfTest
                 MinimumFullMoves = 20,
                 RejectBullet = true,
                 RejectVeryFast = true,
-                VeryFastBaseSeconds = 120
+                VeryFastBaseSeconds = 120,
+                WorkerThreads = 2
             };
 
             string customOutputRoot = Path.Combine(root, "ZelfGekozenUitvoer");
@@ -53,8 +60,8 @@ internal static class SelfTest
 
             var c = result.Counters;
             Require(!result.Cancelled, "Self-test werd onverwacht als geannuleerd gemarkeerd.");
-            Require(c.TotalGames == 7, $"Totaal moet 7 zijn, is {c.TotalGames}.");
-            Require(c.StrongGames == 2, $"StrongGames moet 2 zijn, is {c.StrongGames}.");
+            Require(c.TotalGames == 8, $"Totaal moet 8 zijn, is {c.TotalGames}.");
+            Require(c.StrongGames == 3, $"StrongGames moet 3 zijn, is {c.StrongGames}.");
             Require(c.RejectedGames == 5, $"Afgekeurd moet 5 zijn, is {c.RejectedGames}.");
             Require(c.Bullet == 1, $"Bullet moet 1 zijn, is {c.Bullet}.");
             Require(c.VeryFast == 1, $"Zeer snel moet 1 zijn, is {c.VeryFast}.");
@@ -65,9 +72,9 @@ internal static class SelfTest
             string strong = File.ReadAllText(result.StrongPath, Encoding.Latin1);
             string rejected = File.ReadAllText(result.RejectedPath, Encoding.Latin1);
 
-            Require(CountEvents(strong) == 2, "StrongGames.pgn bevat niet precies 2 partijen.");
+            Require(CountEvents(strong) == 3, "StrongGames.pgn bevat niet precies 3 partijen.");
             Require(CountEvents(rejected) == 5, "Afgekeurd.pgn bevat niet precies 5 partijen.");
-            Require(CountEvents(strong) + CountEvents(rejected) == 7,
+            Require(CountEvents(strong) + CountEvents(rejected) == 8,
                 "StrongGames + Afgekeurd vormen niet de complete self-testverzameling.");
 
             Directory.Delete(root, recursive: true);
