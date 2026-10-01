@@ -7,7 +7,7 @@ internal sealed class MainForm : Form
     private readonly string _baseDirectory =
         AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
 
-    private readonly HashSet<string> _manualPgnPaths =
+    private readonly HashSet<string> _externalRoots =
         new(StringComparer.OrdinalIgnoreCase);
 
     private string _outputRootDirectory;
@@ -96,7 +96,7 @@ internal sealed class MainForm : Form
             AutoSize = true,
             MaximumSize = new Size(580, 0),
             Text =
-                $"Eigen map: {_baseDirectory}   |   Andere locaties via ‘PGN's elders…’"
+                $"Eigen map: {_baseDirectory}   |   ‘PGN's elders…’ zoekt alleen in de gekozen map en daaronder"
         });
 
         root.Controls.Add(titlePanel, 0, 0);
@@ -190,7 +190,7 @@ internal sealed class MainForm : Form
         _addPgnButton.Text = "PGN's elders…";
         _addPgnButton.AutoSize = true;
         _addPgnButton.Margin = new Padding(8, 3, 0, 3);
-        _addPgnButton.Click += (_, _) => AddPgnFiles();
+        _addPgnButton.Click += (_, _) => AddExternalPgnRoot();
         fileToolbar.Controls.Add(_addPgnButton);
 
         _allOnButton.Text = "Alles aan";
@@ -428,23 +428,22 @@ internal sealed class MainForm : Form
             foreach (var file in CleanerEngine.DiscoverPgnFiles(_baseDirectory))
                 byPath[file.Path] = file;
 
-            foreach (string path in _manualPgnPaths.ToArray())
+            foreach (string root in _externalRoots.ToArray())
             {
                 try
                 {
-                    if (!File.Exists(path))
+                    if (!Directory.Exists(root))
                     {
-                        _manualPgnPaths.Remove(path);
+                        _externalRoots.Remove(root);
                         continue;
                     }
 
-                    var fi = new FileInfo(path);
-                    if (fi.Length > 0)
-                        byPath[fi.FullName] = new InputPgn(fi.FullName, fi.Length);
+                    foreach (var file in CleanerEngine.DiscoverPgnFiles(root))
+                        byPath[file.Path] = file;
                 }
                 catch
                 {
-                    _manualPgnPaths.Remove(path);
+                    _externalRoots.Remove(root);
                 }
             }
 
@@ -466,7 +465,7 @@ internal sealed class MainForm : Form
                 {
                     selected = wasChecked;
                 }
-                else if (_manualPgnPaths.Contains(file.Path))
+                else if (_externalRoots.Any(root => IsUnderDirectory(file.Path, root)))
                 {
                     selected = true;
                 }
@@ -494,36 +493,39 @@ internal sealed class MainForm : Form
         }
     }
 
-    private void AddPgnFiles()
+    private void AddExternalPgnRoot()
     {
         if (_running)
             return;
 
-        using var dialog = new OpenFileDialog
+        using var dialog = new FolderBrowserDialog
         {
-            Title = "PGN-bestanden toevoegen",
-            Filter = "PGN-bestanden (*.pgn)|*.pgn|Alle bestanden (*.*)|*.*",
-            Multiselect = true,
-            CheckFileExists = true,
-            CheckPathExists = true,
-            InitialDirectory = Directory.Exists(_baseDirectory) ? _baseDirectory : null
+            Description =
+                "Kies de map waarin GamesCleaner PGN-bestanden mag zoeken. " +
+                "Alleen deze map en onderliggende mappen worden gebruikt; nooit bovenliggende mappen.",
+            UseDescriptionForTitle = true,
+            ShowNewFolderButton = false,
+            SelectedPath = Directory.Exists(_baseDirectory) ? _baseDirectory : null
         };
 
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
 
-        foreach (string file in dialog.FileNames)
+        try
         {
-            try
-            {
-                string full = Path.GetFullPath(file);
-                if (File.Exists(full))
-                    _manualPgnPaths.Add(full);
-            }
-            catch
-            {
-                // Eén onbruikbaar gekozen pad mag de overige keuzes niet blokkeren.
-            }
+            string root = Path.GetFullPath(dialog.SelectedPath);
+            if (Directory.Exists(root))
+                _externalRoots.Add(root);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                "Deze bronmap kan niet worden gebruikt.\r\n\r\n" + ex.Message,
+                "GamesCleaner",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
         }
 
         RefreshFiles();
