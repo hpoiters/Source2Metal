@@ -662,8 +662,17 @@ internal static class CleanerEngine
                     if (inspect.StartsWith("[Event ", StringComparison.Ordinal))
                         SawEvent = true;
 
-                    if (inspect.Contains("bullet", StringComparison.OrdinalIgnoreCase))
+                    // Alleen velden die het speeltempo kunnen beschrijven.
+                    // Een speler met bijvoorbeeld "Bullet" in de gebruikersnaam mag
+                    // niet om die reden worden afgekeurd.
+                    if ((TryReadTag(inspect, "Event", out var eventValue) ||
+                         TryReadTag(inspect, "Site", out eventValue) ||
+                         TryReadTag(inspect, "Speed", out eventValue) ||
+                         TryReadTag(inspect, "TimeClass", out eventValue)) &&
+                        eventValue.Contains("bullet", StringComparison.OrdinalIgnoreCase))
+                    {
                         BulletInHeaders = true;
+                    }
 
                     if (TryReadTag(inspect, "WhiteElo", out var whiteElo))
                         WhiteElo = ParseElo(whiteElo);
