@@ -96,7 +96,7 @@ internal sealed class MainForm : Form
             AutoSize = true,
             MaximumSize = new Size(840, 0),
             Text =
-                $"Automatisch: {_baseDirectory}   |   Extra bronnen via ‘PGN's toevoegen…’"
+                $"Eigen map: {_baseDirectory}   |   Andere locaties via ‘PGN's elders…’"
         });
 
         root.Controls.Add(titlePanel, 0, 0);
@@ -182,12 +182,12 @@ internal sealed class MainForm : Form
         fileToolbar.Dock = DockStyle.Top;
         fileToolbar.Margin = new Padding(0, 0, 0, 4);
 
-        _refreshButton.Text = "PGN's opnieuw zoeken";
+        _refreshButton.Text = "PGN's eigen map";
         _refreshButton.AutoSize = true;
         _refreshButton.Click += (_, _) => RefreshFiles();
         fileToolbar.Controls.Add(_refreshButton);
 
-        _addPgnButton.Text = "PGN's toevoegen…";
+        _addPgnButton.Text = "PGN's elders…";
         _addPgnButton.AutoSize = true;
         _addPgnButton.Margin = new Padding(8, 3, 0, 3);
         _addPgnButton.Click += (_, _) => AddPgnFiles();
