@@ -545,7 +545,7 @@ internal sealed class MainForm : Form
                 "De gekozen map en de submappen daaronder worden doorzocht; bovenliggende mappen en andere locaties nooit.",
             UseDescriptionForTitle = true,
             ShowNewFolderButton = false,
-            SelectedPath =
+            InitialDirectory =
                 Directory.Exists(_lastBrowseDirectory)
                     ? _lastBrowseDirectory
                     : (Directory.Exists(_baseDirectory) ? _baseDirectory : null)
