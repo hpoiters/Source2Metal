@@ -23,14 +23,18 @@ GamesCleaner zoekt standaard NIET:
 - in mappen met bekende resultaatnamen zoals Output, Result, Results, Resultaat of Resultaten.
 
 Nieuw in versie 2:
-- met "PGN's eigen map" ververst u de automatische bronlijst onder de programmamap;
-- met "PGN's elders…" kiest u één andere map op de pc of het netwerk;
-- met "Wissen" maakt u de bronlijst leeg en worden eerder gekozen externe bronmappen vergeten;
-  de laatst bezochte browse-map blijft wel onthouden, zodat "PGN's elders…" daar opnieuw opent;
-- "PGN's eigen map" toont opnieuw de bronnen rond GamesCleaner.exe, maar verandert de
-  laatst bezochte browse-map voor "PGN's elders…" niet;
-- bij "PGN's elders…" worden alleen de gekozen map en de submappen daaronder doorzocht;
-  bovenliggende mappen en andere locaties worden nooit meegenomen;
+- met "PGN's eigen map" wordt uitsluitend de programmamap met de submappen daaronder
+  als brongebied gebruikt;
+- met "PGN's elders…" begint u bewust aan een nieuwe externe bronkeuze: de huidige
+  bronlijst wordt direct leeggemaakt en pas na "Map selecteren" opnieuw gevuld;
+- de bij "PGN's elders…" gekozen map en de submappen daaronder vormen samen het volledige
+  brongebied; bovenliggende, naastliggende en andere locaties worden nooit meegenomen;
+- een nieuwe keuze via "PGN's elders…" vervangt de vorige bronkeuze; bronnen uit de
+  eigen map en een externe map worden dus niet ongemerkt samengevoegd;
+- met "Wissen" maakt u de bronlijst leeg en worden actieve externe bronmappen vergeten;
+  de laatst bezochte externe browse-map blijft wel onthouden, zodat "PGN's elders…"
+  daar opnieuw opent;
+- "PGN's eigen map" verandert die onthouden externe browse-locatie niet;
 - hetzelfde volledige bestandspad wordt niet dubbel in de lijst opgenomen.
 
 Als een samengevoegde GAME-bron met "Merged GAME Sources" in de naam aanwezig is,
