@@ -242,13 +242,13 @@ internal sealed class MainForm : Form
         {
             Dock = DockStyle.Fill,
             AutoSize = true,
-            ColumnCount = 2,
-            RowCount = 2
+            ColumnCount = 3,
+            RowCount = 1
         };
 
         outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        outputLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        outputLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         outputLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
         outputLayout.Controls.Add(MakeLabel("Uitvoermap:"), 0, 0);
@@ -262,6 +262,7 @@ internal sealed class MainForm : Form
         var outputButtons = MakeWrapFlow();
         outputButtons.FlowDirection = FlowDirection.RightToLeft;
         outputButtons.Dock = DockStyle.Top;
+        outputButtons.Margin = Padding.Empty;
 
         _chooseOutputButton.Text = "Uitvoermap kiezen…";
         _chooseOutputButton.AutoSize = true;
@@ -274,8 +275,7 @@ internal sealed class MainForm : Form
         _defaultOutputButton.Click += (_, _) => ResetOutputDirectory();
         outputButtons.Controls.Add(_defaultOutputButton);
 
-        outputLayout.Controls.Add(outputButtons, 0, 1);
-        outputLayout.SetColumnSpan(outputButtons, 2);
+        outputLayout.Controls.Add(outputButtons, 2, 0);
 
         outputBox.Controls.Add(outputLayout);
         root.Controls.Add(outputBox, 0, 4);
@@ -294,7 +294,7 @@ internal sealed class MainForm : Form
             Dock = DockStyle.Fill,
             AutoSize = true,
             ColumnCount = 1,
-            RowCount = 4
+            RowCount = 3
         };
 
         _currentFile.AutoEllipsis = true;
@@ -305,17 +305,24 @@ internal sealed class MainForm : Form
         _progressBar.Dock = DockStyle.Top;
         _progressBar.Minimum = 0;
         _progressBar.Maximum = 1000;
-        _progressBar.Height = 15;
-        _progressBar.Margin = new Padding(0, 1, 0, 1);
+        _progressBar.Height = 13;
+        _progressBar.Margin = new Padding(0, 0, 0, 0);
         statusLayout.Controls.Add(_progressBar, 0, 1);
+
+        var statusBottom = MakeWrapFlow();
+        statusBottom.Margin = Padding.Empty;
 
         _progressText.AutoSize = true;
         _progressText.Text = "0,0%";
-        statusLayout.Controls.Add(_progressText, 0, 2);
+        _progressText.Margin = new Padding(0, 2, 12, 0);
+        statusBottom.Controls.Add(_progressText);
 
         _counts.AutoSize = true;
         _counts.Text = "Partijen: 0   StrongGames: 0   Afgekeurd: 0";
-        statusLayout.Controls.Add(_counts, 0, 3);
+        _counts.Margin = new Padding(0, 2, 0, 0);
+        statusBottom.Controls.Add(_counts);
+
+        statusLayout.Controls.Add(statusBottom, 0, 2);
 
         statusBox.Controls.Add(statusLayout);
         root.Controls.Add(statusBox, 0, 5);
