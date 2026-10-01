@@ -22,6 +22,7 @@ internal sealed class CleanerSettings
     public bool RejectBullet { get; init; } = true;
     public bool RejectVeryFast { get; init; } = true;
     public int VeryFastBaseSeconds { get; init; } = 120;
+    public int WorkerThreads { get; init; } = Math.Max(1, Environment.ProcessorCount / 2);
 }
 
 internal enum RejectReason
@@ -48,10 +49,14 @@ internal sealed class CleanerCounters
     public long LowElo;
     public long InvalidResult;
     public long Malformed;
+    public long WithoutEventTag;
 
-    public void Count(RejectReason reason)
+    public void Count(RejectReason reason, bool hasEventTag)
     {
         TotalGames++;
+        if (!hasEventTag)
+            WithoutEventTag++;
+
         if (reason == RejectReason.None)
         {
             StrongGames++;
@@ -179,7 +184,7 @@ internal static class CleanerEngine
     }
 
     public static CleanerResult Run(
-        string baseDirectory,
+        string outputRootDirectory,
         IReadOnlyList<InputPgn> inputs,
         CleanerSettings settings,
         IProgress<CleanerProgress>? progress,
@@ -192,9 +197,11 @@ internal static class CleanerEngine
         long processedBytes = 0;
         var counters = new CleanerCounters();
         var stopwatch = Stopwatch.StartNew();
-        var lastProgress = TimeSpan.Zero;
 
-        var resultRoot = Path.Combine(baseDirectory, ResultFolderName);
+        if (string.IsNullOrWhiteSpace(outputRootDirectory))
+            throw new ArgumentException("De uitvoermap ontbreekt.", nameof(outputRootDirectory));
+
+        var resultRoot = Path.GetFullPath(outputRootDirectory);
         Directory.CreateDirectory(resultRoot);
 
         var runDirectory = CreateUniqueRunDirectory(resultRoot);
@@ -221,27 +228,51 @@ internal static class CleanerEngine
             using (var rejectedWriter = new StreamWriter(
                 rejectedStream, Encoding.Latin1, 1024 * 1024, leaveOpen: false))
             {
-                foreach (var input in inputs)
+                var outputLock = new object();
+                int maxWorkers = Math.Max(1, settings.WorkerThreads);
+
+                if (maxWorkers == 1 || inputs.Count == 1)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    foreach (var input in inputs)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        ProcessOneFile(
+                            input,
+                            settings,
+                            strongWriter,
+                            rejectedWriter,
+                            counters,
+                            outputLock,
+                            ref processedBytes,
+                            totalBytes,
+                            stopwatch,
+                            progress,
+                            cancellationToken);
+                    }
+                }
+                else
+                {
+                    var options = new ParallelOptions
+                    {
+                        CancellationToken = cancellationToken,
+                        MaxDegreeOfParallelism = Math.Min(maxWorkers, inputs.Count)
+                    };
 
-                    long fileStart = processedBytes;
-                    ProcessOneFile(
-                        input,
-                        settings,
-                        strongWriter,
-                        rejectedWriter,
-                        counters,
-                        ref processedBytes,
-                        totalBytes,
-                        stopwatch,
-                        ref lastProgress,
-                        progress,
-                        cancellationToken);
-
-                    // Maak de voortgang aan het einde van ieder bestand exact.
-                    processedBytes = Math.Min(totalBytes, fileStart + input.SizeBytes);
-                    ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+                    Parallel.ForEach(inputs, options, input =>
+                    {
+                        ProcessOneFile(
+                            input,
+                            settings,
+                            strongWriter,
+                            rejectedWriter,
+                            counters,
+                            outputLock,
+                            ref processedBytes,
+                            totalBytes,
+                            stopwatch,
+                            progress,
+                            options.CancellationToken);
+                    });
                 }
 
                 strongWriter.Flush();
@@ -308,17 +339,17 @@ internal static class CleanerEngine
         StreamWriter strongWriter,
         StreamWriter rejectedWriter,
         CleanerCounters counters,
+        object outputLock,
         ref long processedBytes,
         long totalBytes,
         Stopwatch stopwatch,
-        ref TimeSpan lastProgress,
         IProgress<CleanerProgress>? progress,
         CancellationToken cancellationToken)
     {
         int newlineBytes = DetectNewlineBytes(input.Path);
         string newline = newlineBytes == 1 ? "\n" : "\r\n";
         bool wholeFileBullet =
-            Path.GetFileName(input.Path).Contains("bullet", StringComparison.OrdinalIgnoreCase);
+            ContainsBulletClass(Path.GetFileNameWithoutExtension(input.Path));
 
         using var fs = new FileStream(
             input.Path, FileMode.Open, FileAccess.Read, FileShare.Read,
@@ -331,18 +362,31 @@ internal static class CleanerEngine
         var meta = new GameMeta();
         bool firstLine = true;
         string? line;
+        long localBytes = 0;
+        TimeSpan lastProgress = stopwatch.Elapsed;
 
         while ((line = reader.ReadLine()) is not null)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             long lineBytes = line.Length + newlineBytes;
-            processedBytes = Math.Min(totalBytes, processedBytes + lineBytes);
+            localBytes += lineBytes;
+            Interlocked.Add(ref processedBytes, lineBytes);
 
-            bool newGame = IsEventLine(line, firstLine);
-            if (newGame && game.Length > 0 && meta.SawEvent)
+            bool headerLine = IsHeaderLine(line, firstLine);
+            bool eventLine = IsEventLine(line, firstLine);
+
+            // Normale PGN: [Event ...] begint een nieuwe partij.
+            // Afwijkende PGN zonder Event-tag: zodra na reeds gelezen zetten weer
+            // een headerregel begint, behandelen we dat eveneens als nieuwe partij.
+            bool newGame =
+                game.Length > 0 &&
+                ((eventLine && (meta.SawEvent || meta.SawMovetext)) ||
+                 (headerLine && meta.SawMovetext));
+
+            if (newGame)
             {
-                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
+                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters, outputLock);
                 game.Clear();
                 meta.Reset();
             }
@@ -356,23 +400,47 @@ internal static class CleanerEngine
             if (stopwatch.Elapsed - lastProgress >= TimeSpan.FromMilliseconds(250))
             {
                 lastProgress = stopwatch.Elapsed;
-                ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+                long nowBytes = Math.Min(totalBytes, Interlocked.Read(ref processedBytes));
+                lock (outputLock)
+                {
+                    ReportProgress(progress, input.Path, nowBytes, totalBytes, counters, stopwatch.Elapsed);
+                }
             }
 
             if (game.Length > 64 * 1024 * 1024)
             {
                 // Beschermt tegen een zwaar beschadigd bestand zonder herkenbare partijgrenzen.
                 meta.ForceMalformed = true;
-                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
+                FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters, outputLock);
                 game.Clear();
                 meta.Reset();
             }
         }
 
         if (game.Length > 0)
-            FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
+            FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters, outputLock);
 
-        ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+        // Maak de bytevoortgang per bronbestand exact, ook bij een ontbrekende slot-newline.
+        long correction = input.SizeBytes - localBytes;
+        if (correction != 0)
+            Interlocked.Add(ref processedBytes, correction);
+
+        long doneBytes = Math.Min(totalBytes, Interlocked.Read(ref processedBytes));
+        lock (outputLock)
+        {
+            ReportProgress(progress, input.Path, doneBytes, totalBytes, counters, stopwatch.Elapsed);
+        }
+    }
+
+    private static bool IsHeaderLine(string line, bool firstLine)
+    {
+        if (line.StartsWith("[", StringComparison.Ordinal))
+            return true;
+
+        if (firstLine && line.StartsWith("ï»¿[", StringComparison.Ordinal))
+            return true;
+
+        return false;
     }
 
     private static bool IsEventLine(string line, bool firstLine)
@@ -397,21 +465,26 @@ internal static class CleanerEngine
         CleanerSettings settings,
         StreamWriter strongWriter,
         StreamWriter rejectedWriter,
-        CleanerCounters counters)
+        CleanerCounters counters,
+        object outputLock)
     {
         var reason = Classify(meta, wholeFileBullet, settings);
-        counters.Count(reason);
 
-        var writer = reason == RejectReason.None ? strongWriter : rejectedWriter;
-        foreach (var chunk in game.GetChunks())
-            writer.Write(chunk.Span);
-        if (game.Length > 0 && game[^1] != '\n')
-            writer.WriteLine();
+        lock (outputLock)
+        {
+            counters.Count(reason, meta.SawEvent);
+
+            var writer = reason == RejectReason.None ? strongWriter : rejectedWriter;
+            foreach (var chunk in game.GetChunks())
+                writer.Write(chunk.Span);
+            if (game.Length > 0 && game[^1] != '\n')
+                writer.WriteLine();
+        }
     }
 
     private static RejectReason Classify(GameMeta meta, bool wholeFileBullet, CleanerSettings settings)
     {
-        if (meta.ForceMalformed || !meta.SawEvent || !meta.SawMovetext)
+        if (meta.ForceMalformed || !meta.HasAnyHeader || !meta.SawMovetext)
             return RejectReason.Malformed;
 
         if (settings.RejectBullet && (wholeFileBullet || meta.BulletInHeaders))
@@ -458,7 +531,37 @@ internal static class CleanerEngine
         if (!int.TryParse(basePart, NumberStyles.Integer, CultureInfo.InvariantCulture, out int seconds))
             return false;
 
-        return seconds > 0 && seconds <= maxBaseSeconds;
+        return seconds >= 0 && seconds <= maxBaseSeconds;
+    }
+
+    private static bool ContainsBulletClass(string value)
+    {
+        static bool ContainsWholeWord(string text, string word)
+        {
+            int start = 0;
+            while (start < text.Length)
+            {
+                int index = text.IndexOf(word, start, StringComparison.OrdinalIgnoreCase);
+                if (index < 0)
+                    return false;
+
+                int end = index + word.Length;
+                bool leftBoundary =
+                    index == 0 || !char.IsLetterOrDigit(text[index - 1]);
+                bool rightBoundary =
+                    end == text.Length || !char.IsLetterOrDigit(text[end]);
+
+                if (leftBoundary && rightBoundary)
+                    return true;
+
+                start = index + 1;
+            }
+
+            return false;
+        }
+
+        return ContainsWholeWord(value, "bullet") ||
+               ContainsWholeWord(value, "ultrabullet");
     }
 
     private static int DetectNewlineBytes(string path)
@@ -523,16 +626,18 @@ internal static class CleanerEngine
         MissingElo = c.MissingElo,
         LowElo = c.LowElo,
         InvalidResult = c.InvalidResult,
-        Malformed = c.Malformed
+        Malformed = c.Malformed,
+        WithoutEventTag = c.WithoutEventTag
     };
 
     private static string CreateUniqueRunDirectory(string root)
     {
         string stamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
-        string candidate = Path.Combine(root, stamp);
+        string folderName = "GamesCleaner_" + stamp;
+        string candidate = Path.Combine(root, folderName);
         int n = 2;
         while (Directory.Exists(candidate))
-            candidate = Path.Combine(root, $"{stamp}_{n++}");
+            candidate = Path.Combine(root, $"{folderName}_{n++}");
         return candidate;
     }
 
@@ -573,6 +678,7 @@ internal static class CleanerEngine
         w.WriteLine($"Bullet afkeuren         : {(settings.RejectBullet ? "JA" : "NEE")}");
         w.WriteLine($"Zeer snel afkeuren      : {(settings.RejectVeryFast ? "JA" : "NEE")}");
         w.WriteLine($"Zeer snel t/m basis     : {settings.VeryFastBaseSeconds} seconden");
+        w.WriteLine($"Max. werkthreads        : {settings.WorkerThreads}");
         w.WriteLine();
         w.WriteLine("Uitkomst");
         w.WriteLine("--------");
@@ -590,6 +696,11 @@ internal static class CleanerEngine
         w.WriteLine($"Uitslag ongeldig/onaf   : {c.InvalidResult:N0}");
         w.WriteLine($"PGN afwijkend/beschadigd: {c.Malformed:N0}");
         w.WriteLine();
+        w.WriteLine("Diagnostiek partijgrenzen");
+        w.WriteLine("------------------------");
+        w.WriteLine($"Partijen zonder Event-tag: {c.WithoutEventTag:N0}");
+        w.WriteLine();
+        w.WriteLine($"Uitvoermap              : {Path.GetDirectoryName(strongPath)}");
         w.WriteLine($"StrongGames-bestand     : {strongPath}");
         w.WriteLine($"Afgekeurd-bestand       : {rejectedPath}");
         w.WriteLine();
@@ -618,6 +729,7 @@ internal static class CleanerEngine
         public string? Result;
         public string? TimeControl;
         public bool BulletInHeaders;
+        public bool HasAnyHeader;
         public int MaxMoveNumber;
         public bool SawEvent;
         public bool SawMovetext;
@@ -634,6 +746,7 @@ internal static class CleanerEngine
             Result = null;
             TimeControl = null;
             BulletInHeaders = false;
+            HasAnyHeader = false;
             MaxMoveNumber = 0;
             SawEvent = false;
             SawMovetext = false;
@@ -651,14 +764,18 @@ internal static class CleanerEngine
 
             if (_inHeaders)
             {
-                if (inspect.Length == 0)
+                if (string.IsNullOrWhiteSpace(inspect))
                 {
-                    _inHeaders = false;
+                    // Lege regels vóór de eerste tag zijn alleen voorloopruimte.
+                    // Pas na minimaal één header eindigt een lege regel de tagsectie.
+                    if (HasAnyHeader)
+                        _inHeaders = false;
                     return;
                 }
 
                 if (inspect.StartsWith("[", StringComparison.Ordinal))
                 {
+                    HasAnyHeader = true;
                     if (inspect.StartsWith("[Event ", StringComparison.Ordinal))
                         SawEvent = true;
 
@@ -669,7 +786,7 @@ internal static class CleanerEngine
                          TryReadTag(inspect, "Site", out eventValue) ||
                          TryReadTag(inspect, "Speed", out eventValue) ||
                          TryReadTag(inspect, "TimeClass", out eventValue)) &&
-                        eventValue.Contains("bullet", StringComparison.OrdinalIgnoreCase))
+                        ContainsBulletClass(eventValue))
                     {
                         BulletInHeaders = true;
                     }

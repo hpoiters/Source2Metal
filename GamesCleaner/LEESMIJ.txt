@@ -1,5 +1,5 @@
-GamesCleaner.exe
-================
+GamesCleaner v2
+===============
 
 Doel
 ----
@@ -11,20 +11,58 @@ GamesCleaner splitst grote PGN-verzamelingen in twee complete uitgangen:
 Iedere herkende ingelezen partij gaat precies naar één van deze twee bestanden.
 De bron-PGN's worden nooit gewijzigd.
 
-Plaatsing
----------
-Zet GamesCleaner.exe in de hoofdmap waaronder de te verwerken PGN-bestanden staan.
-
-GamesCleaner zoekt:
+Bronnen
+-------
+GamesCleaner zoekt standaard:
 - in dezelfde map als GamesCleaner.exe;
 - in onderliggende submappen.
 
-GamesCleaner zoekt NIET:
+GamesCleaner zoekt standaard NIET:
 - in bovenliggende mappen;
 - in eigen resultaatmappen;
 - in mappen met bekende resultaatnamen zoals Output, Result, Results, Resultaat of Resultaten.
 
-Voor de start toont het programma alle gevonden PGN-bestanden. U kunt bestanden aan- of uitvinken.
+Nieuw in versie 2:
+- met "PGN's eigen map" wordt uitsluitend de programmamap met de submappen daaronder
+  als brongebied gebruikt;
+- met "PGN's elders…" begint u bewust aan een nieuwe externe bronkeuze: de huidige
+  bronlijst wordt direct leeggemaakt en pas na "Map selecteren" opnieuw gevuld;
+- de bij "PGN's elders…" gekozen map en de submappen daaronder vormen samen het volledige
+  brongebied; bovenliggende, naastliggende en andere locaties worden nooit meegenomen;
+- een nieuwe keuze via "PGN's elders…" vervangt de vorige bronkeuze; bronnen uit de
+  eigen map en een externe map worden dus niet ongemerkt samengevoegd;
+- met "Wissen" maakt u de bronlijst leeg en worden actieve externe bronmappen vergeten;
+  de laatst bezochte externe browse-map blijft wel onthouden, zodat "PGN's elders…"
+  de volgende keer direct ín die map opent;
+- "PGN's eigen map" verandert die onthouden externe browse-locatie niet;
+- hetzelfde volledige bestandspad wordt niet dubbel in de lijst opgenomen.
+
+Als een samengevoegde GAME-bron met "Merged GAME Sources" in de naam aanwezig is,
+wordt die standaard geselecteerd om dubbele invoer van onderliggende bronbestanden
+te helpen voorkomen. U kunt de vinkjes altijd zelf aanpassen.
+
+Uitvoer
+-------
+Standaard schrijft GamesCleaner onder:
+
+GamesCleaner_Resultaat\GamesCleaner_YYYY-MM-DD_HH-mm-ss\
+
+Nieuw in versie 2:
+- met "Uitvoermap kiezen…" kunt u een andere bestaande map kiezen of een nieuwe
+  map aanmaken;
+- met "Standaard" keert u terug naar de gewone uitvoermap naast GamesCleaner.exe;
+- ook in een zelfgekozen uitvoermap maakt iedere run een eigen map met
+  "GamesCleaner_" en datum/tijd in de naam.
+
+In iedere complete runmap staan:
+
+    StrongGames.pgn
+    Afgekeurd.pgn
+    GamesCleaner_Report.txt
+
+Mappen die met "GamesCleaner_" beginnen worden bij automatisch zoeken overgeslagen.
+Daardoor kan een eerdere uitvoer niet per ongeluk als nieuwe automatische bron worden
+meegenomen.
 
 Standaardselectie
 -----------------
@@ -37,16 +75,24 @@ Standaardselectie
 
 De waarden voor Elo, minimumzetten en zeer snelle tijdcontrole zijn in het venster instelbaar.
 
-Uitvoer
--------
-Per run wordt gemaakt:
+Werkthreads
+-----------
+GamesCleaner v2 gebruikt standaard maximaal de helft van de beschikbare logische
+CPU-threads. Dit aantal is in het venster instelbaar.
 
-GamesCleaner_Resultaat\YYYY-MM-DD_HH-mm-ss\
-    StrongGames.pgn
-    Afgekeurd.pgn
-    GamesCleaner_Report.txt
+De parallelisatie gebeurt veilig over onafhankelijke bron-PGN's. Als u slechts één
+grote samengevoegde PGN selecteert, wordt die ene bron bewust sequentieel gestreamd.
+Dat voorkomt ingewikkelde splitsing midden in partijen en is bij zeer grote bestanden
+vaak al I/O-beperkt.
 
-Daardoor kan een volgende run nooit per ongeluk de eigen uitvoer opnieuw als bron gebruiken.
+Meer werkthreads betekent niet automatisch evenredig meer snelheid. Bij meerdere grote
+PGN's kan de winst op een gegeven moment afvlakken doordat opslag, geheugenverkeer en de
+gezamenlijke uitvoer naar StrongGames.pgn en Afgekeurd.pgn de nieuwe begrenzing worden.
+Ook verschillen bronbestanden in grootte, zodat de laatste grote bron aan het einde nog
+kan doorlopen terwijl andere workers al klaar zijn. Daarom blijft de standaard op
+ongeveer de helft van de logische CPU-threads staan. Wie wil, kan veilig alle beschikbare
+threads kiezen; op sommige systemen of datasets levert dat nog extra winst op, op andere
+slechts weinig.
 
 Voortgang
 ---------
@@ -60,18 +106,31 @@ Het venster toont:
 - geschatte resterende tijd.
 
 Het venster mag tijdens de verwerking worden vergroot, verkleind of gemaximaliseerd.
+De PGN-lijst krijgt bewust extra verticale ruimte zodat meerdere bronbestanden tegelijk
+zichtbaar blijven. De velden Uitvoer en Voortgang zijn compact gehouden om bijvoorbeeld
+een volledig jaar met twaalf maand-PGN's zo veel mogelijk tegelijk in beeld te houden;
+bij grotere aantallen verschijnt een normale verticale schuifbalk.
 
 Annuleren
 ---------
-Annuleren gebeurt op een partijgrens. Gedeeltelijke uitvoer wordt bewaard met
-_ONVOLLEDIG in de bestandsnaam, zodat die nooit met een complete run wordt verward.
+Annuleren gebeurt op een veilige verwerkingsgrens. Gedeeltelijke uitvoer wordt bewaard
+met _ONVOLLEDIG in de bestandsnaam, zodat die nooit met een complete run wordt verward.
 
 Opmerking over snelle partijen
 ------------------------------
-GamesCleaner gebruikt waar aanwezig de PGN-tag TimeControl. Bestanden of PGN-headers
-waarin het woord Bullet voorkomt worden eveneens als Bullet herkend. Een onbekende
-tijdcontrole is op zichzelf geen reden om een partij af te keuren.
+GamesCleaner gebruikt waar aanwezig de PGN-tag TimeControl. Event-, Site-, Speed- of
+TimeClass-velden met het afzonderlijke woord Bullet worden eveneens als Bullet herkend. Een speler
+met "Bullet" in zijn gebruikersnaam wordt daardoor niet ten onrechte afgekeurd.
+Een onbekende tijdcontrole is op zichzelf geen reden om een partij af te keuren.
 
 Versie
 ------
-Eerste proefbuild voor Windows x64.
+GamesCleaner v2 proefbuild voor Windows x64.
+
+
+Diagnostiek
+-----------
+Naar aanleiding van de eerste V1-praktijkrun rapporteert V2 ook hoeveel herkende
+partijen geen Event-tag hadden. Zulke partijen kunnen nog steeds geldig zijn en worden
+niet alleen vanwege die ontbrekende tag afgekeurd. Deze telling helpt verschillen tussen
+PGN-parsers van GamesCleaner, ChessBase en Scid te onderzoeken.
