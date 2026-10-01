@@ -179,7 +179,7 @@ internal static class CleanerEngine
     }
 
     public static CleanerResult Run(
-        string baseDirectory,
+        string outputRootDirectory,
         IReadOnlyList<InputPgn> inputs,
         CleanerSettings settings,
         IProgress<CleanerProgress>? progress,
@@ -194,7 +194,10 @@ internal static class CleanerEngine
         var stopwatch = Stopwatch.StartNew();
         var lastProgress = TimeSpan.Zero;
 
-        var resultRoot = Path.Combine(baseDirectory, ResultFolderName);
+        if (string.IsNullOrWhiteSpace(outputRootDirectory))
+            throw new ArgumentException("De uitvoermap ontbreekt.", nameof(outputRootDirectory));
+
+        var resultRoot = Path.GetFullPath(outputRootDirectory);
         Directory.CreateDirectory(resultRoot);
 
         var runDirectory = CreateUniqueRunDirectory(resultRoot);
@@ -590,6 +593,7 @@ internal static class CleanerEngine
         w.WriteLine($"Uitslag ongeldig/onaf   : {c.InvalidResult:N0}");
         w.WriteLine($"PGN afwijkend/beschadigd: {c.Malformed:N0}");
         w.WriteLine();
+        w.WriteLine($"Uitvoermap              : {Path.GetDirectoryName(strongPath)}");
         w.WriteLine($"StrongGames-bestand     : {strongPath}");
         w.WriteLine($"Afgekeurd-bestand       : {rejectedPath}");
         w.WriteLine();
