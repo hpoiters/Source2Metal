@@ -49,8 +49,8 @@ internal sealed class MainForm : Form
 
         Text = "GamesCleaner v2";
         StartPosition = FormStartPosition.CenterScreen;
-        MinimumSize = new Size(620, 500);
-        Size = new Size(760, 620);
+        MinimumSize = new Size(620, 520);
+        Size = new Size(760, 680);
 
         BuildUi();
         Shown += (_, _) => RefreshFiles();
@@ -219,8 +219,8 @@ internal sealed class MainForm : Form
             Text = "Uitvoer",
             Dock = DockStyle.Top,
             AutoSize = true,
-            Padding = new Padding(6),
-            Margin = new Padding(0, 4, 0, 0)
+            Padding = new Padding(4),
+            Margin = new Padding(0, 2, 0, 0)
         };
 
         var outputLayout = new TableLayoutPanel
@@ -246,7 +246,7 @@ internal sealed class MainForm : Form
 
         var outputButtons = MakeWrapFlow();
         outputButtons.FlowDirection = FlowDirection.RightToLeft;
-        outputButtons.Dock = DockStyle.Fill;
+        outputButtons.Dock = DockStyle.Top;
 
         _chooseOutputButton.Text = "Uitvoermap kiezen…";
         _chooseOutputButton.AutoSize = true;
@@ -270,8 +270,8 @@ internal sealed class MainForm : Form
             Text = "Voortgang",
             Dock = DockStyle.Top,
             AutoSize = true,
-            Padding = new Padding(6),
-            Margin = new Padding(0, 4, 0, 4)
+            Padding = new Padding(4),
+            Margin = new Padding(0, 2, 0, 2)
         };
 
         var statusLayout = new TableLayoutPanel
@@ -290,8 +290,8 @@ internal sealed class MainForm : Form
         _progressBar.Dock = DockStyle.Top;
         _progressBar.Minimum = 0;
         _progressBar.Maximum = 1000;
-        _progressBar.Height = 18;
-        _progressBar.Margin = new Padding(0, 3, 0, 1);
+        _progressBar.Height = 16;
+        _progressBar.Margin = new Padding(0, 2, 0, 1);
         statusLayout.Controls.Add(_progressBar, 0, 1);
 
         _progressText.AutoSize = true;
@@ -339,6 +339,7 @@ internal sealed class MainForm : Form
     private void ConfigureGrid()
     {
         _filesGrid.Dock = DockStyle.Fill;
+        _filesGrid.MinimumSize = new Size(0, 155);
         _filesGrid.AllowUserToAddRows = false;
         _filesGrid.AllowUserToDeleteRows = false;
         _filesGrid.AllowUserToResizeRows = false;
