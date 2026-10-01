@@ -98,7 +98,9 @@ Het venster toont:
 
 Het venster mag tijdens de verwerking worden vergroot, verkleind of gemaximaliseerd.
 De PGN-lijst krijgt bewust extra verticale ruimte zodat meerdere bronbestanden tegelijk
-zichtbaar blijven; bij grotere aantallen verschijnt een normale verticale schuifbalk.
+zichtbaar blijven. De velden Uitvoer en Voortgang zijn compact gehouden om bijvoorbeeld
+een volledig jaar met twaalf maand-PGN's zo veel mogelijk tegelijk in beeld te houden;
+bij grotere aantallen verschijnt een normale verticale schuifbalk.
 
 Annuleren
 ---------
