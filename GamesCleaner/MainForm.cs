@@ -11,6 +11,7 @@ internal sealed class MainForm : Form
         new(StringComparer.OrdinalIgnoreCase);
 
     private bool _includeBaseDirectory = true;
+    private string _lastBrowseDirectory;
     private string _outputRootDirectory;
 
     private readonly DataGridView _filesGrid = new();
@@ -48,6 +49,7 @@ internal sealed class MainForm : Form
     public MainForm()
     {
         _outputRootDirectory = DefaultOutputRoot;
+        _lastBrowseDirectory = _baseDirectory;
 
         Text = "GamesCleaner v2";
         StartPosition = FormStartPosition.CenterScreen;
@@ -189,6 +191,7 @@ internal sealed class MainForm : Form
         _refreshButton.Click += (_, _) =>
         {
             _includeBaseDirectory = true;
+            _lastBrowseDirectory = _baseDirectory;
             RefreshFiles();
         };
         fileToolbar.Controls.Add(_refreshButton);
@@ -534,7 +537,10 @@ internal sealed class MainForm : Form
                 "De gekozen map en de submappen daaronder worden doorzocht; bovenliggende mappen en andere locaties nooit.",
             UseDescriptionForTitle = true,
             ShowNewFolderButton = false,
-            SelectedPath = Directory.Exists(_baseDirectory) ? _baseDirectory : null
+            SelectedPath =
+                Directory.Exists(_lastBrowseDirectory)
+                    ? _lastBrowseDirectory
+                    : (Directory.Exists(_baseDirectory) ? _baseDirectory : null)
         };
 
         if (dialog.ShowDialog(this) != DialogResult.OK)
@@ -544,7 +550,10 @@ internal sealed class MainForm : Form
         {
             string root = Path.GetFullPath(dialog.SelectedPath);
             if (Directory.Exists(root))
+            {
+                _lastBrowseDirectory = root;
                 _externalRoots.Add(root);
+            }
         }
         catch (Exception ex)
         {
