@@ -309,10 +309,19 @@ internal sealed class MainForm : Form
             var files = CleanerEngine.DiscoverPgnFiles(_baseDirectory);
 
             _filesGrid.Rows.Clear();
+
+            // Als er een samengevoegde GAME-bron aanwezig is, selecteer die standaard.
+            // Zo worden de onderliggende bron-PGN's niet per ongeluk nogmaals meegeteld.
+            bool hasMergedGame = files.Any(f =>
+                Path.GetFileName(f.Path).Contains("Merged GAME Sources", StringComparison.OrdinalIgnoreCase));
+
             foreach (var file in files)
             {
+                bool selected = !hasMergedGame ||
+                    Path.GetFileName(file.Path).Contains("Merged GAME Sources", StringComparison.OrdinalIgnoreCase);
+
                 int rowIndex = _filesGrid.Rows.Add(
-                    true,
+                    selected,
                     file.DisplayPath(_baseDirectory),
                     file.DisplaySize);
                 _filesGrid.Rows[rowIndex].Tag = file;
