@@ -94,7 +94,7 @@ internal sealed class MainForm : Form
         titlePanel.Controls.Add(new Label
         {
             AutoSize = true,
-            MaximumSize = new Size(840, 0),
+            MaximumSize = new Size(580, 0),
             Text =
                 $"Eigen map: {_baseDirectory}   |   Andere locaties via ‘PGN's elders…’"
         });
@@ -167,7 +167,7 @@ internal sealed class MainForm : Form
         settingsRow3.Controls.Add(new Label
         {
             AutoSize = true,
-            Text = "(standaard: helft van de logische CPU-threads)",
+            Text = "(standaard 1/2 CPU)",
             Margin = new Padding(3, 5, 3, 2)
         });
 
