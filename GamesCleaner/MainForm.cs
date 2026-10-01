@@ -49,8 +49,8 @@ internal sealed class MainForm : Form
 
         Text = "GamesCleaner v2";
         StartPosition = FormStartPosition.CenterScreen;
-        MinimumSize = new Size(900, 640);
-        Size = new Size(1180, 800);
+        MinimumSize = new Size(760, 500);
+        Size = new Size(900, 600);
 
         BuildUi();
         Shown += (_, _) => RefreshFiles();
@@ -62,7 +62,7 @@ internal sealed class MainForm : Form
         var root = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
-            Padding = new Padding(12),
+            Padding = new Padding(8),
             ColumnCount = 1,
             RowCount = 7
         };
@@ -81,23 +81,22 @@ internal sealed class MainForm : Form
             Dock = DockStyle.Top,
             AutoSize = true,
             ColumnCount = 1,
-            Margin = new Padding(0, 0, 0, 8)
+            Margin = new Padding(0, 0, 0, 2)
         };
 
         titlePanel.Controls.Add(new Label
         {
             AutoSize = true,
             Font = new Font(Font, FontStyle.Bold),
-            Text = "GamesCleaner v2 — sterke partijen bewaren, afgekeurde partijen apart houden"
+            Text = "GamesCleaner v2"
         });
 
         titlePanel.Controls.Add(new Label
         {
             AutoSize = true,
-            MaximumSize = new Size(1120, 0),
+            MaximumSize = new Size(840, 0),
             Text =
-                $"Automatisch zoeken vanaf: {_baseDirectory}\r\n" +
-                "Daarnaast kunt u met ‘PGN's toevoegen…’ bestanden van elke andere map of schijf kiezen."
+                $"Automatisch: {_baseDirectory}   |   Extra bronnen via ‘PGN's toevoegen…’"
         });
 
         root.Controls.Add(titlePanel, 0, 0);
@@ -107,8 +106,8 @@ internal sealed class MainForm : Form
             Text = "Selectieregels",
             Dock = DockStyle.Top,
             AutoSize = true,
-            Padding = new Padding(10),
-            Margin = new Padding(0, 0, 0, 8)
+            Padding = new Padding(6),
+            Margin = new Padding(0, 0, 0, 4)
         };
 
         var settingsFlow = new FlowLayoutPanel
@@ -164,7 +163,7 @@ internal sealed class MainForm : Form
         {
             AutoSize = true,
             Text = "(standaard: helft van de logische CPU-threads)",
-            Margin = new Padding(3, 7, 3, 3)
+            Margin = new Padding(3, 5, 3, 2)
         });
 
         settingsBox.Controls.Add(settingsFlow);
@@ -223,8 +222,8 @@ internal sealed class MainForm : Form
             Text = "Uitvoer",
             Dock = DockStyle.Top,
             AutoSize = true,
-            Padding = new Padding(10),
-            Margin = new Padding(0, 8, 0, 0)
+            Padding = new Padding(6),
+            Margin = new Padding(0, 4, 0, 0)
         };
 
         var outputLayout = new TableLayoutPanel
@@ -267,8 +266,8 @@ internal sealed class MainForm : Form
             Text = "Voortgang",
             Dock = DockStyle.Top,
             AutoSize = true,
-            Padding = new Padding(10),
-            Margin = new Padding(0, 8, 0, 8)
+            Padding = new Padding(6),
+            Margin = new Padding(0, 4, 0, 4)
         };
 
         var statusLayout = new TableLayoutPanel
@@ -287,8 +286,8 @@ internal sealed class MainForm : Form
         _progressBar.Dock = DockStyle.Top;
         _progressBar.Minimum = 0;
         _progressBar.Maximum = 1000;
-        _progressBar.Height = 22;
-        _progressBar.Margin = new Padding(0, 5, 0, 2);
+        _progressBar.Height = 18;
+        _progressBar.Margin = new Padding(0, 3, 0, 1);
         statusLayout.Controls.Add(_progressBar, 0, 1);
 
         _progressText.AutoSize = true;
@@ -312,20 +311,20 @@ internal sealed class MainForm : Form
 
         _startButton.Text = "Start GamesCleaner";
         _startButton.AutoSize = true;
-        _startButton.Padding = new Padding(10, 4, 10, 4);
+        _startButton.Padding = new Padding(6, 2, 6, 2);
         _startButton.Click += async (_, _) => await StartCleaningAsync();
         buttons.Controls.Add(_startButton);
 
         _cancelButton.Text = "Annuleren";
         _cancelButton.AutoSize = true;
-        _cancelButton.Padding = new Padding(10, 4, 10, 4);
+        _cancelButton.Padding = new Padding(6, 2, 6, 2);
         _cancelButton.Enabled = false;
         _cancelButton.Click += (_, _) => _cts?.Cancel();
         buttons.Controls.Add(_cancelButton);
 
         _openResultButton.Text = "Open resultaatmap";
         _openResultButton.AutoSize = true;
-        _openResultButton.Padding = new Padding(10, 4, 10, 4);
+        _openResultButton.Padding = new Padding(6, 2, 6, 2);
         _openResultButton.Enabled = false;
         _openResultButton.Click += (_, _) => OpenResultDirectory();
         buttons.Controls.Add(_openResultButton);
