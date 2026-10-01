@@ -206,47 +206,47 @@ internal static class CleanerEngine
         var rejectedFinal = Path.Combine(runDirectory, "Afgekeurd.pgn");
         var reportPath = Path.Combine(runDirectory, "GamesCleaner_Report.txt");
 
-        bool cancelled = false;
-
         try
         {
-            using var strongStream = new FileStream(
+            // Writers zitten in een eigen scope zodat de .tmp-bestanden zeker dicht zijn
+            // vóór ze naar de definitieve PGN-namen worden verplaatst.
+            using (var strongStream = new FileStream(
                 strongTmp, FileMode.CreateNew, FileAccess.Write, FileShare.Read,
-                1024 * 1024, FileOptions.SequentialScan);
-            using var rejectedStream = new FileStream(
+                1024 * 1024, FileOptions.SequentialScan))
+            using (var rejectedStream = new FileStream(
                 rejectedTmp, FileMode.CreateNew, FileAccess.Write, FileShare.Read,
-                1024 * 1024, FileOptions.SequentialScan);
-
-            // Latin1 is intentional: every input byte 0..255 round-trips unchanged.
-            // This preserves UTF-8/ANSI payload bytes while we inspect only ASCII PGN tags.
-            using var strongWriter = new StreamWriter(strongStream, Encoding.Latin1, 1024 * 1024, leaveOpen: false);
-            using var rejectedWriter = new StreamWriter(rejectedStream, Encoding.Latin1, 1024 * 1024, leaveOpen: false);
-
-            foreach (var input in inputs)
+                1024 * 1024, FileOptions.SequentialScan))
+            using (var strongWriter = new StreamWriter(
+                strongStream, Encoding.Latin1, 1024 * 1024, leaveOpen: false))
+            using (var rejectedWriter = new StreamWriter(
+                rejectedStream, Encoding.Latin1, 1024 * 1024, leaveOpen: false))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                foreach (var input in inputs)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                long fileStart = processedBytes;
-                ProcessOneFile(
-                    input,
-                    settings,
-                    strongWriter,
-                    rejectedWriter,
-                    counters,
-                    ref processedBytes,
-                    totalBytes,
-                    stopwatch,
-                    ref lastProgress,
-                    progress,
-                    cancellationToken);
+                    long fileStart = processedBytes;
+                    ProcessOneFile(
+                        input,
+                        settings,
+                        strongWriter,
+                        rejectedWriter,
+                        counters,
+                        ref processedBytes,
+                        totalBytes,
+                        stopwatch,
+                        ref lastProgress,
+                        progress,
+                        cancellationToken);
 
-                // Maak de voortgang aan het einde van ieder bestand exact.
-                processedBytes = Math.Min(totalBytes, fileStart + input.SizeBytes);
-                ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+                    // Maak de voortgang aan het einde van ieder bestand exact.
+                    processedBytes = Math.Min(totalBytes, fileStart + input.SizeBytes);
+                    ReportProgress(progress, input.Path, processedBytes, totalBytes, counters, stopwatch.Elapsed);
+                }
+
+                strongWriter.Flush();
+                rejectedWriter.Flush();
             }
-
-            strongWriter.Flush();
-            rejectedWriter.Flush();
 
             File.Move(strongTmp, strongFinal);
             File.Move(rejectedTmp, rejectedFinal);
@@ -271,7 +271,6 @@ internal static class CleanerEngine
         }
         catch (OperationCanceledException)
         {
-            cancelled = true;
             stopwatch.Stop();
 
             TryRenameIncomplete(strongTmp, Path.Combine(runDirectory, "StrongGames_ONVOLLEDIG.pgn"));
