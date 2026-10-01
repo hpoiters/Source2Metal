@@ -66,6 +66,16 @@ Standaardselectie
 
 De waarden voor Elo, minimumzetten en zeer snelle tijdcontrole zijn in het venster instelbaar.
 
+Werkthreads
+-----------
+GamesCleaner v2 gebruikt standaard maximaal de helft van de beschikbare logische
+CPU-threads. Dit aantal is in het venster instelbaar.
+
+De parallelisatie gebeurt veilig over onafhankelijke bron-PGN's. Als u slechts één
+grote samengevoegde PGN selecteert, wordt die ene bron bewust sequentieel gestreamd.
+Dat voorkomt ingewikkelde splitsing midden in partijen en is bij zeer grote bestanden
+vaak al I/O-beperkt.
+
 Voortgang
 ---------
 Het venster toont:
