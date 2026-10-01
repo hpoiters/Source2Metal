@@ -369,8 +369,18 @@ internal static class CleanerEngine
             localBytes += lineBytes;
             Interlocked.Add(ref processedBytes, lineBytes);
 
-            bool newGame = IsEventLine(line, firstLine);
-            if (newGame && game.Length > 0 && meta.SawEvent)
+            bool headerLine = IsHeaderLine(line, firstLine);
+            bool eventLine = IsEventLine(line, firstLine);
+
+            // Normale PGN: [Event ...] begint een nieuwe partij.
+            // Afwijkende PGN zonder Event-tag: zodra na reeds gelezen zetten weer
+            // een headerregel begint, behandelen we dat eveneens als nieuwe partij.
+            bool newGame =
+                game.Length > 0 &&
+                ((eventLine && meta.HasAnyHeader) ||
+                 (headerLine && meta.SawMovetext));
+
+            if (newGame)
             {
                 FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters, outputLock);
                 game.Clear();
@@ -418,6 +428,17 @@ internal static class CleanerEngine
         }
     }
 
+    private static bool IsHeaderLine(string line, bool firstLine)
+    {
+        if (line.StartsWith("[", StringComparison.Ordinal))
+            return true;
+
+        if (firstLine && line.StartsWith("ï»¿[", StringComparison.Ordinal))
+            return true;
+
+        return false;
+    }
+
     private static bool IsEventLine(string line, bool firstLine)
     {
         if (line.StartsWith("[Event ", StringComparison.Ordinal))
@@ -459,7 +480,7 @@ internal static class CleanerEngine
 
     private static RejectReason Classify(GameMeta meta, bool wholeFileBullet, CleanerSettings settings)
     {
-        if (meta.ForceMalformed || !meta.SawEvent || !meta.SawMovetext)
+        if (meta.ForceMalformed || !meta.HasAnyHeader || !meta.SawMovetext)
             return RejectReason.Malformed;
 
         if (settings.RejectBullet && (wholeFileBullet || meta.BulletInHeaders))
@@ -669,6 +690,7 @@ internal static class CleanerEngine
         public string? Result;
         public string? TimeControl;
         public bool BulletInHeaders;
+        public bool HasAnyHeader;
         public int MaxMoveNumber;
         public bool SawEvent;
         public bool SawMovetext;
@@ -685,6 +707,7 @@ internal static class CleanerEngine
             Result = null;
             TimeControl = null;
             BulletInHeaders = false;
+            HasAnyHeader = false;
             MaxMoveNumber = 0;
             SawEvent = false;
             SawMovetext = false;
@@ -710,6 +733,7 @@ internal static class CleanerEngine
 
                 if (inspect.StartsWith("[", StringComparison.Ordinal))
                 {
+                    HasAnyHeader = true;
                     if (inspect.StartsWith("[Event ", StringComparison.Ordinal))
                         SawEvent = true;
 
