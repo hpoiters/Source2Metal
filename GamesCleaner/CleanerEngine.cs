@@ -404,7 +404,7 @@ internal static class CleanerEngine
         }
 
         if (game.Length > 0)
-            FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters);
+            FinalizeGame(game, meta, wholeFileBullet, settings, strongWriter, rejectedWriter, counters, outputLock);
 
         // Maak de bytevoortgang per bronbestand exact, ook bij een ontbrekende slot-newline.
         long correction = input.SizeBytes - localBytes;
