@@ -191,7 +191,6 @@ internal sealed class MainForm : Form
         _refreshButton.Click += (_, _) =>
         {
             _includeBaseDirectory = true;
-            _lastBrowseDirectory = _baseDirectory;
             RefreshFiles();
         };
         fileToolbar.Controls.Add(_refreshButton);
