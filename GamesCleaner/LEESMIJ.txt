@@ -1,0 +1,77 @@
+GamesCleaner.exe
+================
+
+Doel
+----
+GamesCleaner splitst grote PGN-verzamelingen in twee complete uitgangen:
+
+1. StrongGames.pgn
+2. Afgekeurd.pgn
+
+Iedere herkende ingelezen partij gaat precies naar één van deze twee bestanden.
+De bron-PGN's worden nooit gewijzigd.
+
+Plaatsing
+---------
+Zet GamesCleaner.exe in de hoofdmap waaronder de te verwerken PGN-bestanden staan.
+
+GamesCleaner zoekt:
+- in dezelfde map als GamesCleaner.exe;
+- in onderliggende submappen.
+
+GamesCleaner zoekt NIET:
+- in bovenliggende mappen;
+- in eigen resultaatmappen;
+- in mappen met bekende resultaatnamen zoals Output, Result, Results, Resultaat of Resultaten.
+
+Voor de start toont het programma alle gevonden PGN-bestanden. U kunt bestanden aan- of uitvinken.
+
+Standaardselectie
+-----------------
+- beide spelers minimaal Elo 2400;
+- minimaal 20 zetten;
+- Bullet wordt afgekeurd;
+- herkenbare zeer snelle tijdcontrole met maximaal 120 seconden basistijd wordt afgekeurd;
+- alleen voltooide uitslagen 1-0, 0-1 en 1/2-1/2;
+- ontbrekende Elo en duidelijk afwijkende/beschadigde records worden afgekeurd.
+
+De waarden voor Elo, minimumzetten en zeer snelle tijdcontrole zijn in het venster instelbaar.
+
+Uitvoer
+-------
+Per run wordt gemaakt:
+
+GamesCleaner_Resultaat\YYYY-MM-DD_HH-mm-ss\
+    StrongGames.pgn
+    Afgekeurd.pgn
+    GamesCleaner_Report.txt
+
+Daardoor kan een volgende run nooit per ongeluk de eigen uitvoer opnieuw als bron gebruiken.
+
+Voortgang
+---------
+Het venster toont:
+- echte voortgang op basis van verwerkte bestandsgrootte;
+- huidig PGN-bestand;
+- totaal aantal verwerkte partijen;
+- aantal StrongGames;
+- aantal afgekeurde partijen;
+- verstreken tijd;
+- geschatte resterende tijd.
+
+Het venster mag tijdens de verwerking worden vergroot, verkleind of gemaximaliseerd.
+
+Annuleren
+---------
+Annuleren gebeurt op een partijgrens. Gedeeltelijke uitvoer wordt bewaard met
+_ONVOLLEDIG in de bestandsnaam, zodat die nooit met een complete run wordt verward.
+
+Opmerking over snelle partijen
+------------------------------
+GamesCleaner gebruikt waar aanwezig de PGN-tag TimeControl. Bestanden of PGN-headers
+waarin het woord Bullet voorkomt worden eveneens als Bullet herkend. Een onbekende
+tijdcontrole is op zichzelf geen reden om een partij af te keuren.
+
+Versie
+------
+Eerste proefbuild voor Windows x64.

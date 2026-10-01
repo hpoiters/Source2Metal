@@ -1,0 +1,66 @@
+name: GamesCleaner Windows build
+
+on:
+  pull_request:
+    paths:
+      - "GamesCleaner/**"
+      - ".github/workflows/gamescleaner-build.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Build
+        shell: pwsh
+        run: dotnet build GamesCleaner/GamesCleaner.csproj -c Release
+
+      - name: Publish single EXE
+        shell: pwsh
+        run: >
+          dotnet publish GamesCleaner/GamesCleaner.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=false
+          -o GamesCleaner/dist
+
+      - name: Verify executable
+        shell: pwsh
+        run: |
+          if (!(Test-Path "GamesCleaner/dist/GamesCleaner.exe")) {
+            throw "GamesCleaner.exe ontbreekt na publish."
+          }
+          Get-Item "GamesCleaner/dist/GamesCleaner.exe" | Format-List Name,Length,LastWriteTime
+
+      - name: Run end-to-end self-test
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath "GamesCleaner/dist/GamesCleaner.exe" -ArgumentList "--selftest" -Wait -PassThru
+          if ($p.ExitCode -ne 0) {
+            $diag = Join-Path $env:TEMP "GamesCleanerSelfTest_FAILED.txt"
+            if (Test-Path $diag) { Get-Content $diag }
+            throw "GamesCleaner self-test mislukt met exitcode $($p.ExitCode)."
+          }
+
+      - name: Package artifact
+        shell: pwsh
+        run: |
+          Copy-Item "GamesCleaner/LEESMIJ.txt" "GamesCleaner/dist/LEESMIJ.txt"
+          Compress-Archive -Path "GamesCleaner/dist/GamesCleaner.exe","GamesCleaner/dist/LEESMIJ.txt" -DestinationPath "GamesCleaner/GamesCleaner_Windows_x64.zip" -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GamesCleaner-Windows-x64
+          path: GamesCleaner/GamesCleaner_Windows_x64.zip
+          if-no-files-found: error
