@@ -528,6 +528,12 @@ func gmEmitRealGame(w *bufio.Writer, g gmParsed, sourceKind SourceKind, matched,
 }
 
 func gmVerifyRealMetal(path string, expected int64) error {
+	return gmVerifyRealMetalProgress(path, expected, nil)
+}
+
+// gmVerifyRealMetalProgress preserves the exact validation rules. Optional
+// progress is reporting-only and does not influence parsing or acceptance.
+func gmVerifyRealMetalProgress(path string, expected int64, progress func(int64)) error {
 	found, err := countGeneratedPGNRecords(path)
 	if err != nil {
 		return err
@@ -536,7 +542,12 @@ func gmVerifyRealMetal(path string, expected int64) error {
 		return fmt.Errorf("verwacht %s records, gevonden %s", fmtInt(expected), fmtInt(found))
 	}
 	var bad int64
+	var examined int64
 	err = parsePGNFile(path, func(g PGNGame) error {
+		examined++
+		if progress != nil {
+			progress(examined)
+		}
 		toks, res, vars, _ := stripMainline(g.MoveText)
 		if vars != 0 {
 			bad++
@@ -562,6 +573,39 @@ func gmVerifyRealMetal(path string, expected int64) error {
 		return fmt.Errorf("%s records faalden de echte-partijcontrole", fmtInt(bad))
 	}
 	return nil
+}
+
+
+// metalFinalHeartbeat only reports the current work and is deliberately
+// independent of the underlying processing algorithms and output data.
+func metalFinalHeartbeat(stage string, total int64, done *atomic.Int64) func() {
+	quit := make(chan struct{})
+	ended := make(chan struct{})
+	started := time.Now()
+	go func() {
+		defer close(ended)
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-quit:
+				return
+			case <-ticker.C:
+				elapsed := time.Since(started).Round(time.Second)
+				if done != nil && total > 0 {
+					n := done.Load()
+					fmt.Printf("  [Voortgang] %s: %s / %s (%.1f%%) | verstreken %s\n",
+						stage, fmtInt(n), fmtInt(total), 100*float64(n)/float64(total), elapsed)
+				} else {
+					fmt.Printf("  [Actief] %s | verstreken %s\n", stage, elapsed)
+				}
+			}
+		}
+	}()
+	return func() {
+		close(quit)
+		<-ended
+	}
 }
 
 // buildMetalFromGames creates one global statistical GAME model and writes the
@@ -756,16 +800,33 @@ func buildMetalFromGames(inv Inventory, extra []Source, layout OutputLayout, cfg
 		c.GameMetalSkipped++
 		return nil
 	}
-	if err := gmVerifyRealMetal(layout.GameMetalFile, c.GameMetalSelected); err != nil {
+	// The merged file may take a long time to validate even when there is
+	// only one source. Keep its last three operations explicitly visible.
+	fmt.Println("  GAME-METAL eindafhandeling: definitief bestand gesloten; start eindcontrole.")
+	var validated atomic.Int64
+	stopCheck := metalFinalHeartbeat("samengevoegde METAL controleren", c.GameMetalSelected, &validated)
+	err = gmVerifyRealMetalProgress(layout.GameMetalFile, c.GameMetalSelected, func(n int64) {
+		validated.Store(n)
+	})
+	stopCheck()
+	if err != nil {
 		c.GameMetalFailed++
 		return fmt.Errorf("samengevoegde GAME-METAL controle: %w", err)
 	}
+	fmt.Printf("  GAME-METAL eindcontrole: %s / %s partijen gecontroleerd | OK\n", fmtInt(validated.Load()), fmtInt(c.GameMetalSelected))
 	st, _ := os.Stat(layout.GameMetalFile)
 	if st != nil {
 		c.GameMetalBytes = st.Size()
 	}
-	if h, e := fileSHA256(layout.GameMetalFile); e == nil {
+	fmt.Println("  GAME-METAL eindafhandeling: SHA-256 berekenen...")
+	stopHash := metalFinalHeartbeat("SHA-256 van samengevoegde METAL berekenen", 0, nil)
+	h, e := fileSHA256(layout.GameMetalFile)
+	stopHash()
+	if e == nil {
 		c.GameMetalSHA256 = h
+		fmt.Println("  GAME-METAL SHA-256: klaar.")
+	} else {
+		fmt.Printf("  GAME-METAL SHA-256: niet beschikbaar (%v)\n", e)
 	}
 	c.GameMetalVerified = c.GameMetalSelected
 	c.GameMetalBuilt = 1
