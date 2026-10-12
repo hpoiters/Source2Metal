@@ -584,21 +584,64 @@ func metalFinalHeartbeat(stage string, total int64, done *atomic.Int64) func() {
 	started := time.Now()
 	go func() {
 		defer close(ended)
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
+		frames := []string{"|", "/", "-", "\\"}
+		frame := 0
+		drawn := false
+		render := func() {
+			width := visibleConsoleWidth() - 1
+			if width < 24 {
+				width = 24
+			}
+			if drawn {
+				// Erase the bar and status in place, without growing the log.
+				fmt.Print("\r\x1b[2K\x1b[1A\r\x1b[2K")
+			}
+			elapsed := time.Since(started).Round(time.Second)
+			status := fmt.Sprintf("  %s | verstreken %s", stage, elapsed)
+			percent := 0.0
+			if done != nil && total > 0 {
+				n := done.Load()
+				if n > total {
+					n = total
+				}
+				percent = 100 * float64(n) / float64(total)
+				status = fmt.Sprintf("  %s: %s / %s (%.1f%%) | %s",
+					stage, fmtInt(n), fmtInt(total), percent, elapsed)
+			}
+			barWidth := width - 8
+			if barWidth > 46 {
+				barWidth = 46
+			}
+			if barWidth < 8 {
+				barWidth = 8
+			}
+			filled := int(float64(barWidth) * percent / 100)
+			if filled > barWidth {
+				filled = barWidth
+			}
+			var bar string
+			if done != nil && total > 0 {
+				bar = "[" + strings.Repeat("#", filled) + strings.Repeat("-", barWidth-filled) + "]"
+			} else {
+				// Hashing has no record count: indicate activity, not fake progress.
+				bar = "[" + strings.Repeat("-", frame%barWidth) + "#" + strings.Repeat("-", barWidth-frame%barWidth-1) + "]"
+			}
+			fmt.Print(fitConsoleLine(status, width), "\n", fitConsoleLine("  "+frames[frame%len(frames)]+" "+bar, width))
+			drawn = true
+			frame++
+		}
+		render()
 		for {
 			select {
 			case <-quit:
+				if drawn {
+					fmt.Print("\r\x1b[2K\x1b[1A\r\x1b[2K")
+				}
 				return
 			case <-ticker.C:
-				elapsed := time.Since(started).Round(time.Second)
-				if done != nil && total > 0 {
-					n := done.Load()
-					fmt.Printf("  [Voortgang] %s: %s / %s (%.1f%%) | verstreken %s\n",
-						stage, fmtInt(n), fmtInt(total), 100*float64(n)/float64(total), elapsed)
-				} else {
-					fmt.Printf("  [Actief] %s | verstreken %s\n", stage, elapsed)
-				}
+				render()
 			}
 		}
 	}()
