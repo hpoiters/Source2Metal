@@ -22,10 +22,18 @@ jobs:
         run: gofmt -w source/Source2Metal_core/game_metal.go
       - name: Acquire Syzygy package and test/build
         run: bash tools/build_release.sh
+      - name: Verify single EXE contains updated core
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          core = Path('dist/Source2Metal_core.exe').read_bytes()
+          launcher = Path('dist/!Source2Metal_v3.4.1.exe').read_bytes()
+          assert core in launcher, 'Updated core not embedded in launcher'
+          print('Embedded-core check: OK')
+          PY
       - name: Archive isolated test executable
         uses: actions/upload-artifact@v4
         with:
-          name: Source2Metal-progress-test-Windows-x64
+          name: Source2Metal-one-EXE-progress-test-Windows-x64
           path: |
             dist/!Source2Metal_v3.4.1.exe
-            dist/Source2Metal_core.exe
