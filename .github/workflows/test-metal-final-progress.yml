@@ -37,3 +37,28 @@ jobs:
           name: Source2Metal-one-EXE-progress-test-Windows-x64
           path: |
             dist/!Source2Metal_v3.4.1.exe
+
+  defender-check:
+    needs: windows-test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Source2Metal-one-EXE-progress-test-Windows-x64
+          path: testbin
+      - name: Check whether Microsoft Defender scanning is available
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path testbin -Filter '*.exe' -Recurse | Select-Object -First 1
+          if (-not $exe) { throw 'Missing test EXE' }
+          Write-Output ('SHA256: ' + (Get-FileHash $exe.FullName -Algorithm SHA256).Hash)
+          $cmd = Get-Command Start-MpScan -ErrorAction SilentlyContinue
+          if (-not $cmd) { throw 'Defender scanner unavailable: no security verdict' }
+          $status = Get-MpComputerStatus -ErrorAction Stop
+          if (-not $status.AntivirusEnabled -or -not $status.RealTimeProtectionEnabled) {
+            throw 'Defender antivirus not active: no security verdict'
+          }
+          Start-MpScan -ScanType CustomScan -ScanPath $exe.FullName -ErrorAction Stop
+          $hits = @(Get-MpThreatDetection -ErrorAction SilentlyContinue | Where-Object { $_.Resources -match [regex]::Escape($exe.Name) })
+          if ($hits.Count -gt 0) { $hits | Format-List; throw 'Defender detection: do not use build' }
+          Write-Output 'Defender custom scan completed without a reported matching detection.'
