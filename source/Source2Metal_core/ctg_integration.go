@@ -41,7 +41,7 @@ func rawBookSkippable(err error) bool {
 func buildRawBooks(inv Inventory, layout OutputLayout, cfg Config, c *Counters) ([]string, error) {
 	sets := completeCTGSources(inv)
 	if len(sets) == 0 {
-		fmt.Println(L("No complete CTG sets for CTG RAW; skipped.", "Keine vollständigen CTG-Sets für CTG RAW; übersprungen.", "Geen complete CTG-sets voor CTG RAW; overgeslagen.", "Aucun ensemble CTG complet pour CTG RAW ; ignoré.", "No hay conjuntos CTG completos para CTG RAW; omitido.", "没有用于 CTG RAW 的完整 CTG 集；已跳过。", "Нет полных наборов CTG для CTG RAW; пропущено."))
+
 		return nil, nil
 	}
 	if err := os.MkdirAll(layout.RawBooksDir, 0755); err != nil {
