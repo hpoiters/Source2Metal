@@ -191,11 +191,18 @@ func run(cfg Config) error {
 	}
 
 	fmt.Println("\n" + U("2/6 Bronnen valideren..."))
-	fmt.Println(L("PGN, CBH and 2CBH sources are GAME sources: they build RAW and, in mode 3, also feed GAME-METAL.", "PGN-, CBH- und 2CBH-Quellen sind GAME-Quellen: Sie erstellen RAW und speisen in Modus 3 auch GAME-METAL.", "PGN-, CBH- en 2CBH-bronnen worden GAME-bronnen: zij bouwen RAW en voeden in modus 3 ook GAME-METAL.", "Les sources PGN, CBH et 2CBH sont des sources GAME : elles construisent RAW et alimentent aussi GAME-METAL en mode 3.", "Las fuentes PGN, CBH y 2CBH son fuentes GAME: crean RAW y, en modo 3, también alimentan GAME-METAL.", "PGN、CBH 和 2CBH 源属于 GAME 源：它们构建 RAW，并在模式 3 中同时供给 GAME-METAL。", "Источники PGN, CBH и 2CBH являются GAME-источниками: они создают RAW и в режиме 3 также питают GAME-METAL."))
-	fmt.Println(L("Complete CTG/CTO/CTB sets build separate CTG RAW and feed the CTG-METAL route.", "Vollständige CTG/CTO/CTB-Sets erstellen separates CTG RAW und speisen die CTG-METAL-Route.", "Complete CTG/CTO/CTB-sets bouwen afzonderlijke CTG RAW en voeden de CTG-METAL-route.", "Les ensembles CTG/CTO/CTB complets construisent un CTG RAW séparé et alimentent la voie CTG-METAL.", "Los conjuntos CTG/CTO/CTB completos crean CTG RAW separado y alimentan la ruta CTG-METAL.", "完整的 CTG/CTO/CTB 集会构建独立的 CTG RAW，并供给 CTG-METAL 路径。", "Полные наборы CTG/CTO/CTB создают отдельный CTG RAW и питают ветку CTG-METAL."))
+	// Console descriptions follow the actual source inventory only.
+	if c.FilesPGN > 0 || c.FilesCBH > 0 || c.Files2CBH > 0 {
+		fmt.Println(U("GAME-bronnen: RAW en eventueel GAME-METAL."))
+	}
+	if len(completeCTGSources(inv)) > 0 {
+		fmt.Println(U("CTG-bronnen: CTG RAW en eventueel CTG-METAL."))
+	}
+	if hasSourceKind(inv, KindBIN) {
+		fmt.Println(binScopeText())
+	}
 
 	var rawGamesPath string
-	fmt.Println(binScopeText())
 	var rawBookPaths []string
 	var cbSources []Source
 	if cfg.Mode == "raw" || cfg.Mode == "all" {
@@ -210,9 +217,7 @@ func run(cfg Config) error {
 				return err
 			}
 			fmt.Println(U("GAME RAW gemaakt:"), rawGamesPath)
-		} else {
-			fmt.Println(U("Geen bruikbare PGN/CBH/2CBH GAME-bronnen: GAME RAW overgeslagen."))
-		}
+				}
 
 		rawBookPaths, err = buildRawBooks(inv, layout, cfg, &c)
 		if err != nil {
@@ -252,9 +257,7 @@ func run(cfg Config) error {
 			return e
 		} else if combined != "" {
 			fmt.Println(U("ALLE SOURCES RAW gemaakt:"), combined)
-		} else {
-			fmt.Println(bookPolicyText())
-		}
+				}
 	} else {
 		fmt.Println("\n" + U("3/6 RAW bouwen: overgeslagen"))
 	}
@@ -271,7 +274,9 @@ func run(cfg Config) error {
 			_ = writeReports(layout, inv, cfg, hw, c, "MISLUKT")
 			return err
 		}
+		if len(completeCTGSources(inv)) > 0 {
 		fmt.Println("\n" + L("CTG-METAL: each complete CTG set is processed separately by the book-oriented Metal route.", "CTG-METAL: Jedes vollständige CTG-Set wird separat durch die buchorientierte Metal-Route verarbeitet.", "CTG-METAL: iedere complete CTG-set wordt afzonderlijk door de boekgerichte Metal-route verwerkt.", "CTG-METAL : chaque ensemble CTG complet est traité séparément par la voie Metal orientée livre.", "CTG-METAL: cada conjunto CTG completo se procesa por separado mediante la ruta Metal orientada a libros.", "CTG-METAL：每个完整 CTG 集都由面向开局库的 Metal 路径单独处理。", "CTG-METAL: каждый полный набор CTG отдельно обрабатывается книжной веткой Metal."))
+		}
 		if err := buildMetalFromCTG(inv, layout, cfg, &c); err != nil {
 			c.Elapsed = time.Since(started)
 			pruneEmptyOutputDirs(layout)
@@ -474,4 +479,12 @@ func fatal(c Config, err error) {
 func pause() {
 	fmt.Print("\n" + L("Press Enter to continue...", "Drücken Sie Enter, um fortzufahren...", "Druk op Enter om verder te gaan...", "Appuyez sur Entrée pour continuer...", "Pulse Intro para continuar...", "按回车继续……", "Нажмите Enter, чтобы продолжить..."))
 	_, _ = stdin.ReadString('\n')
+}
+
+// hasSourceKind controls console descriptions, never source processing.
+func hasSourceKind(inv Inventory, kind SourceKind) bool {
+	for _, source := range inv.Sources {
+		if source.Kind == kind { return true }
+	}
+	return false
 }
