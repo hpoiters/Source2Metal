@@ -18,6 +18,8 @@ jobs:
         with:
           go-version: '1.23.2'
           cache: false
+      - name: Format patched Go file
+        run: gofmt -w source/Source2Metal_core/game_metal.go
       - name: Acquire Syzygy package and test/build
         run: bash tools/build_release.sh
       - name: Archive isolated test executable
