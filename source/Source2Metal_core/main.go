@@ -203,7 +203,6 @@ func run(cfg Config) error {
 	}
 
 	var rawGamesPath string
-	fmt.Println(binScopeText())
 	var rawBookPaths []string
 	var cbSources []Source
 	if cfg.Mode == "raw" || cfg.Mode == "all" {
